@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+vector<int> tree;
+
+int init(int node, int start, int end) {
+	if (start == end)
+		return tree[node] = 1;
+
+	int mid = (start + end) / 2;
+	return tree[node] = init(2 * node, start, mid) + init(2 * node + 1, mid + 1, end);
+}
+
+int search(int node, int start, int end, int index) {
+	if (start == end)
+		return start;
+
+	int mid = (start + end) / 2;
+	if (index <= tree[2 * node]) return search(2 * node, start, mid, index);
+	else return search(2 * node + 1, mid + 1, end, index-tree[2*node]);
+}
+
+int update(int node, int start, int end, int num) {
+	tree[node]--;
+	if (start == end) return 0;
+
+	int mid = (start + end) / 2;
+	if (num <= mid) return update(2 * node, start, mid, num);
+	else return update(2 * node + 1, mid + 1, end, num);
+
+}
+int main() {
+	int N, K, index = 1, num;
+	scanf("%d %d", &N, &K);
+	int h = (int)ceil(log2(N));
+	int t_size = (1 << (h + 1));
+	tree.resize(t_size);
+
+	init(1, 1, N);
+
+	printf("<");
+	for (int i = 0; i < N; i++) {
+		index = (index + K - 1) % (N - i); 
+		if (index == 0) index = N - i;
+	
+		num = search(1, 1, N, index);
+		update(1, 1, N, num);
+		if (i < N - 1) printf("%d, ", num);
+		else printf("%d>", num);
+	}
+
+	return 0;
+}
