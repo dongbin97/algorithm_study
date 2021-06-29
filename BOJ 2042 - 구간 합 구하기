@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+vector<long long> arr;
+vector<long long> tree;
+
+long long init(int node, int start, int end) {
+	if (start == end)
+		return tree[node] = arr[start];
+
+	int mid = (start + end) / 2;
+	return tree[node] = init(2 * node, start, mid) + init(2 * node + 1, mid + 1, end);
+}
+
+void update(int node, int start, int end, int point, long long diff) {
+	if (point < start || end < point) return;
+
+	tree[node] = tree[node] + diff;
+	if (start == end) return;
+
+	int mid = (start + end) / 2;
+	if (point <= mid) update(2 * node, start, mid, point, diff);
+	else update(2 * node + 1, mid + 1, end, point, diff);
+}
+
+long long sum(int node, int start, int end, int left, int right) {
+	if (end<left || start>right) return 0;
+	else if (left <= start && end <= right) return tree[node];
+	else {
+		int mid = (start + end) / 2;
+		return sum(2 * node, start, mid, left, right) + sum(2 * node + 1, mid + 1, end, left, right);
+	}
+}
+int main() {
+	int N, M, K, a, b;
+	long long c, num;
+	scanf("%d %d %d", &N, &M, &K);
+
+	for (int i = 0; i < N; i++) {
+		scanf("%lld", &num);
+		arr.push_back(num);
+	}
+	
+	int h = (int)ceil(log2(N));
+	int t_size = (1 << (h + 1));
+	tree.resize(t_size);
+
+	init(1, 0, N - 1);
+
+	for (int i = 0; i < M + K; i++) {
+		scanf("%d %d %lld", &a, &b, &c);
+		switch (a) {
+		case 1: update(1, 0, N - 1, b - 1, c - arr[b - 1]);
+			arr[b - 1] = c;
+			break;
+		case 2: printf("%lld\n", sum(1, 0, N - 1, b - 1, c - 1));
+		}
+	}
+
+	return 0;
+}
