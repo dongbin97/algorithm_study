@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <algorithm>
+using namespace std;
+
+
+int main() {
+	int T, n, p;
+	
+	scanf("%d", &T);
+	while (T--) {
+		scanf("%d", &n);
+		int** dp = (int**)malloc(sizeof(int*) * 2);
+		for (int i = 0; i < 2; i++) 
+			dp[i] = (int*)malloc(sizeof(int) * (n + 1));
+	
+		int** point = (int**)malloc(sizeof(int*) * 2);
+		for (int i = 0; i < 2; i++) 
+			point[i] = (int*)malloc(sizeof(int) * (n + 1));
+			
+		point[0][0] = 0; point[1][0] = 0;
+
+		for (int i = 0; i < 2; i++) {
+			for (int j = 1; j <= n; j++) {
+				scanf("%d", &p);
+				point[i][j] = p;
+			}
+		}
+
+		dp[0][0] = 0;
+		dp[1][0] = 0;
+
+		dp[0][1] = point[0][1];
+		dp[1][1] = point[1][1];
+
+		for (int i = 2; i <= n; i++) {
+			dp[0][i] = max(max(dp[0][i - 2], dp[1][i - 2]), dp[1][i - 1]) + point[0][i];
+			dp[1][i] = max(max(dp[0][i - 2], dp[1][i - 2]), dp[0][i - 1]) + point[1][i];
+		}
+		printf("%d\n", max(dp[0][n],dp[1][n]));
+
+		free(point);
+		free(dp);
+	}
+
+	return 0;
+}
