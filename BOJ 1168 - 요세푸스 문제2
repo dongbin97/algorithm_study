@@ -21,14 +21,13 @@ int search(int node, int start, int end, int index) {
 	if (index <= tree[2 * node]) return search(2 * node, start, mid, index);
 	else return search(2 * node + 1, mid + 1, end, index-tree[2*node]);
 }
-
-int update(int node, int start, int end, int num) {
+void update(int node, int start, int end, int num) {
 	tree[node]--;
-	if (start == end) return 0;
+	if (start == end) return;
 
 	int mid = (start + end) / 2;
-	if (num <= mid) return update(2 * node, start, mid, num);
-	else return update(2 * node + 1, mid + 1, end, num);
+	if (num <= mid) update(2 * node, start, mid, num);
+	else update(2 * node + 1, mid + 1, end, num);
 
 }
 int main() {
