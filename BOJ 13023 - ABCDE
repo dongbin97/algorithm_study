@@ -15,7 +15,6 @@ int DFS(int u, int length) {
 		if (visited[x] == true) continue;
 
 		if (DFS(x, length + 1)) return 1;
-		visited[x] = false;
 	}
 
 	visited[u] = false;
