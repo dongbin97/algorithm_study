@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+vector<vector<int>> graph;
+bool visited[2000] = { false, };
+
+int DFS(int u, int length) {
+	visited[u] = true;
+	if (length == 4) return 1;
+
+	int size = graph[u].size(), x;
+	for (int i = 0; i < size; i++) {
+		x = graph[u][i];
+		if (visited[x] == true) continue;
+
+		if (DFS(x, length + 1)) return 1;
+		visited[x] = false;
+	}
+
+	visited[u] = false;
+	return 0;
+}
+
+int main() {
+	int N, M, a, b;
+	scanf("%d %d", &N, &M);
+
+	for (int i = 0; i < N; i++) {
+		vector<int> element;
+		graph.push_back(element);
+	}
+
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d", &a, &b);
+		graph[a].push_back(b);
+		graph[b].push_back(a);
+	}
+
+	int flag = 0;
+	for (int i = 0; i < N; i++) {
+		flag = DFS(i, 0);
+		if (flag == 1) break;
+	}
+
+	printf("%d", flag);
+	return 0;
+}
