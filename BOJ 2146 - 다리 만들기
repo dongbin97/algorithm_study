@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+using namespace std;
+int dx[4] = { 0,1,0,-1 }, dy[4] = { 1,0,-1,0 };
+
+int map[100][100];
+int visited[100][100] = { 0, };
+queue<pair<int,int> > q;
+int N;
+
+void DFS(int row, int col, int color) {
+	map[row][col] = color;
+	for (int i = 0; i < 4; i++) {
+		int nrow = row + dx[i];
+		int ncol = col + dy[i];
+		if (0 <= nrow && nrow < N && 0 <= ncol && ncol < N && map[nrow][ncol] == 1) {
+			DFS(nrow, ncol, color);
+		}
+	}
+}
+
+int BFS(int srow, int scol) {
+	visited[srow][scol] = 1;
+	q.push({ srow,scol });
+	while (!q.empty()) {
+		int row = q.front().first;
+		int col = q.front().second; q.pop();
+		for (int i = 0; i < 4; i++) {
+			int nrow = row + dx[i];
+			int ncol = col + dy[i];
+
+			if (0 <= nrow && nrow < N && 0 <= ncol && ncol < N) {
+				if (map[nrow][ncol] == 0) {
+					if (visited[nrow][ncol] > 0) continue;
+
+					visited[nrow][ncol] = visited[row][col] + 1;
+					q.push({ nrow,ncol });
+				}
+				else if (map[nrow][ncol] != map[srow][scol]) {
+					return visited[row][col] - 1;
+				}
+
+			}
+		}
+	}
+	return -1;
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			scanf("%d", &map[i][j]);
+
+	int color = 2;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (map[i][j] == 1)
+				DFS(i, j, color++);
+		}
+	}
+
+	int min = 10000, cnt;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (map[i][j] == 0) continue;
+
+			cnt = BFS(i, j);
+			if (cnt > 0 && min > cnt) min = cnt;
+
+			while (!q.empty()) {
+				q.pop();
+			}
+
+			for (int k = 0; k < N; k++)
+				for (int l = 0; l < N; l++)
+					visited[k][l] = 0;
+		}
+	}
+
+	printf("%d", min);
+	return 0;
+}
