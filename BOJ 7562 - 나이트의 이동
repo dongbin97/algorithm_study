@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+using namespace std;
+
+int dx[8] = { 2,1,-1,-2,-2,-1,1,2 }, dy[8] = { 1,2,2,1,-1,-2,-2,-1 };
+queue<pair<int,int> > q;
+int visited[300][300] = { 0, };
+int s_row, s_col, e_row, e_col;
+
+void BFS(int size) {
+	visited[s_row][s_col] = 1;
+	q.push({ s_row, s_col });
+	while (!q.empty()) {
+		int row = q.front().first;
+		int col = q.front().second;
+		q.pop();
+		
+		int nrow, ncol;
+		for (int i = 0; i < 8; i++) {
+			nrow = row + dx[i];
+			ncol = col + dy[i];
+			if (0 <= nrow && nrow < size && 0 <= ncol && ncol < size) {
+				if (visited[nrow][ncol] > 0) continue;
+
+				visited[nrow][ncol] = visited[row][col] + 1;
+				if (nrow == e_row && ncol == e_col)
+					return;
+
+				q.push({ nrow,ncol });
+			}
+		}
+	}
+	
+}
+int main() {
+	int T, size;
+	scanf("%d", &T);
+
+	while (T--) {
+		scanf("%d", &size);
+		scanf("%d %d", &s_row, &s_col);
+		scanf("%d %d", &e_row, &e_col);
+
+		BFS(size);
+		printf("%d\n", visited[e_row][e_col] - 1);
+
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				visited[i][j] = 0;
+			}
+		}
+
+		while (!q.empty())
+			q.pop();
+	}
+
+	return 0;
+}
