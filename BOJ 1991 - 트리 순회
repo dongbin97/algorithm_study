@@ -1,0 +1,42 @@
+#include <stdio.h>
+
+char tree[26][2];
+
+void preorder(char x) {
+	if (x == '.') return;
+	printf("%c", x);
+	preorder(tree[x - 'A'][0]);
+	preorder(tree[x - 'A'][1]);
+}
+
+void inorder(char x) {
+	if (x == '.') return;
+	inorder(tree[x - 'A'][0]);
+	printf("%c", x);
+	inorder(tree[x - 'A'][1]);
+}
+
+void postorder(char x) {
+	if (x == '.') return;
+	postorder(tree[x - 'A'][0]);
+	postorder(tree[x - 'A'][1]);
+	printf("%c", x);
+}
+
+int main() {
+	int N;
+	char root, left, right;
+	scanf("%d", &N);
+
+	for (int i = 0; i < N; i++) {
+		scanf("\n%c %c %c", &root, &left, &right);
+		tree[root - 'A'][0] = left;
+		tree[root - 'A'][1] = right;
+	}
+
+	preorder('A'); printf("\n");
+	inorder('A'); printf("\n");
+	postorder('A'); printf("\n");
+
+	return 0;
+}
