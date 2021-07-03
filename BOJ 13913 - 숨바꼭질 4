@@ -21,6 +21,12 @@ int main() {
 		int x = q.front(); q.pop();
 		if (x == K) break;
 
+		if (x - 1 == K || x + 1 == K || 2 * x == K) {
+			visited[K] = visited[x] + 1;
+			parent[K] = x;
+			break;
+		}
+
 		if (x - 1 >= 0 && visited[x - 1] == 0) {
 			visited[x - 1] = visited[x] + 1;
 			parent[x - 1] = x;
