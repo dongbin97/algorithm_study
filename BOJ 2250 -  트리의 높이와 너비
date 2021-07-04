@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+#define SIZE 10001
+#define DEPTH 20
+
+int tree[SIZE][2];
+int parent[SIZE] = { 0, };
+int mini[DEPTH], maxi[DEPTH] = { 0, };
+int N, idx = 1;
+
+void inorder(int x, int lv) {
+	if (x == -1) return;
+	inorder(tree[x][0], lv + 1);
+	if (idx < mini[lv]) mini[lv] = idx;
+	if (idx > maxi[lv]) maxi[lv] = idx;
+	idx++;
+	inorder(tree[x][1], lv + 1);
+}
+
+int main() {
+	int a, b, c;
+	scanf("%d", &N);
+
+	for (int i = 0; i < N; i++) {
+		scanf("%d %d %d", &a, &b, &c);
+		tree[a][0] = b; tree[a][1] = c;
+		parent[b] = a; parent[c] = a;
+	}
+
+	int root;
+	for (int i = 1; i <= N; i++)
+		if (parent[i] == 0) {
+			root = i;
+			break;
+		}
+
+	for (int i = 0; i < DEPTH; i++)
+		mini[i] = 15000;
+
+	inorder(root, 1);
+
+	int max = -1, maxpoint = 0, width;
+	for (int lv = 1; lv <DEPTH; lv++) {
+		if (maxi[lv] == 0 || mini[lv] == 15000) continue;
+		width = maxi[lv] - mini[lv] + 1;
+		if (max < width) {
+			maxpoint = lv; max = width;
+		}
+	}
+
+	printf("%d %d", maxpoint, max);
+	return 0;
+}
