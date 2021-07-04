@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+#define SIZE 100001
+
+vector<int> graph[SIZE];
+bool visited[SIZE];
+int parent[SIZE];
+int order[SIZE];
+int N, idx = 1;
+
+int DFS(int prev, int u) {
+	if (parent[u] != prev) return 0;
+	visited[u] = true;
+	int size = graph[u].size(), x, cnt = 0;
+	for (int i = 0; i < size; i++) {
+		x = graph[u][i];
+		if (visited[x]) continue;
+		parent[x] = u;
+		cnt++;
+	}
+	for (int i = 0; i < cnt; i++) {
+		if (DFS(u, order[idx++]) == 0) return 0;
+	}
+	return 1;
+}
+
+int main() {
+	int a, b;
+	scanf("%d", &N);
+	
+	for (int i = 0; i < N - 1; i++) {
+		scanf("%d %d", &a, &b);
+		graph[a].push_back(b);
+		graph[b].push_back(a);
+	}
+
+	for (int i = 1; i <= N; i++)
+		scanf("%d", &order[i]);
+
+	if (order[1] != 1) {
+		printf("0");
+		return 0;
+	}
+
+	parent[order[idx]] = -1;
+	printf("%d", DFS(-1, order[idx++]));
+	return 0;
+}
