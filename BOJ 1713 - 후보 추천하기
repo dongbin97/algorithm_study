@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+vector<int> input, frame;
+int candidate[101] = { 0, };
+
+int main() {
+	int N, K, a;
+	scanf("%d %d", &N, &K);
+
+	for (int i = 0; i < K; i++) {
+		scanf("%d", &a);
+		input.push_back(a);
+	}
+	for (int i = 0; i < K; i++) {
+		a = input[i];
+		if (candidate[a] > 0) candidate[a]++;
+		else {
+			int size = frame.size();
+			if (size < N) {
+				candidate[a]++;
+				frame.push_back(a);
+			}
+			else {
+				int minpos = -1, min = K + 1;
+				for (int j = 0; j < N; j++) {
+					if (min > candidate[frame[j]]) {
+						min = candidate[frame[j]], minpos = j;
+					}
+				}
+				candidate[frame[minpos]] = 0;
+				frame.erase(frame.begin() + minpos);
+				frame.push_back(a);
+				candidate[a]++;
+			}
+		}
+	}
+
+	int temp, size = frame.size();
+	for (int i = 0; i < size - 1; i++) {
+		for (int j = 1; j < size - i; j++) {
+			if (frame[j - 1] > frame[j]) {
+				temp = frame[j - 1];
+				frame[j - 1] = frame[j];
+				frame[j] = temp;
+			}
+		}
+	}
+	for (int i = 0; i < size; i++)
+		printf("%d ", frame[i]);
+
+	return 0;
+}
