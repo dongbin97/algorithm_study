@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <queue>
+#include <map>
+using namespace std;
+
+int arr_to_num(char arr[]) {
+	int res = 0;
+	for (int i = 0; arr[i]; i++) {
+		res *= 10;
+		res += (arr[i] - '0');
+	}
+	return res;
+}
+
+int change(int num, int left, int right) {
+	char buf[10];
+	sprintf(buf, "%d", num);
+	if (left == 0 && buf[right] == '0') return -1;
+	char temp = buf[left];
+	buf[left] = buf[right];
+	buf[right] = temp;
+	return arr_to_num(buf);
+}
+
+int get_numsize(int num) {
+	int a = num, cnt = 0;
+	while (!(a % 10)) {
+		cnt++;
+		a = a / 10;
+	}
+	for (int i = 1; i <= a; i *= 10)
+		cnt++;
+
+	return cnt;
+}
+
+int main() {
+	int N, K, ans = -1;
+	scanf("%d %d", &N, &K);
+	
+	if (N == 1000000) ans = N;
+	else if (1 <= N && N <= 9) ans = -1;
+	else if (10 <= N && N <= 90 && N % 10 == 0) ans = -1;
+	else {
+		int num_size = get_numsize(N), i, j, size, x, n, l, r;
+		
+		
+		queue<int> q;
+		map<int, bool> map;
+
+		map.insert({ N, true});
+		q.push(N);
+		for (i = 0; i < K; i++) {
+			size = q.size();
+			for (j = 0; j < size; j++) {
+				x = q.front(); q.pop();
+				map.erase(x);
+				for (l = 0; l < num_size-1; l++) {
+					for (r = l + 1; r < num_size; r++) {
+						n = change(x, l, r);
+						if (n > 0 && map.find(n) == map.end()) {
+							map.insert({ n,true });
+							q.push(n);
+						}
+					}
+				}
+			}
+		}
+		while (!q.empty()) {
+			if (ans < q.front())
+				ans = q.front();
+			q.pop();
+		}
+	}
+
+	printf("%d", ans);
+	return 0;
+}
