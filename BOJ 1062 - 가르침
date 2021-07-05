@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <string.h>
+
+char string[50][16];
+bool learn[26];
+int N, K, ans = -1;
+
+void check(char alpha, int count) {
+	if (alpha > 'z') return;
+	if (count == 0) {
+		int cnt = 0;
+		for (int i = 0; i < N; i++) {
+			bool flag = true;
+			int size = strlen(string[i]);
+			for (int j = 4; j < size - 4 && flag; j++) {
+				if (learn[string[i][j]-'a'] == false)
+					flag = false;
+			}
+			if (flag) cnt++;
+		}
+		if (ans < cnt) ans = cnt;
+		return;
+	}
+	else if (alpha < 'z') {
+		if (learn[(alpha + 1) - 'a'])
+			check(alpha + 1, count);
+		else {
+			check(alpha + 1, count);
+			learn[(alpha + 1) - 'a'] = true;
+			check(alpha + 1, count - 1);
+			learn[(alpha + 1) - 'a'] = false;
+
+		}
+	}
+	return;
+}
+
+int main() {
+	scanf("%d %d", &N, &K);
+
+	for (int i = 0; i < N; i++)
+		scanf("%s", string[i]);
+
+	if (K < 5) {
+		printf("0");
+		return 0;
+	}
+
+	learn['a' - 'a'] = true;
+	learn['c' - 'a'] = true;
+	learn['i' - 'a'] = true;
+	learn['n' - 'a'] = true;
+	learn['t' - 'a'] = true;
+
+	check('a', K - 5);
+
+	printf("%d", ans);
+	return 0;
+}
