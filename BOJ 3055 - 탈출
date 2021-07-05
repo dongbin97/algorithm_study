@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+#define SIZE 50
+int dx[4] = { 0,1,0,-1 }, dy[4] = { 1,0,-1,0 };
+
+char map[SIZE][SIZE];
+int w_visited[SIZE][SIZE] = { 0, };
+int d_visited[SIZE][SIZE] = { 0, };
+queue<pair<int, int> > water;
+queue<pair<int, int> > dochi;
+int R, C, target_row, target_col;
+
+bool BFS() {
+	int idx = 1;
+	while (!(dochi.empty() && water.empty())) {
+		while (!water.empty()) {
+			int w_row = water.front().first;
+			int w_col = water.front().second;
+			if (w_visited[w_row][w_col] != idx) break;
+			water.pop();
+			for (int i = 0; i < 4; i++) {
+				int wn_row = w_row + dx[i];
+				int wn_col = w_col + dy[i];
+				if (0 <= wn_row && wn_row < R && 0 <= wn_col && wn_col < C) {
+					if (w_visited[wn_row][wn_col] > 0) continue;
+					if (map[wn_row][wn_col] == '.' || map[wn_row][wn_col] == 'S') {
+						w_visited[wn_row][wn_col] = w_visited[w_row][w_col] + 1;
+						map[wn_row][wn_col] = '*';
+						water.push({ wn_row,wn_col });
+					}
+				}
+			}
+		}
+		while (!dochi.empty()) {
+			int d_row = dochi.front().first;
+			int d_col = dochi.front().second;
+			if (d_visited[d_row][d_col] != idx) break;
+			dochi.pop();
+			for (int i = 0; i < 4; i++) {
+				int dn_row = d_row + dx[i];
+				int dn_col = d_col + dy[i];
+				if (dn_row == target_row && dn_col == target_col) {
+					d_visited[target_row][target_col] = d_visited[d_row][d_col] + 1;
+					return true;
+				}
+				if (0 <= dn_row && dn_row < R && 0 <= dn_col && dn_col < C) {
+					if (d_visited[dn_row][dn_col] > 0) continue;
+					if (map[dn_row][dn_col] == '.') {
+						d_visited[dn_row][dn_col] = d_visited[d_row][d_col] + 1;
+						map[dn_row][dn_col] = 'S';
+						dochi.push({ dn_row,dn_col });
+					}
+				}
+			}
+		}
+
+		idx++;
+	}
+	return false;
+}
+
+int main() {
+	scanf("%d %d", &R, &C);
+
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+			scanf("%c", &map[i][j]);
+			if (map[i][j] == '\n') {
+				j--; continue;
+			}
+			if (map[i][j] == '*') {
+				w_visited[i][j] = 1;
+				water.push({ i,j });
+			}
+			if (map[i][j] == 'S') {
+				d_visited[i][j] = 1;
+				dochi.push({ i,j });
+			}
+			if (map[i][j] == 'D') {
+				target_row = i;
+				target_col = j;
+			}
+		}
+	}
+
+	if (BFS()) printf("%d", d_visited[target_row][target_col] - 1);
+	else printf("KAKTUS");
+	
+	return 0;
+}
