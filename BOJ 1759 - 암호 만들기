@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+char alpha[15];
+bool selected[15] = { false, };
+int L, C;
+
+bool aeiou(char temp) {
+	return (temp == 'a' || temp == 'e' || temp == 'i' || temp == 'o' || temp == 'u');
+}
+void password(int idx,int n) {
+	if (idx > C) return;
+	if (n == L) {
+		int a = 0, others = 0;
+		vector<char> p;
+		for (int i = 0; i < C; i++) {
+			if (selected[i]){
+				if (aeiou(alpha[i])) a++;
+				else others++;
+				p.push_back(alpha[i]);
+			}
+		}
+
+		if (a < 1 || others < 2) return;
+
+		for (int i = 0; i < L; i++)
+			printf("%c", p[i]);
+		printf("\n");
+		return;
+	}
+	selected[idx] = true;
+	password(idx + 1, n + 1);
+	selected[idx] = false;
+	password(idx + 1, n);
+}
+
+int main() {
+	char temp;
+	int a=0, others=0;
+	scanf("%d %d", &L, &C);
+
+	for (int i = 0; i < C; i++) {
+		scanf("%c", &temp);
+		if (temp == ' ' || temp == '\n') {
+			i--;
+			continue;
+		}
+		alpha[i] = temp;
+		if (aeiou(temp))
+			a++;
+		else others++;
+	}
+	
+	if (a < 1 || others < 2) return 0;
+
+	for (int i = 0; i < C - 1; i++) {
+		for (int j = i; j < C; j++) {
+			if (alpha[i] > alpha[j]) {
+				temp = alpha[i];
+				alpha[i] = alpha[j];
+				alpha[j] = temp;
+			}
+		}
+	}
+
+	password(0, 0);
+	return 0;
+}
