@@ -1,0 +1,33 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+int main() {
+	int N, S, num,ans = 1000001;
+	vector<int> arr;
+	scanf("%d %d", &N, &S);
+
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &num);
+		arr.push_back(num);
+	}
+
+	int i = 0, j = 0, sum = arr[0];
+
+	while (j < N) {
+		if (sum < S) {
+			if (j + 1 < N) 
+				sum += arr[j+1];
+			j++;
+			
+		}
+		else {
+			if (ans > j - i + 1) ans = j - i + 1;
+			sum -= arr[i];
+			i++;
+		}
+	}
+	if (ans == 1000001) ans = 0;
+	printf("%d", ans);
+	return 0;
+}
