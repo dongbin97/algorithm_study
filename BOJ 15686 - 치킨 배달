@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int N, M, h_sz, c_sz = 0, ans = 1000000;
+int map[50][50];
+vector<pair<int, int> > house, chicken;
+
+int dist() {
+	int res = 0, dist, local_min;
+	for (int i = 0; i < h_sz; i++) {
+		int h_row = house[i].first;
+		int h_col = house[i].second;
+		local_min = 1000000000;
+		for (int j = 0; j < c_sz; j++) {
+			int c_row = chicken[j].first;
+			int c_col = chicken[j].second;
+			if (map[c_row][c_col] != 2) continue;
+			dist = abs(h_row - c_row) + abs(h_col - c_col);
+			if (local_min > dist) local_min = dist;
+		}
+		res += local_min;
+	}
+	return res;
+}
+
+void solve(int idx,int cnt) {
+	if (cnt == M) {
+		int res = dist();
+		if (ans > res) ans = res;
+		return;
+	}
+	if (idx >= c_sz) return;
+	int row = chicken[idx].first;
+	int col = chicken[idx].second;
+
+	map[row][col] = 0;
+	solve(idx + 1, cnt - 1);
+	map[row][col] = 2;
+	solve(idx + 1, cnt);
+}
+
+int main() {
+	scanf("%d %d", &N, &M);
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			scanf("%d", &map[i][j]);
+			if (map[i][j] == 1) house.push_back({ i,j });
+			else if (map[i][j] == 2) chicken.push_back({ i,j });
+		}
+	}
+	h_sz = house.size();
+	c_sz = chicken.size();
+
+	solve(0, c_sz);
+
+	printf("%d", ans);
+	return 0;
+}
