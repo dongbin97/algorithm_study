@@ -1,0 +1,25 @@
+#include <stdio.h>
+
+int main() {
+	int  ans = 1000000001; //980000000/1000000000도 1000000000만 더하면 됨
+	long long X, Y,Z, temp;
+	//X, Y, i, ans;
+	scanf("%lld %lld", &X, &Y);
+	Z = (Y * 100) / X;
+	if (Z >= 99) ans = -1;
+	else {
+		int start = 1, end = 1000000000,mid;
+		while (start <= end) {
+			mid = (start + end) / 2;
+			temp = ((Y + mid) * 100) / (X + mid);
+			if (temp > Z) {
+				if (ans > mid) ans = mid;
+				end = mid - 1;
+			}
+			else
+				start = mid + 1;
+		}
+	}
+	printf("%d", ans);
+	return 0;
+}
