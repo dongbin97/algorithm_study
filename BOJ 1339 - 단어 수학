@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <string.h>
+#include <vector>
+using namespace std;
+
+int N;
+char str[10][9];
+int num[26];
+bool used[10];
+vector<int> ch;
+int ch_sz, ans = -1;
+
+int char_to_int(char arr[]) {
+	int res = 0;
+	for (int i=0; arr[i]; i++) {
+		res *= 10;
+		res += (num[arr[i] - 'A']);
+	}
+	return res;
+}
+
+void solve(int idx) {
+	if (idx == ch_sz) {
+		int res = 0;
+		for (int i = 0; i < N; i++)
+			res += char_to_int(str[i]);
+		if (ans < res) ans = res;
+		return;
+	}
+
+	for (int i = 0; i < 10; i++) {
+		if (used[i]) continue;
+		num[ch[idx]] = i;
+		used[i] = true;
+		solve(idx + 1);
+		used[i] = false;
+	}
+}
+
+int main() {
+	scanf("%d", &N);
+
+	for (int i = 0; i < N; i++)
+		scanf("%s", str[i]);
+
+	for (int i = 0; i < 26; i++)
+		num[i] = -1;
+
+	for (int i = 0; i < N; i++) {
+		int sz = strlen(str[i]);
+		for (int j = 0; j < sz; j++) {
+			if (num[str[i][j]-'A'] < 0) {
+				num[str[i][j] - 'A'] = 0;
+				ch.push_back(str[i][j] - 'A');
+			}
+		}
+	}
+	ch_sz = ch.size();
+	
+	solve(0);
+
+	printf("%d", ans);
+	return 0;
+}
