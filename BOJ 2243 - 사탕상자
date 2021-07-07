@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <vector>
+#include <cmath>
+using namespace std;
+#define MAX 1000000
+
+vector<int> tree;
+
+int init(int node, int start, int end) {
+	if (start == end) return tree[node] = 0;
+	int mid = (start + end) / 2;
+	return tree[node] = init(2 * node, start, mid) + init(2 * node + 1, mid + 1, end);
+}
+
+void update(int node, int start, int end, int index, int diff) {
+	tree[node] = tree[node] + diff;
+	if (start == end) return;
+	int mid = (start + end) / 2;
+	if (index <= mid) update(2 * node, start, mid, index, diff);
+	else update(2 * node + 1, mid + 1, end, index, diff);
+}
+
+int find(int node, int start, int end, int rank) {
+	if (start == end) return start;
+	int mid = (start + end) / 2;
+	if (rank <= tree[2 * node]) return find(2 * node, start, mid, rank);
+	else return find(2 * node + 1, mid + 1, end, rank - tree[2 * node]);
+}
+
+int main() {
+	int N, a, b, c;
+	scanf("%d", &N);
+
+	int h = (int)ceil(log2(MAX));
+	int t_size = 1 << (h + 1);
+	tree.resize(t_size);
+
+	init(1, 1, MAX);
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &a);
+		if (a == 1) {
+			scanf("%d", &b);
+			int num = find(1, 1, MAX, b);
+			update(1, 1, MAX, num, -1);
+			printf("%d\n", num);
+		}
+		else if (a == 2) {
+			scanf("%d %d", &b, &c);
+			update(1, 1, MAX, b, c);
+		}
+	}
+
+	return 0;
+}
