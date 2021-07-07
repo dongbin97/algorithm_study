@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <vector>
+#include <deque>
+using namespace std;
+
+int main() {
+	int N, L, num;
+	vector<int> A, ans;
+	deque<pair<int,int> > dq;
+
+	scanf("%d %d", &N, &L);
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &num);
+		A.push_back(num);
+	}
+
+	int start = 0 - L + 1, end = 0, min;
+	for (; end < N; start++, end++) {
+		if (start <= 0) {
+			if (dq.empty()) {
+				min = A[end];
+				dq.push_back({ A[end],end });
+			}
+			else {
+				while (!dq.empty() && dq.back().first > A[end])
+					dq.pop_back();
+				dq.push_back({ A[end],end });
+			}
+		}
+		else {
+			while (!dq.empty() && dq.front().second < start)
+				dq.pop_front();
+			while (!dq.empty() && dq.back().first > A[end])
+				dq.pop_back();
+			dq.push_back({ A[end],end });
+		}
+		ans.push_back(dq.front().first);
+	}
+	
+	for (int i = 0; i < N; i++)
+		printf("%d ", ans[i]);
+	return 0;
+}
