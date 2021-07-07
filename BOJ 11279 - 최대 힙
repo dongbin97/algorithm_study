@@ -1,0 +1,24 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+
+int main() {
+	int N, a, ans;
+	scanf("%d", &N);
+
+	priority_queue<int> pq;
+
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &a);
+		if (a == 0) {
+			if (pq.empty()) ans = 0;
+			else {
+				ans = pq.top();
+				pq.pop();
+			}
+			printf("%d\n", ans);
+		}
+		else pq.push(a);
+	}
+	return 0;
+}
