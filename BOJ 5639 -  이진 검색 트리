@@ -1,0 +1,33 @@
+#include <stdio.h>
+
+int element[10000];
+
+void recur(int start, int end) {
+	if (start == end) {
+		printf("%d\n", element[start]);
+		return;
+	}
+
+	if (start > end) return;
+	int mid = end;
+	for (int i = start+1; i <= end; i++) {
+		if (element[start] < element[i]) {
+			mid = i - 1;
+			break;
+		}
+	}
+	
+	recur(start+1, mid);
+	recur(mid + 1, end);
+	printf("%d\n", element[start]);
+	return;
+}
+int main() {
+	int num,  N=0;
+	while (scanf("%d", &num) != -1) {
+		element[N++] = num;
+	}
+
+	recur(0,N-1);
+	return 0;
+}
