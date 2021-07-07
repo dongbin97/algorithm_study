@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <map>
+using namespace std;
+
+int main() {
+	int test = 1, u, v;
+	bool finished = false,isTree;
+	while (!finished) {
+		map<int, int> m;
+		int cnt = 0;
+		isTree = true;
+		while (1) {
+			scanf("%d %d", &u, &v);
+			if (u == -1 && v == -1) {
+				finished = true;
+				break;
+			}
+			else if (u == 0 && v == 0) break;
+			else {
+				if (m.find(u) == m.end()) m.insert({ u,1 });
+				if (m.find(v) == m.end()) m.insert({ v,1 });
+				cnt++;
+			}
+		}
+		if (finished) break;
+
+		if (m.size() - 1 != cnt) isTree = false;
+		if (cnt == 0) isTree = true;
+
+		if (isTree) printf("Case %d is a tree.\n", test);
+		else printf("Case %d is not a tree.\n", test);
+		test++;
+	}
+
+	return 0;
+}
