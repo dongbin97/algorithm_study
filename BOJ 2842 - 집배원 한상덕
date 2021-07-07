@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+int dx[8] = { -1,-1,0,1,1,1,0,-1 }, dy[8] = { 0,1,1,1,0,-1,-1,-1 };
+int N, post_row, post_col, h_cnt = 0, need_low, need_high;
+char map[50][51];
+int h[50][50];
+vector<int> height;
+
+
+//low ~ high 사이의 고도탐색을 했을때 배달할 수 있는 집의 개수
+int bfs(int low, int high) {
+	int cnt = 0;
+	if (h[post_row][post_col]<low || h[post_row][post_col]>high) return 0;
+	queue<pair<int, int> > q;
+	bool visited[50][50] = { false, };
+	visited[post_row][post_col] = true;
+	q.push({ post_row,post_col });
+	while (!q.empty() ) {
+		int row = q.front().first;
+		int col = q.front().second; q.pop();
+		for (int i = 0; i < 8; i++) {
+			int nrow = row + dx[i];
+			int ncol = col + dy[i];
+			if (!(0 <= nrow && nrow < N && 0 <= ncol && ncol < N)) continue;
+			if (visited[nrow][ncol]) continue;
+			if (h[nrow][ncol] < low || h[nrow][ncol] > high) continue;
+			visited[nrow][ncol] = true;
+			if (map[nrow][ncol] == 'K') cnt++;
+			q.push({ nrow,ncol });
+		}
+	}
+	return cnt;
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%s", map[i]);
+		for (int j = 0; j < N; j++) {
+			if (map[i][j] == 'P') {
+				post_row = i, post_col = j;
+			}
+			else if (map[i][j] == 'K')
+				h_cnt++;
+		}
+	}
+	
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			scanf("%d", &h[i][j]);
+			height.push_back(h[i][j]);
+		}
+	}
+		
+	sort(height.begin(), height.end());
+	int ans = height.back() - height[0];
+
+	int size = height.size(), i = 0, j = 0, res, low, high;
+	while (i <size && j < size && i <= j) {
+		low = height[i], high = height[j];
+		res = bfs(low, high);
+		if (res < h_cnt) {
+			j++;
+		}
+		else {
+			if (ans > high - low) ans = high - low;
+			i++;
+		}
+
+	}
+	
+	printf("%d", ans);
+	return 0;
+}
