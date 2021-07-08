@@ -1,0 +1,23 @@
+#include <stdio.h>
+
+bool check[1001] = { false, };
+
+int main() {
+	int N, K;
+	scanf("%d %d", &N, &K);
+
+	int cnt = 0, ans;
+
+	for (int i = 2; i <= N && cnt<K; i++) {
+		if (check[i] == false) {
+			for (int j = i; j <= N &&cnt<K; j = j + i) {
+				if (check[j] == true) continue;
+				check[j] = true;
+				cnt++;
+				ans = j;
+			}
+		}
+	}
+	printf("%d", ans);
+	return 0;
+}
