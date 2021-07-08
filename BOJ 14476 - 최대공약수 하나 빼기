@@ -1,0 +1,42 @@
+#include <stdio.h>
+
+//max, num sum에 다양하게 활용가능
+int num[1000002],front[1000002], rear[1000002];
+
+int GCD(int a, int b) {
+	if (b == 0) return a;
+	else return GCD(b, a % b);
+}
+
+int main() {
+	int N;
+	scanf("%d", &N);
+
+	for (int i = 1; i <= N; i++)
+		scanf("%d", &num[i]);
+
+	front[0] = 0;
+	front[1] = num[1];
+	for (int i = 2; i < N; i++) {
+		front[i] = GCD(front[i - 1], num[i]);
+	}
+
+	rear[N + 1] = 0;
+	rear[N] = num[N];
+	for (int i = N -1; i >= 0; i--)
+		rear[i] = GCD(rear[i + 1], num[i]);
+
+	int min = 1000001, pos = -1,g;
+	for (int i = 0; i < N; i++) {
+		g = GCD(front[i - 1], rear[i + 1]);
+
+		if (min > g && num[i] % g != 0) {
+			min = g;
+			pos = num[i];
+		}
+	}
+
+	if (min == 1000001) printf("-1");
+	else printf("%d %d", min, pos);
+	return 0;
+}
