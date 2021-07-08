@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <vector>
+#include <string.h>
+using namespace std;
+
+bool check[1000001] = { false, };
+vector<int> prime;
+
+void get_prime(int num) {
+	for (int i = 2; i < num; i++) {
+		if (check[i] == false) {
+			prime.push_back(i);
+			for (int j = 2 * i; j < num; j = j + i)
+				check[j] = true;
+		}
+	}
+}
+
+int main() {
+	char P[102];
+	int K;
+	scanf("%s", P);
+	scanf("%d", &K);
+	get_prime(K);
+
+	int len = strlen(P);
+	int size = prime.size(), i;
+	int num;
+	bool is_good = true;
+	for (i = 0; i < size; i++) {
+		num = 0;
+		for (int j = 0; j < len; j++) {
+			num = (num * 10 + (P[j] - '0')) % prime[i];
+		}
+		if (num % prime[i] == 0) {
+			is_good = false;
+			break;
+		}
+	}
+
+	if (is_good) printf("GOOD");
+	else printf("BAD %d", prime[i]);
+	
+	return 0;
+}
