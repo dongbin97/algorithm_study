@@ -1,0 +1,17 @@
+#include <stdio.h>
+
+int GCD(int a, int b) {
+	if (b == 0) return a;
+	else return GCD(b, a % b);
+}
+
+int main() {
+	int A, B, C, D,P,Q;
+	scanf("%d %d %d %d", &A, &B, &C, &D);
+	P = A * D + B * C;
+	Q = B * D;
+
+	int gcd = GCD(P, Q);
+	P = P / gcd; Q = Q / gcd;
+	printf("%d %d", P, Q);
+}
