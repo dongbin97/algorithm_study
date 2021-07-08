@@ -1,0 +1,33 @@
+#include <iostream>
+#include <map>
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+map<string, int> m;
+vector<string> tree;
+
+int main() {
+	cin.tie(NULL);
+	ios::sync_with_stdio(false);
+	cout.precision(4);
+	cout << fixed;
+
+	int count = 0;
+	string str;
+	while (getline(cin, str)) {
+		if (m[str] == 0) tree.push_back(str);
+		m[str]++;
+		count++;
+	}
+
+	int tree_sz = tree.size();
+
+	sort(tree.begin(), tree.end());
+	
+	for (int i = 0; i < tree_sz; i++) {
+		cout << tree[i] << " " << (float)(m[tree[i]] * 100) / count << "\n";
+	}
+	return 0;
+}
