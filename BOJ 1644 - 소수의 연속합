@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+bool check[4000001] = { false, };
+vector<int> prime;
+
+
+void get_prime(int num) {
+	for (int i = 2; i <= num; i++) {
+		if (check[i] == false) {
+			prime.push_back(i);
+			for (int j = 2 * i; j <= num; j = j + i)
+				check[j] = true;
+		}
+	}
+}
+
+int main() {
+	int num;
+	scanf("%d", &num);
+	get_prime(num);
+
+	int size = prime.size();
+
+	vector<int> sum;
+	sum.resize(size + 1);
+	sum[0] = 0;
+	for (int i = 1; i <= size; i++) {
+		sum[i] = sum[i - 1] + prime[i - 1];
+	}
+
+	int i = 0, j = 1, cnt = 0, s;
+	while (i <= size && j <= size && i <= j) {
+		s = sum[j] - sum[i];
+		if (s < num) j++;
+		else if (s > num) i++;
+		else {
+			cnt++;
+			i++;
+		}
+	}
+
+	printf("%d", cnt);
+	return 0;
+}
