@@ -1,0 +1,25 @@
+#include <iostream>
+#include <map>
+#include <string>
+using namespace std;
+
+map<string, int> m;
+
+int main() {
+	cin.tie(NULL);
+	ios::sync_with_stdio(false);
+	cout.precision(4);
+	cout << fixed;
+
+	int count = 0;
+	string str;
+	while (getline(cin, str)) {
+		m[str]++;
+		count++;
+	}
+
+	for(auto x:m) {
+		cout << x.first<< " " << (float)(x.second * 100) / count << "\n";
+	}
+	return 0;
+}
