@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <queue>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+typedef pair<int, int> pii;
+int N, K;
+int M, V, C;
+
+vector<pii> jewel;
+vector<int> cap;
+priority_queue<int> cand;
+
+int main() {
+	scanf("%d %d", &N, &K);
+	for (int i = 0; i < N; i++) {
+		scanf("%d %d", &M, &V);
+		jewel.push_back({ M,V });
+	}
+	for (int i = 0; i < K; i++) {
+		scanf("%d", &C);
+		cap.push_back(C);
+	}
+
+	sort(jewel.begin(), jewel.end());
+	sort(cap.begin(), cap.end());
+
+	int bag, pos = 0;
+	long long ans = 0;
+	for (int i = 0; i < K; i++) {
+		bag = cap[i];
+		while (pos < N && jewel[pos].first <= bag) {
+			cand.push(jewel[pos].second);
+			pos++;
+		}
+		//cand에는 현재 가방에 넣을 수 있는 value들이 크기 순으로 들어가 있음
+		if (!cand.empty()) {
+			ans += cand.top();
+			cand.pop();
+		}
+	}
+
+	printf("%lld", ans);
+	return 0;
+}
