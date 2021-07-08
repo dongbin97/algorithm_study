@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+bool check[3200] = {false, };
+vector<int> prime;
+
+void getprime() {
+	int max = (int)ceil(sqrt(10000000));
+	for (int i = 2; i < max; i++) {
+		if (check[i] == false) {
+			prime.push_back(i);
+			for (int j = 2 * i; j < max; j = j + i)
+				check[j] = true;
+		}
+	}
+}
+int main() {
+	int N;
+	scanf("%d", &N);
+	int max = (int)ceil(sqrt(10000000));
+
+	getprime();
+
+	int size = prime.size();
+	for (int i = 0; i < size && N != 1; i++) {
+		if (N % prime[i]==0) {
+			printf("%d\n", prime[i]);
+			N = N / prime[i];
+			i--;
+		}
+	}
+	if (N > 1)
+		printf("%d\n", N);
+	
+	return 0;
+}
