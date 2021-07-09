@@ -27,6 +27,10 @@ int main() {
 
 	int cnt_a = N, cnt_z = M;
 	for (int i = 0; i < N + M; i++) {
+		if (cnt_a == 0) {
+			ans[i] = 'z';
+			continue;
+		}
 		int temp = dp[cnt_a + cnt_z - 1][cnt_z];
 		if (temp >= K) {
 			ans[i] = 'a';
