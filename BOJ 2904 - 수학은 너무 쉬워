@@ -1,0 +1,75 @@
+#include <stdio.h>
+#include <vector>
+#include <map>
+using namespace std;
+
+typedef pair<int, int> pii;
+
+int N, num[100];
+bool check[1000001];
+vector<int> prime;
+vector<pii > a;
+map<pii, int> m;
+int sol[100][80000] = { 0, };
+
+void get_prime() {
+	for (int i = 2; i <= 1000000; i++) {
+		if (check[i] == false) {
+			prime.push_back(i);
+			for (int j = 2 * i; j <= 1000000; j = j + i)
+				check[j] = true;
+		}
+	}
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &num[i]);
+	}
+
+	get_prime();
+
+	int prime_sz = prime.size();  
+	int max_prime_idx = 0;
+	for (int i = 0; i < N; i++) {
+		int x = num[i];
+		for (int j = 0; j < prime_sz && prime[j] <= num[i]; j++) {
+			while (x % prime[j] == 0) {
+				sol[i][j]++;
+				m[{prime[j], j}]++;
+				x /= prime[j];
+				if (max_prime_idx < j) max_prime_idx = j;
+			}
+		}
+	}
+
+
+	for (auto x : m) {
+		a.push_back({ x.first.first,x.second / N });
+	}
+
+	int gcd = 1;
+	int a_sz = a.size();
+	for (int i = 0; i < a_sz; i++) {
+		int n = a[i].second;
+		while (n--)
+			gcd = gcd * a[i].first;
+	}
+
+	int give, get, sum = 0;
+	for (auto x : m) {
+		int idx = x.first.second;
+		int cnt = x.second / N;
+		
+		give = 0, get = 0;
+		for (int i = 0; i < N; i++) {
+			if (cnt > sol[i][idx]) get += (cnt - sol[i][idx]);
+			else give += (sol[i][idx] - cnt);
+		}
+		sum += ((give > get) ? get : give);
+	}
+
+	printf("%d %d", gcd, sum);
+	return 0;
+}
