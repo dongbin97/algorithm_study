@@ -1,0 +1,67 @@
+#include <stdio.h>
+
+int GCD(int a, int b) {
+	if (b == 0) return a;
+	else return GCD(b, a % b);
+}
+
+int main() {
+	int t, K, C;
+	scanf("%d", &t);
+	while (t--) {
+		scanf("%d %d", &K, &C);
+
+		if (GCD(K, C) != 1) {
+			printf("IMPOSSIBLE\n");
+			continue;
+		}
+		else if (C == 1) {
+			if (K == 1000000000)
+				printf("IMPOSSIBLE\n");
+			else
+				printf("%d\n", K + 1);
+			continue;
+		}
+		else if (K == 1) {
+			printf("1\n");
+			continue;
+		}
+		
+		int r0 = K, r1 = C;
+		int s0 = 1, s1 = 0;
+		int t0 = 0, t1 = 1;
+		int temp = 0, q;
+
+		//r_i = s_i * K + t_i + C;
+		//r_i+1 = r_i-1 - r_i * q_i;  q_i = r_i-1/r_i;
+		//r_i+1 = s_i+1 * K + t_i+1 * C
+		//      = (s_i-1 - s_i * q-I) * K + (t_i-1 - t_i * q_i) * C;
+		//r0 = K = 1 * K + 0 * C => s0 = 1, s1 = 0
+		//r1 = C = 0 * K + 1 * C => t0 = 0, t1 = 1
+		//K = C * q + r2  => r2 = K - C * q = (1 - 0 * q) * K + ( 0 - 1 * q) * C
+		
+
+		while (r1 != 1) {
+			q = r0 / r1;
+
+			temp = r0;
+			r0 = r1;
+			r1 = temp - r1 * q;
+
+			temp = s0;
+			s0 = s1;
+			s1 = temp - s1 * q;
+
+			temp = t0;
+			t0 = t1;
+			t1 = temp - t1 * q;
+			
+		}
+
+		if (t1 < 0) t1 = t1 + K;
+
+		if (t1 > 1000000000) printf("IMPOSSIBLE\n");
+		else printf("%d\n", t1);
+	}
+	return 0;
+}
