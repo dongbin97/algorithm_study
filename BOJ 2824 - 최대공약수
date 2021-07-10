@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <map>
+#include <vector>
+using namespace std;
+#define MAX 1000000000
+
+bool check[32000];
+vector<int> prime;
+map<int, int> a_map, b_map;
+
+void get_prime() {
+	for (int i = 2; i < 32000; i++) {
+		if (check[i]) continue;
+		prime.push_back(i);
+		for (int j = 2 * i; j < 32000; j = j + i)
+			check[j] = true;
+	}
+}
+
+int main() {
+	int N, M, num;
+	get_prime();
+	int size = prime.size();
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &num);
+		for (int i = 0; i < size; i++) {
+			while (num % prime[i] == 0) {
+				a_map[prime[i]]++;
+				num /= prime[i];
+			}
+		}
+		if (num > 1) 
+			a_map[num]++;
+	}
+
+	scanf("%d", &M);
+	for (int i = 0; i < M; i++) {
+		scanf("%d", &num);
+		for (int i = 0; i < size; i++) {
+			while (num % prime[i] == 0) {
+				b_map[prime[i]]++;
+				num /= prime[i];
+			}
+		}
+		if (num > 1) 
+			b_map[num]++;
+	}
+
+	map<int, int> ::iterator a_it = a_map.begin();
+	map<int, int> ::iterator b_it = b_map.begin();
+	bool flag = false;
+	long long ans = 1;
+	while (a_it != a_map.end() && b_it != b_map.end()) {
+		long long a_prime = (*a_it).first;
+		long long b_prime = (*b_it).first;
+		if (a_prime < b_prime)a_it++;
+		else if (a_prime > b_prime) b_it++;
+		else {
+			int a = (*a_it).second;
+			int b = (*b_it).second;
+
+			if (a < b) {
+				while (a--) {
+					if (ans * a_prime > MAX) flag = true;
+					ans = (ans * a_prime) % MAX;
+				}
+			}
+			else {
+				while (b--) {
+					if (ans * b_prime > MAX) flag = true;
+					ans = (ans * b_prime) % MAX;
+				}
+			}
+			a_it++; b_it++;
+		}
+	}
+
+	if (flag) {
+		char answer[10];
+		for (int i = 8; i >= 0; i--) {
+			answer[i] = (ans % 10) + '0';
+			ans /= 10;
+		}
+		answer[9] = '\0';
+		printf("%s", answer);
+	}
+	else
+		printf("%lld", ans);
+
+	return 0;
+}
