@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <map>
+using namespace std;
+
+int n, k, card[10], a[4];
+bool used[10];
+map<int, int> m;
+
+int get_num() {
+	int res = 0;
+	for (int i = 0; i < k; i++) {
+		if (card[a[i]] > 9) res *= 100;
+		else res *= 10;
+		res += card[a[i]];
+	}
+	return res;
+}
+void recur(int selected) {
+	if (selected == k) {
+		m[get_num()]++;
+		return;
+	}
+
+	for (int i = 0; i < n; i++) {
+		if (used[i]) continue;
+		used[i] = true;
+		a[selected] = i;
+		recur(selected + 1);
+		used[i] = false;
+	}
+}
+
+int main() {
+	scanf("%d", &n);
+	scanf("%d", &k);
+	for (int i = 0; i < n; i++)
+		scanf("%d", &card[i]);
+
+	recur(0);
+	printf("%d", m.size());
+	return 0;
+}
