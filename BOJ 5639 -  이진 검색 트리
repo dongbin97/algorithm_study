@@ -1,33 +1,35 @@
 #include <stdio.h>
+#include <vector>
+using namespace std;
 
-int element[10000];
+vector<int> input;
+int sz;
 
-void recur(int start, int end) {
+void go(int start, int end) {
 	if (start == end) {
-		printf("%d\n", element[start]);
+		printf("%d\n", input[start]);
 		return;
 	}
 
 	if (start > end) return;
-	int mid = end;
-	for (int i = start+1; i <= end; i++) {
-		if (element[start] < element[i]) {
-			mid = i - 1;
-			break;
-		}
-	}
-	
-	recur(start+1, mid);
-	recur(mid + 1, end);
-	printf("%d\n", element[start]);
-	return;
+
+	int next = end;
+	for (next = start + 1; next <= end; next++)
+		if (input[next] > input[start]) break;
+
+	go(start + 1, next - 1);
+	go(next, end);
+	printf("%d\n", input[start]);
 }
+
 int main() {
-	int num,  N=0;
+	int num;
 	while (scanf("%d", &num) != -1) {
-		element[N++] = num;
+		if (num == -1) break;
+		input.push_back(num);
 	}
 
-	recur(0,N-1);
+	sz = input.size();
+	go(0, sz-1);
 	return 0;
 }
