@@ -1,0 +1,56 @@
+#include <stdio.h>
+
+int n, m;
+int parent[1000001];
+
+int find(int u) {
+	int root, x, temp;
+	for (root = u; parent[root] >= 0; root = parent[root]);
+	for (x = u; x != root; x = temp) {
+		temp = parent[x];
+		parent[x] = root;
+	}
+	return root;
+}
+
+void uni(int u, int v) {
+	int a = find(u);
+	int b = find(v);
+	if (a == b) return;
+	if (parent[a] < parent[b]) {
+		parent[a] += parent[b];
+		parent[b] = a;
+	}
+	else {
+		parent[b] += parent[a];
+		parent[a] = b;
+	}
+}
+
+int main() {
+	int type, a, b;
+
+	scanf("%d %d", &n, &m);
+
+	for (int i = 0; i <= n; i++)
+		parent[i] = -1;
+
+	for (int i = 0; i < m; i++) {
+		scanf("%d %d %d", &type, &a, &b);
+		if (type == 0) {
+			if (a == b) continue;
+			uni(a, b);
+		}
+		else if (type == 1) {
+			if (a == b) {
+				printf("YES\n");
+				continue;
+			}
+			if (find(a) == find(b))
+				printf("YES\n");
+			else
+				printf("NO\n");
+
+		}
+	}
+}
