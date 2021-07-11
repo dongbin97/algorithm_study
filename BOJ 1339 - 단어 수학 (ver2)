@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <map>
+#include <vector>
+#include <string.h>
+#include <algorithm>
+using namespace std;
+
+int cnt[26];
+vector<pair<int, char>> alpha;
+map<char, int> m;
+
+bool comp(pair<int, char> a, pair<int, char> b) {
+	return a.first > b.first;
+}
+
+int main() {
+	int N;
+	scanf("%d", &N);
+	char str[9];
+	for (int i = 0; i < N; i++) {
+		scanf("%s", str);
+		int len = strlen(str);
+		int ten = 1, n = len - 1;
+		while (n--) ten *= 10;
+		for (int j = 0; j < len; j++) {
+			m[str[j]] += ten;
+			ten /= 10;
+		}
+	}
+
+	for (auto x : m) {
+		alpha.push_back({ x.second,x.first });
+	}
+
+	sort(alpha.begin(), alpha.end(), comp);
+
+	int size = alpha.size(), digit = 9, ans = 0;
+	for (int i = 0; i < size; i++, digit--) {
+		ans += (alpha[i].first * digit);
+	}
+
+	printf("%d", ans);
+	return 0;
+}
