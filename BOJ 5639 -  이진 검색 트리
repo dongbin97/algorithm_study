@@ -25,7 +25,6 @@ void go(int start, int end) {
 int main() {
 	int num;
 	while (scanf("%d", &num) != -1) {
-		if (num == -1) break;
 		input.push_back(num);
 	}
 
