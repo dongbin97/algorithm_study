@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+#define MAX 150000
+
+int dist[501][501];
+
+int main() {
+	int N, M, a, b;
+	scanf("%d %d", &N, &M);
+
+	for (int i = 1; i <= N; i++)
+		for (int j = 1; j <= N; j++) {
+			if (i == j) dist[i][j] = 0;
+			else dist[i][j] = MAX;
+		}
+
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d", &a, &b);
+		dist[a][b] = 1;
+	}
+
+	for (int k = 1; k <= N; k++)
+		for (int i = 1; i <= N; i++)
+			for (int j = 1; j <= N; j++)
+				dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+
+	int ans = 0, cnt;
+	for (int i = 1; i <= N; i++) {
+		cnt = 0;
+		for (int j = 1; j <= N; j++) {
+			if (dist[i][j] == MAX && dist[j][i] == MAX) continue;
+			cnt++;
+		}
+		if (cnt == N) ans++;
+	}
+
+	printf("%d", ans);
+	return 0;
+}
