@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int from, to, cost;
+} edge;
+
+bool comp(edge u, edge v) {
+	return v.cost > u.cost;
+}
+
+int N, M;
+vector<edge> edges;
+int parent[1001];
+
+int find(int u) {
+	int root, x, temp;
+	for (root = u; parent[root] >= 0; root = parent[root]);
+	for (x = u; x != root; x = temp) {
+		temp = parent[x];
+		parent[x] = root;
+	}
+	return root;
+}
+
+void merge(int a, int b) {
+	if (parent[a] < parent[b]) {
+		parent[a] += parent[b];
+		parent[b] = a;
+	}
+	else {
+		parent[b] += parent[a];
+		parent[a] = b;
+	}
+}
+
+int main() {
+	int a, b, c;
+	scanf("%d %d", &N, &M);
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d %d", &a, &b, &c);
+		if (a == b) continue;
+		edges.push_back({ a,b,c });
+	}
+
+	sort(edges.begin(), edges.end(), comp);
+
+	for (int i = 0; i < N; i++)
+		parent[i] = -1;
+
+	int cnt = 0, idx = 0, ans = 0;
+	while (cnt < N - 1) {
+		int u = edges[idx].from;
+		int v = edges[idx].to;
+		int cost = edges[idx].cost;
+
+		int a = find(u);
+		int b = find(v);
+		if (a != b) {
+			merge(a, b);
+			cnt++;
+			ans += cost;
+		}
+		idx++;
+	}
+
+	printf("%d", ans);
+	return 0;
+}
