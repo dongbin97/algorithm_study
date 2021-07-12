@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+#include <cmath>
+using namespace std;
+
+int N, M;
+bool visited[100001] = { false, };
+vector<int> graph[100001];
+int level[100001];
+int parent[18][100001] = { 0, };
+queue<int> q;
+int m, ans;
+
+void BFS() {
+	level[1] = 1;
+	visited[1] = true;
+	q.push(1);
+	while (!q.empty()) {
+		int u = q.front(); q.pop();
+		int size = graph[u].size();
+		for (int i = 0; i < size; i++) {
+			int x = graph[u][i];
+			if (visited[x]) continue;
+			level[x] = level[u] + 1;
+			parent[0][x] = u;
+			visited[x] = true;
+			q.push(x);
+		}
+	}
+}
+
+int main() {
+	int a, b;
+	scanf("%d ", &N);
+	for (int i = 0; i < N-1; i++) {
+		scanf("%d %d", &a, &b);
+		graph[a].push_back(b);
+		graph[b].push_back(a);
+	}
+	
+	BFS();
+
+	for (int k = 1; k < 18; k++) {
+		for (int u = 2; u <= N; u++) {
+			parent[k][u] = parent[k - 1][parent[k - 1][u]];
+		}
+	}
+
+	scanf("%d", &M);
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d", &a, &b);
+
+		if (level[a] < level[b]) {
+			int temp = a;
+			a = b;
+			b = temp;
+		}
+
+		for (int k = 17; k >= 0; k--) {
+			if (level[parent[k][a]] >= level[b]) 
+				a = parent[k][a];
+		}
+/*
+		int diff = level[a] - level[b];
+		int pw = 0;
+		while (diff) {
+			if (diff & 1)
+				a = parent[pw][a];
+			diff /= 2;
+			pw++;
+		}
+*/		
+		if (a == b) ans = a;
+		else {
+			for (int k = 17; k >= 0; k--) {
+				if (parent[k][a] != parent[k][b]) {
+					a = parent[k][a];
+					b = parent[k][b];
+				}
+			}
+			ans = parent[0][a];
+		}
+		
+		printf("%d\n", ans);
+		
+	}
+	return 0;
+}
