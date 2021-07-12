@@ -5,14 +5,13 @@ using namespace std;
 
 typedef struct {
 	int from, to, cost;
-} edge;
+}e;
 
-bool comp(edge u, edge v) {
-	return v.cost > u.cost;
+bool comp(e a, e b) {
+	return b.cost > a.cost;
 }
 
-int N, M;
-vector<edge> edges;
+vector<e> edge;
 int parent[1001];
 
 int find(int u) {
@@ -25,47 +24,45 @@ int find(int u) {
 	return root;
 }
 
-void merge(int a, int b) {
-	if (parent[a] < parent[b]) {
-		parent[a] += parent[b];
-		parent[b] = a;
+void merge(int u, int v) {
+	if (parent[u] < parent[v]) {
+		parent[u] += parent[v];
+		parent[v] = u;
 	}
 	else {
-		parent[b] += parent[a];
-		parent[a] = b;
+		parent[v] += parent[u];
+		parent[u] = v;
 	}
 }
 
 int main() {
-	int a, b, c;
+	int N, M, a, b, c;
 	scanf("%d %d", &N, &M);
 	for (int i = 0; i < M; i++) {
 		scanf("%d %d %d", &a, &b, &c);
-		if (a == b) continue;
-		edges.push_back({ a,b,c });
+		edge.push_back({ a,b,c });
 	}
 
-	sort(edges.begin(), edges.end(), comp);
+	sort(edge.begin(), edge.end(), comp);
 
-	for (int i = 0; i < N; i++)
+	for (int i = 1; i <= N; i++)
 		parent[i] = -1;
 
-	int cnt = 0, idx = 0, ans = 0;
+	int cnt = 0, ans = 0, idx = 0;
 	while (cnt < N - 1) {
-		int u = edges[idx].from;
-		int v = edges[idx].to;
-		int cost = edges[idx].cost;
+		a = edge[idx].from;
+		b = edge[idx].to;
+		c = edge[idx].cost;
 
-		int a = find(u);
-		int b = find(v);
-		if (a != b) {
-			merge(a, b);
+		int u = find(a);
+		int v = find(b);
+		if (u != v) {
+			merge(u, v);
 			cnt++;
-			ans += cost;
+			ans += c;
 		}
 		idx++;
 	}
-
 	printf("%d", ans);
 	return 0;
 }
