@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <queue>
+#include <vector>
+using namespace std;
+#define MAX 1000000
+typedef struct {
+	int to;
+	int cost;
+}st;
+
+bool operator<(st a, st b) {
+	return a.cost > b.cost;
+}
+
+int N, M, S, D;
+vector<st> graph[500],rev[500];
+int dist[500];
+priority_queue<st> pq;
+queue<pair<int, int> > q;
+
+
+int main() {
+	int a, b;
+	int c;
+
+	while (1) {
+		scanf("%d %d", &N, &M);
+		if (N == 0 && M == 0) break;
+
+		scanf("%d %d", &S, &D);
+
+		for (int i = 0; i < M; i++) {
+			scanf("%d %d %d", &a, &b, &c);
+			graph[a].push_back({ b,c });
+			rev[b].push_back({ a,c });
+		}
+
+		for (int i = 0; i < N; i++)
+			dist[i] = MAX;
+
+		dist[S] = 0;
+		pq.push({ S,0 });
+
+		while (!pq.empty()) {
+			int u = pq.top().to;
+			int cost = pq.top().cost; pq.pop();
+
+			for (st next : graph[u]) {
+				if (dist[next.to] > dist[u] + next.cost) {
+					dist[next.to] = dist[u] + next.cost;
+					pq.push({ next.to,dist[next.to] });
+				}
+			}
+		}
+
+		if (dist[D] == MAX) {
+			printf("-1\n");
+			for (int i = 0; i < N; i++) {
+				graph[i].clear();
+				rev[i].clear();
+			}
+			continue;
+		}
+		
+		bool visited[500] = { false, };
+		bool used[500][500] = { false, };
+
+		visited[D] = true;
+		q.push({ -1,D });
+		while (!q.empty()) {
+			int prev = q.front().first;
+			int u = q.front().second; q.pop();
+			for (st x : rev[u]) {
+				if (x.to == prev) continue;
+				if (dist[x.to] + x.cost == dist[u]) {
+					used[x.to][u] = true;
+					if (visited[x.to]) continue;
+					visited[x.to] = true;
+					q.push({ u,x.to });
+					
+				}
+			}
+		}
+
+		for (int i = 0; i < N; i++)
+			dist[i] = MAX;
+
+		dist[S] = 0;
+		pq.push({ S,0 });
+		while (!pq.empty()) {
+			int u = pq.top().to;
+			int cost = pq.top().cost; pq.pop();
+
+			for (st next : graph[u]) {
+				if (used[u][next.to]) continue;
+				if (dist[next.to] > dist[u] + next.cost) {
+					dist[next.to] = dist[u] + next.cost;
+					pq.push({ next.to,dist[next.to] });
+				}
+			}
+		}
+
+		if (dist[D] == MAX) {
+			printf("-1\n");
+		}
+		else printf("%d\n", dist[D]);
+
+		for (int i = 0; i < N; i++) {
+			graph[i].clear();
+			rev[i].clear();
+		}
+	}
+	return 0;
+}
