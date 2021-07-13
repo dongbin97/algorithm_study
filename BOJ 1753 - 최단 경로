@@ -32,17 +32,17 @@ int main() {
 		dist[i] = MAX;
 
 	dist[start] = 0;
-	for (pii next : graph[start]) {
-		pq.push(next);
-	}
-	
+	pq.push({ start,0 });
+
 	while (!pq.empty()) {
 		int u = pq.top().first;
 		int cost = pq.top().second; pq.pop();
-		if (dist[u] != MAX) continue;
-		dist[u] = cost;
+		
 		for (pii next : graph[u]) {
-			pq.push({ next.first,dist[u] + next.second });
+			if (dist[next.first] > dist[u] + next.second) {
+				dist[next.first] = dist[u] + next.second;
+				pq.push({ next.first,dist[next.first] });
+			}
 		}
 	}
 
