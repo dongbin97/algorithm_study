@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <cmath>
+#include <vector>
+#include <algorithm>
+using namespace std;
+#define MAX 66000
+typedef pair<int, int> pii;
+
+int arr[250001];
+vector<long long> tree;
+int N, K;
+
+bool comp(pii a, pii b) {
+	if (a.first == b.first)
+		return a.second < b.second;
+	else return a.first < b.first;
+}
+
+long long init(int node, int start, int end) {
+	if (start == end) return tree[node] = 0;
+	int mid = (start + end) / 2;
+	return tree[node] = init(2 * node, start, mid) + init(2 * node + 1, mid + 1, end);
+}
+
+void update(int node, int start, int end, int num, long long diff) {
+	tree[node] = tree[node] + diff;
+	if (start == end) return;
+
+	int mid = (start + end) / 2;
+	if (num <= mid) update(2 * node, start, mid, num, diff);
+	else update(2 * node + 1, mid + 1, end, num, diff);
+}
+
+int query(int node, int start, int end, int order) {
+	if (start == end) return start;
+	int mid = (start + end) / 2;
+	if (order <= tree[2 * node]) return query(2 * node, start, mid, order);
+	else return query(2 * node + 1, mid + 1, end, order - tree[2 * node]);
+}
+
+int main() {
+	int a, b;
+	scanf("%d %d", &N, &K);
+	
+	for (int i = 1; i <= N; i++)
+		scanf("%d", &arr[i]);
+
+	int h = (int)ceil(log2(MAX));
+	int t_size = 1 << (h + 1);
+	tree.resize(t_size);
+
+	init(1, 0, MAX);
+	long long ans = 0;
+	for (int i = 1; i <= N; i++) {
+		if (i <= K) {
+			update(1, 0, MAX, arr[i], 1);
+			if (i == K)
+				ans += query(1, 0, MAX, (K + 1) / 2);
+			continue;
+		}
+		update(1, 0, MAX, arr[i - K], -1);
+		update(1, 0, MAX, arr[i], 1);
+		ans += query(1, 0, MAX, (K + 1) / 2);
+	}
+
+	printf("%lld", ans);
+	return 0;
+}
