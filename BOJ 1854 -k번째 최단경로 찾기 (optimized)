@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+#define INF 2000000000
+
+typedef struct {
+	int to, cost;
+}st;
+
+struct comp {
+	bool operator() (st a, st b) {
+		return a.cost > b.cost;
+	}
+};
+
+vector<st> graph[1001];
+int cnt[1001] = { 0, };
+
+int main() {
+	int n, m, k, a, b, c;
+	scanf("%d %d %d", &n, &m, &k);
+	for (int i = 0; i < m; i++) {
+		scanf("%d %d %d", &a, &b, &c);
+		graph[a].push_back({ b,c });
+	}
+
+	priority_queue<st,vector<st>,comp > pq;
+	priority_queue<int,vector<int> ,less<> > dist[1001];
+
+	pq.push({ 1,0 });
+	dist[1].push(0);
+	cnt[1]++;
+	while (!pq.empty()) {
+		st u = pq.top(); pq.pop();
+		if (cnt[u.to] >= k && dist[u.to].top() < u.cost) continue;
+
+		for (st x : graph[u.to]) {
+			if (cnt[x.to] < k) {
+				dist[x.to].push(u.cost + x.cost);
+				cnt[x.to]++;
+				pq.push({ x.to,u.cost + x.cost });
+			}
+			else if (dist[x.to].top() > u.cost + x.cost) {
+				dist[x.to].push(u.cost + x.cost);
+				dist[x.to].pop();
+				pq.push({ x.to,u.cost + x.cost });
+			}
+		}
+	}
+
+	for (int j = 1; j <= n; j++) {
+		if (dist[j].size() < k)
+			printf("-1\n");
+		else printf("%d\n", dist[j].top());
+	}
+	return 0;
+}
