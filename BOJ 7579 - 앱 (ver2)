@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int dp[10001];
+int dp[10001]; // dp[i] : 비용이 i 일때 최대 확보할 수 있는 메모리
 int m[100], c[100];
 
 int main() {
