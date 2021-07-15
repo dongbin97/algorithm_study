@@ -14,7 +14,7 @@ bool comp(app a, app b) {
 	return a.cost > b.cost;
 }
 
-int dp[2][10000001];
+int dp[2][10000001]; // j의 메모리를 확보하기 위해 (i%2)번째 앱을 비활성화할때 필요한 최소비용
 app list[101];
 
 int main() {
