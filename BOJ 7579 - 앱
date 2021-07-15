@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+#define INF 1000000001
+
+typedef struct {
+	int memory, cost;
+}app;
+
+bool comp(app a, app b) {
+	if (a.cost == b.cost)
+		return a.memory < b.memory;
+	return a.cost > b.cost;
+}
+
+int dp[2][10000001];
+app list[101];
+
+int main() {
+	int N, M;
+	scanf("%d %d", &N, &M);
+
+	for (int i = 1; i <= N; i++)
+		scanf("%d", &list[i].memory);
+
+	for (int i = 1; i <= N; i++) 
+		scanf("%d", &list[i].cost);
+
+	sort(list + 1, list + N, comp);
+	
+	for (int j = 1; j <= M; j++) {
+		dp[0][j] = INF;
+		dp[1][j] = INF;
+	}
+
+	dp[0][0] = 0; dp[1][0] = 0;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 0; j <= M; j++) {
+			int m = list[i].memory;
+			int c = list[i].cost;
+			if (j <= m)
+				dp[i % 2][j] = min(dp[(i + 1) % 2][j], c);
+			else dp[i % 2][j] = min(dp[(i + 1) % 2][j - m] + c, dp[(i + 1) % 2][j]);
+			if (dp[i % 2][j] > INF) dp[i % 2][j] = INF;
+		}
+	}
+
+	printf("%d", dp[N % 2][M]);
+	return 0;
+}
