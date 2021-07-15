@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+
+typedef pair<int, int> pii;
+
+vector<pii> arr1, arr2, v;
+vector<long long> tree;
+
+long long init(int node, int start, int end) {
+	if (start == end) return tree[node] = 0;
+	int mid = (start + end) / 2;
+	return tree[node] = init(2 * node, start, mid) + init(2 * node + 1, mid + 1, end);
+}
+
+void update(int node, int start, int end, int idx) {
+	tree[node] += 1;
+	if (start == end) return;
+	int mid = (start + end) / 2;
+	if (idx <= mid) update(2 * node, start, mid, idx);
+	else update(2 * node + 1, mid + 1, end, idx);
+}
+
+long long query(int node, int start, int end, int left, int right) {
+	if (right<start || left>end) return 0;
+	else if (left <= start && end <= right) return tree[node];
+	int mid = (start + end) / 2;
+	return query(2 * node, start, mid, left, right) + query(2 * node + 1, mid + 1, end, left, right);
+}
+
+int main() {
+	int N, num;
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &num);
+		arr1.push_back({ num,i });
+	}
+
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &num);
+		arr2.push_back({ num,i });
+	}
+
+	sort(arr1.begin(), arr1.end());
+	sort(arr2.begin(), arr2.end());
+
+	for (int i = 0; i < N; i++)
+		v.push_back({ arr1[i].second,arr2[i].second });
+
+	sort(v.begin(), v.end());
+
+	int h = (int)ceil(log2(N));
+	int t_size = 1 << (h + 1);
+	tree.resize(t_size);
+
+	init(1, 0, N - 1);
+	long long ans = 0;
+	for (int i = 0; i < N; i++) {
+		int x = v[i].second;
+		ans += query(1, 0, N - 1, x + 1, N - 1);
+		update(1, 0, N - 1, x);
+	}
+
+	printf("%lld", ans);
+	return 0;
+}
