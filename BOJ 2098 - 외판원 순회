@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <algorithm>
+#include <queue>
+using namespace std;
+#define INF 20000000
+
+typedef struct {
+	int state, idx, cost, start;
+} st;
+
+int dp[1 << 17][16];
+int N, cost[16][16], ans = INF, total;
+queue<st> q;
+
+int DFS(int state, int idx, int start) {
+	if (dp[state][idx] > 0) return dp[state][idx];
+	if (state == total - 1) {
+		dp[state][idx] = cost[idx][start];
+		return dp[state][idx];
+	}
+	for (int i = 0; i < N; i++) {
+		int next = state & (1 << i);
+		if (!next) {
+			int res = DFS(state | (1 << i), i, start);
+			if (dp[state][idx] == -1 || dp[state][idx] > cost[idx][i] + res)
+				dp[state][idx] = cost[idx][i] + res;
+		}
+	}
+
+	return dp[state][idx];
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++) {
+			scanf("%d", &cost[i][j]);
+			if (cost[i][j] == 0)
+				cost[i][j] = INF;
+		}
+
+	total = (1 << N);
+	
+	for (int i = 0; i < N; i++) {
+
+		for (int j = 0; j < total; j++)
+			for (int k = 0; k < N; k++)
+				dp[j][k] = -1;
+
+		int res = DFS((1 << i), i, i);
+		if (ans > res) ans = res;
+	}
+	printf("%d", ans);
+	return 0;
+}
