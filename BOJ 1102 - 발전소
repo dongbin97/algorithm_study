@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+#define INF 100000
+
+int dp[1 << 17], cnt[1 << 17] = { 0, };
+int N, cost[16][16], P;
+char state[17];
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			scanf("%d", &cost[i][j]);
+
+	int total = (1 << N);
+	for (int i = 0; i < total; i++)
+		dp[i] = INF;
+
+	scanf("%s", state);
+	int bit = 0;
+	for (int i = 0; i < N; i++) {
+		bit = bit | ((state[i] == 'Y') ? 1 : 0) << i;
+	}
+	dp[bit] = 0;
+
+	scanf("%d", &P);
+
+	for (int i = 0; i < total; i++) {
+		for (int j = 0; j < N; j++) {
+			if ((i & (1 << j)) == 0) continue;
+			cnt[i]++;
+			for (int k = 0; k < N; k++) {
+				dp[i | (1 << k)] = min(dp[i | (1 << k)], dp[i] + cost[j][k]);
+			}
+		}
+	}
+
+	int ans = INF;
+	for (int i = 0; i < total; i++) {
+		if (cnt[i] >= P) {
+			if (ans > dp[i]) ans = dp[i];
+		}
+	}
+
+	if (ans == INF) ans = -1;
+	printf("%d", ans);
+	return 0;
+}
