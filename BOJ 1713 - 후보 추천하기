@@ -1,54 +1,41 @@
 #include <stdio.h>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
-vector<int> input, frame;
-int candidate[101] = { 0, };
+vector<int> picture;
 
 int main() {
-	int N, K, a;
-	scanf("%d %d", &N, &K);
+	int N, R, num;
+	int cnt[101] = { 0, };
+	scanf("%d %d", &N, &R);
+	for (int i = 0; i < R; i++) {
+		scanf("%d", &num);
 
-	for (int i = 0; i < K; i++) {
-		scanf("%d", &a);
-		input.push_back(a);
-	}
-	for (int i = 0; i < K; i++) {
-		a = input[i];
-		if (candidate[a] > 0) candidate[a]++;
+		if (cnt[num] > 0) {
+			cnt[num]++;
+			continue;
+		}
+
+		cnt[num]++;
+		if (picture.size() < N)	picture.push_back(num);
 		else {
-			int size = frame.size();
-			if (size < N) {
-				candidate[a]++;
-				frame.push_back(a);
-			}
-			else {
-				int minpos = -1, min = K + 1;
-				for (int j = 0; j < N; j++) {
-					if (min > candidate[frame[j]]) {
-						min = candidate[frame[j]], minpos = j;
-					}
+			int min = 1001, del;
+			for (int j = 0; j < N; j++) {
+				if (min > cnt[picture[j]]) {
+					min = cnt[picture[j]];
+					del = j;
 				}
-				candidate[frame[minpos]] = 0;
-				frame.erase(frame.begin() + minpos);
-				frame.push_back(a);
-				candidate[a]++;
 			}
+			cnt[picture[del]] = 0;
+			picture.erase(picture.begin() + del);
+			picture.push_back(num);
 		}
 	}
 
-	int temp, size = frame.size();
-	for (int i = 0; i < size - 1; i++) {
-		for (int j = 1; j < size - i; j++) {
-			if (frame[j - 1] > frame[j]) {
-				temp = frame[j - 1];
-				frame[j - 1] = frame[j];
-				frame[j] = temp;
-			}
-		}
-	}
-	for (int i = 0; i < size; i++)
-		printf("%d ", frame[i]);
-
+	sort(picture.begin(), picture.end());
+	int sz = picture.size();
+	for (int i = 0; i < sz; i++)
+		printf("%d ", picture[i]);
 	return 0;
 }
