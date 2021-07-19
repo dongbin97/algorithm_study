@@ -1,91 +1,74 @@
 #include <stdio.h>
 #include <queue>
 using namespace std;
-#define SIZE 50
-int dx[4] = { 0,1,0,-1 }, dy[4] = { 1,0,-1,0 };
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
 
-char map[SIZE][SIZE];
-int w_visited[SIZE][SIZE] = { 0, };
-int d_visited[SIZE][SIZE] = { 0, };
-queue<pair<int, int> > water;
-queue<pair<int, int> > dochi;
-int R, C, target_row, target_col;
-
-bool BFS() {
-	int idx = 1;
-	while (!(dochi.empty() && water.empty())) {
-		while (!water.empty()) {
-			int w_row = water.front().first;
-			int w_col = water.front().second;
-			if (w_visited[w_row][w_col] != idx) break;
-			water.pop();
-			for (int i = 0; i < 4; i++) {
-				int wn_row = w_row + dx[i];
-				int wn_col = w_col + dy[i];
-				if (0 <= wn_row && wn_row < R && 0 <= wn_col && wn_col < C) {
-					if (w_visited[wn_row][wn_col] > 0) continue;
-					if (map[wn_row][wn_col] == '.' || map[wn_row][wn_col] == 'S') {
-						w_visited[wn_row][wn_col] = w_visited[w_row][w_col] + 1;
-						map[wn_row][wn_col] = '*';
-						water.push({ wn_row,wn_col });
-					}
-				}
-			}
-		}
-		while (!dochi.empty()) {
-			int d_row = dochi.front().first;
-			int d_col = dochi.front().second;
-			if (d_visited[d_row][d_col] != idx) break;
-			dochi.pop();
-			for (int i = 0; i < 4; i++) {
-				int dn_row = d_row + dx[i];
-				int dn_col = d_col + dy[i];
-				if (dn_row == target_row && dn_col == target_col) {
-					d_visited[target_row][target_col] = d_visited[d_row][d_col] + 1;
-					return true;
-				}
-				if (0 <= dn_row && dn_row < R && 0 <= dn_col && dn_col < C) {
-					if (d_visited[dn_row][dn_col] > 0) continue;
-					if (map[dn_row][dn_col] == '.') {
-						d_visited[dn_row][dn_col] = d_visited[d_row][d_col] + 1;
-						map[dn_row][dn_col] = 'S';
-						dochi.push({ dn_row,dn_col });
-					}
-				}
-			}
-		}
-
-		idx++;
-	}
-	return false;
-}
+int R, C, dist[50][50] = { 0, };
+int target_row, target_col;
+char map[50][51];
+bool w_visited[50][50] = { false, }, d_visited[50][50] = { false, };
+queue<pair<int, int> > water_q, dochi_q;
 
 int main() {
 	scanf("%d %d", &R, &C);
-
 	for (int i = 0; i < R; i++) {
+		scanf("%s", map[i]);
 		for (int j = 0; j < C; j++) {
-			scanf("%c", &map[i][j]);
-			if (map[i][j] == '\n') {
-				j--; continue;
-			}
-			if (map[i][j] == '*') {
-				w_visited[i][j] = 1;
-				water.push({ i,j });
-			}
 			if (map[i][j] == 'S') {
-				d_visited[i][j] = 1;
-				dochi.push({ i,j });
+				d_visited[i][j] = true;
+				dochi_q.push({ i,j });
 			}
-			if (map[i][j] == 'D') {
-				target_row = i;
-				target_col = j;
+			else if (map[i][j] == 'D') {
+				target_row = i; target_col = j;
+			}
+			else if (map[i][j] == '*') {
+				w_visited[i][j] = true;
+				water_q.push({ i,j });
 			}
 		}
 	}
 
-	if (BFS()) printf("%d", d_visited[target_row][target_col] - 1);
-	else printf("KAKTUS");
 	
+	bool found = false;
+	while (!dochi_q.empty() && !found) {
+		int water_sz = water_q.size();
+		for (int x = 0; x < water_sz; x++) {
+			int row = water_q.front().first;
+			int col = water_q.front().second; water_q.pop();
+			for (int i = 0; i < 4; i++) {
+				int nrow = row + dx[i];
+				int ncol = col + dy[i];
+				if (!(0 <= nrow && nrow < R && 0 <= ncol && ncol < C)) continue;
+				if (map[nrow][ncol] == 'X' || map[nrow][ncol] == 'D') continue;
+				if (w_visited[nrow][ncol]) continue;
+				map[nrow][ncol] = '*';
+				w_visited[nrow][ncol] = true;
+				water_q.push({ nrow,ncol });
+			}
+		}
+
+		int dochi_sz = dochi_q.size();
+		for (int x = 0; x < dochi_sz && !found; x++) {
+			int row = dochi_q.front().first;
+			int col = dochi_q.front().second; dochi_q.pop();
+			for (int i = 0; i < 4; i++) {
+				int nrow = row + dx[i];
+				int ncol = col + dy[i];
+				if (!(0 <= nrow && nrow < R && 0 <= ncol && ncol < C)) continue;
+				if (map[nrow][ncol] == 'X' || map[nrow][ncol] == '*') continue;
+				if (d_visited[nrow][ncol]) continue;
+				dist[nrow][ncol] = dist[row][col] + 1;
+				d_visited[nrow][ncol] = true;
+				if (map[nrow][ncol] == 'D') {
+					found = true;
+					break;
+				}
+				dochi_q.push({ nrow,ncol });
+			}
+		}
+	}
+
+	if (!found) printf("KAKTUS");
+	else printf("%d", dist[target_row][target_col]);
 	return 0;
 }
