@@ -1,69 +1,46 @@
 #include <stdio.h>
-#include <vector>
+#include <algorithm>
 using namespace std;
 
-char alpha[15];
-bool selected[15] = { false, };
 int L, C;
+char ans[15], ch[15];
+bool used[15];
 
-bool aeiou(char temp) {
-	return (temp == 'a' || temp == 'e' || temp == 'i' || temp == 'o' || temp == 'u');
-}
-void password(int idx,int n) {
-	if (idx > C) return;
-	if (n == L) {
-		int a = 0, others = 0;
-		vector<char> p;
-		for (int i = 0; i < C; i++) {
-			if (selected[i]){
-				if (aeiou(alpha[i])) a++;
-				else others++;
-				p.push_back(alpha[i]);
-			}
+void solve(int idx, int aeiou, int other, int selected) {
+	if (selected == L) {
+		if (aeiou >= 1 && other >= 2) {
+			for (int i = 0; i < L; i++)
+				printf("%c", ans[i]);
+			printf("\n");
+			return;
 		}
-
-		if (a < 1 || others < 2) return;
-
-		for (int i = 0; i < L; i++)
-			printf("%c", p[i]);
-		printf("\n");
-		return;
 	}
-	selected[idx] = true;
-	password(idx + 1, n + 1);
-	selected[idx] = false;
-	password(idx + 1, n);
+
+	if (idx >= C) return;
+
+	used[idx] = true;
+	ans[selected] = ch[idx];
+	if (ch[idx] == 'a' || ch[idx] == 'e' || ch[idx] == 'i' || ch[idx] == 'o' || ch[idx] == 'u')
+		solve(idx + 1, aeiou + 1, other, selected + 1);
+	else solve(idx + 1, aeiou, other + 1, selected + 1);
+	used[idx] = false;
+	solve(idx + 1, aeiou, other, selected);
 }
-
 int main() {
-	char temp;
-	int a=0, others=0;
+	char c;
 	scanf("%d %d", &L, &C);
-
 	for (int i = 0; i < C; i++) {
-		scanf("%c", &temp);
-		if (temp == ' ' || temp == '\n') {
+		scanf("%c", &c);
+		if (c == '\n' || c == ' ') {
 			i--;
 			continue;
 		}
-		alpha[i] = temp;
-		if (aeiou(temp))
-			a++;
-		else others++;
+		ch[i] = c;
 	}
 	
-	if (a < 1 || others < 2) return 0;
+	sort(ch, ch + C);
 
-	for (int i = 0; i < C - 1; i++) {
-		for (int j = i; j < C; j++) {
-			if (alpha[i] > alpha[j]) {
-				temp = alpha[i];
-				alpha[i] = alpha[j];
-				alpha[j] = temp;
-			}
-		}
-	}
+	solve(0, 0, 0, 0);
 
-	password(0, 0);
 	return 0;
 }
