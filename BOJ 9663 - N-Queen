@@ -2,35 +2,38 @@
 #include <algorithm>
 using namespace std;
 
-int row[15];
-int N, ans = 0;
+int N;
+int chess[14];
+int ans = 0;
 
-bool check(int r, int c) {
-	for (int i = 0; i < r; i++) {
-		if (row[i] == c) return false;
-		if (abs(r - i) == abs(c - row[i])) return false;
+void solve(int row, int col) {
+	bool fail = false;
+	for (int i = 0; i < row; i++) {
+		if (chess[i] == col || abs(row - i) == abs(chess[i] - col)) {
+			fail = true;
+			break;
+		}
 	}
-	return true;
-}
-
-void DFS(int r, int c) {
-	if (!check(r, c)) return;
-	else if (r == N - 1) {
+	
+	if (fail) return;
+	
+	if (row == N - 1) {
 		ans++;
 		return;
 	}
+
 	for (int i = 0; i < N; i++) {
-		row[r + 1] = i;
-		DFS(r + 1, i);
+		chess[row + 1] = i;
+		solve(row + 1, i);
 	}
-	return;
 }
+
 int main() {
 	scanf("%d", &N);
 
 	for (int i = 0; i < N; i++) {
-		row[0] = i;
-		DFS(0, i);
+		chess[0] = i;
+		solve(0, i);	
 	}
 
 	printf("%d", ans);
