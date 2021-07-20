@@ -8,7 +8,6 @@ int sz;
 bool found = false;
 
 bool check(int row, int col) {
-	int row_sum = 0, col_sum = 0, sq_sum = 0;
 	for (int i = 0; i < 9 ; i++) {
 		if (i == col) continue;
 		if (sdocu[row][col] == sdocu[row][i]) return false;
@@ -46,10 +45,8 @@ void solve(int idx) {
 	int col = zero[idx].second;
 	
 	for (int i = 1; i <= 9 && !found; i++) {
-		
 		sdocu[row][col] = i;
 		if (!check(row, col)) continue;
-		
 		solve(idx + 1);
 	}
 	sdocu[row][col] = 0;
