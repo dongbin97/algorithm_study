@@ -1,58 +1,63 @@
 #include <stdio.h>
 #include <string.h>
 
-char string[50][16];
-bool learn[26];
-int N, K, ans = -1;
+char str[50][16];
+bool learned[26] = { false, };
+int N, K, ans = 0;
 
-void check(char alpha, int count) {
-	if (alpha > 'z') return;
+void solve(char alpha, int count) {
+
 	if (count == 0) {
 		int cnt = 0;
+		bool ok;
 		for (int i = 0; i < N; i++) {
-			bool flag = true;
-			int size = strlen(string[i]);
-			for (int j = 4; j < size - 4 && flag; j++) {
-				if (learn[string[i][j]-'a'] == false)
-					flag = false;
+			ok = true;
+			int len = strlen(str[i]);
+			for (int j = 4; j < len - 4; j++) {
+				if (learned[str[i][j] - 'a'] == false) {
+					ok = false;
+					break;
+				}
 			}
-			if (flag) cnt++;
+			if (ok) cnt++;
 		}
+	
 		if (ans < cnt) ans = cnt;
 		return;
 	}
-	else if (alpha < 'z') {
-		if (learn[(alpha + 1) - 'a'])
-			check(alpha + 1, count);
-		else {
-			check(alpha + 1, count);
-			learn[(alpha + 1) - 'a'] = true;
-			check(alpha + 1, count - 1);
-			learn[(alpha + 1) - 'a'] = false;
 
-		}
+	if (alpha == 'z') return;
+	if (learned[alpha + 1 - 'a']) 
+		solve(alpha + 1, count);
+	else {
+		learned[alpha + 1 - 'a'] = true;
+		solve(alpha + 1, count - 1);
+		learned[alpha + 1 - 'a'] = false;
+		solve(alpha + 1, count);
 	}
-	return;
 }
 
 int main() {
 	scanf("%d %d", &N, &K);
-
 	for (int i = 0; i < N; i++)
-		scanf("%s", string[i]);
+		scanf("%s", str[i]);
 
 	if (K < 5) {
 		printf("0");
 		return 0;
 	}
+	else if (K == 26) {
+		printf("%d", N);
+		return 0;
+	}
 
-	learn['a' - 'a'] = true;
-	learn['c' - 'a'] = true;
-	learn['i' - 'a'] = true;
-	learn['n' - 'a'] = true;
-	learn['t' - 'a'] = true;
+	learned['a' - 'a'] = true;
+	learned['c' - 'a'] = true;
+	learned['i' - 'a'] = true;
+	learned['n' - 'a'] = true;
+	learned['t' - 'a'] = true;
 
-	check('a', K - 5);
+	solve('a', K - 5);
 
 	printf("%d", ans);
 	return 0;
