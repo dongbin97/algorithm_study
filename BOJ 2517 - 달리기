@@ -1,57 +1,58 @@
 #include <stdio.h>
 #include <vector>
-#include <cmath>
 #include <algorithm>
-#include <map>
 using namespace std;
 
-int N, arr[500000],temp[500000];
 vector<int> tree;
-map<int, int> m;
+int N;
+pair<int,int> arr[500000];
+vector<pair<int, int> > order;
+
 int init(int node, int start, int end) {
 	if (start == end) return tree[node] = 0;
 	int mid = (start + end) / 2;
-	return tree[node] = init(2 * node, start, mid) + init(2 * node + 1, mid + 1, end);
+	return init(2 * node, start, mid) + init(2 * node + 1, mid + 1, end);
 }
 
-void update(int node, int start, int end, int index) {
-	tree[node]++;
+void update(int node, int start, int end, int idx) {
+	tree[node] += 1;
 	if (start == end) return;
-
 	int mid = (start + end) / 2;
-	if (index <= mid) update(2 * node, start, mid, index);
-	else update(2 * node + 1, mid + 1, end, index);
+	if (idx <= mid) update(2 * node, start, mid, idx);
+	else update(2 * node + 1, mid + 1, end, idx);
 }
 
 int sum(int node, int start, int end, int left, int right) {
-	if (right < start || end < left) return 0;
+	if (right<start || left>end) return 0;
 	else if (left <= start && end <= right) return tree[node];
-	
 	int mid = (start + end) / 2;
 	return sum(2 * node, start, mid, left, right) + sum(2 * node + 1, mid + 1, end, left, right);
-
 }
+
 int main() {
-	int num;
 	scanf("%d", &N);
 	for (int i = 0; i < N; i++) {
-		scanf("%d", &num);
-		arr[i] = temp[i] = num;
-
+		scanf("%d", &arr[i].first);
+		arr[i].second = i;
 	}
 
-	sort(temp, temp + N);
-	for (int i = 0; i < N; i++)
-		m.insert({ temp[i],i });
+	sort(arr, arr + N);
+
+	for (int i = 0; i < N; i++) {
+		order.push_back({ arr[i].second,i });
+	}
+
+	sort(order.begin(), order.end());
 
 	int h = (int)ceil(log2(N));
 	int t_size = 1 << (h + 1);
 	tree.resize(t_size);
-	
 	init(1, 0, N - 1);
+
 	for (int i = 0; i < N; i++) {
-		update(1, 0, N - 1, m[arr[i]]);
-		printf("%d\n", sum(1, 0, N - 1, m[arr[i]],N-1));
+		printf("%d\n", sum(1, 0, N - 1, order[i].second + 1, N - 1) + 1);
+		update(1, 0, N - 1, order[i].second);
 	}
+
 	return 0;
 }
