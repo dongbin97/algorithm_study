@@ -2,8 +2,7 @@
 
 int main() {
 	int  ans = 1000000001; //980000000/1000000000도 1000000000만 더하면 됨
-	long long X, Y,Z, temp;
-	//X, Y, i, ans;
+	long long X, Y, Z, temp;
 	scanf("%lld %lld", &X, &Y);
 	Z = (Y * 100) / X;
 	if (Z >= 99) ans = -1;
