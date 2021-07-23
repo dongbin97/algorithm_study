@@ -1,43 +1,27 @@
 #include <stdio.h>
-#include <vector>
 #include <deque>
 using namespace std;
 
+typedef struct {
+	int num, idx;
+}st;
+
+int N, L;
+deque<st> dq;
+
 int main() {
-	int N, L, num;
-	vector<int> A, ans;
-	deque<pair<int,int> > dq;
+	int num; 
 
 	scanf("%d %d", &N, &L);
 	for (int i = 0; i < N; i++) {
 		scanf("%d", &num);
-		A.push_back(num);
-	}
+		if(i>=L) {
+			while (!dq.empty() && dq.front().idx < i - L + 1) dq.pop_front();
+		}
+		while (!dq.empty() && dq.back().num >= num) dq.pop_back();
+		dq.push_back({ num,i });
 
-	int start = 0 - L + 1, end = 0, min;
-	for (; end < N; start++, end++) {
-		if (start <= 0) {
-			if (dq.empty()) {
-				min = A[end];
-				dq.push_back({ A[end],end });
-			}
-			else {
-				while (!dq.empty() && dq.back().first > A[end])
-					dq.pop_back();
-				dq.push_back({ A[end],end });
-			}
-		}
-		else {
-			while (!dq.empty() && dq.front().second < start)
-				dq.pop_front();
-			while (!dq.empty() && dq.back().first > A[end])
-				dq.pop_back();
-			dq.push_back({ A[end],end });
-		}
-		ans.push_back(dq.front().first);
+		printf("%d ", dq.front().num);
 	}
-	
-	for (int i = 0; i < N; i++)
-		printf("%d ", ans[i]);
 	return 0;
 }
