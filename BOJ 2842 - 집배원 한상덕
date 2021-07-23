@@ -5,7 +5,7 @@
 using namespace std;
 
 int dx[8] = { -1,-1,0,1,1,1,0,-1 }, dy[8] = { 0,1,1,1,0,-1,-1,-1 };
-int N, post_row, post_col, h_cnt = 0, need_low, need_high;
+int N, post_row, post_col, h_cnt = 0;
 char map[50][51];
 int h[50][50];
 vector<int> height;
