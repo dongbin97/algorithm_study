@@ -21,5 +21,13 @@ int main() {
 	for(auto x:m) {
 		cout << x.first<< " " << (float)(x.second * 100) / count << "\n";
 	}
+	
+	/*
+	map<string, int> ::iterator it;
+	for (it = m.begin(); it != m.end();it++) {
+		cout << it->first << " " << (double)it->second / N * 100 << "\n";
+	}
+	*/
+	
 	return 0;
 }
