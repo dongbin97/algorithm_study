@@ -1,65 +1,59 @@
 #include <stdio.h>
-#include <vector>
-#include <stack>
 #include <string.h>
+#include <stack>
+#include <vector>
 #include <algorithm>
 using namespace std;
 
-typedef pair<int, int> pii;
-
-stack<pair<char,int> > st;
 char str[31];
-int len, sz;
-vector<pii> point;
-bool flag = true;
+stack<int> st;
+vector<pair<int, int> > arr;
 
-int solve(int index,int start, int end) {
-	if (end == start + 1) {
-		if (str[start] == '(') return 2;
-		else if (str[start] == '[') return 3;
-	}
-
-	int s = point[index + 1].first;
-	int e = point[index + 1].second;
-	int ans = solve(index + 1, s, e);
-
-	for (int i = index + 2; i < sz; i++) {
-		if (point[i].first > e && point[i].second < end) {
-			s = point[i].first;
-			e = point[i].second;
-			ans += solve(i, s, e);
-
-		}
-	}
+int solve(int start, int end) {
+	int idx = arr[start].first;
 	
-	if (str[start] == '(') return 2 * ans;
-	else if (str[start] == '[') return 3 * ans;
+	if (start == end) {
+		if (str[idx] == '(') return 2;
+		else if (str[idx] == '[') return 3;
+	}
+
+	int s = start + 1, e = start + 2, ans = 0;
+	for (; e <= end; e++) {
+		if (arr[e].first < arr[s].second) continue;
+		ans += solve(s, e - 1);
+		s = e;
+	}
+	ans += solve(s, e - 1);
+
+	if (str[idx] == '(') return 2 * ans;
+	else if (str[idx] == '[')return 3 * ans;
 }
 
 int main() {
-	scanf("%s", str);
-	len = strlen(str);
 
+	scanf("%s", &str);
+	int len = strlen(str);
+	bool flag = true;
 	for (int i = 0; i < len; i++) {
-		if (str[i] == '(' || str[i] == '[') st.push({ str[i],i });
+		if (str[i] == '(' || str[i] == '[') st.push(i);
 		else if (str[i] == ')') {
-			if (!st.empty() && st.top().first == '(') {
-				point.push_back({ st.top().second,i });
-				st.pop();
-			}
-			else {
+			if (st.empty() || str[st.top()] != '(') {
 				flag = false;
 				break;
+			}
+			else {
+				arr.push_back({st.top(), i});
+				st.pop();
 			}
 		}
 		else if (str[i] == ']') {
-			if (!st.empty() && st.top().first == '[') {
-				point.push_back({ st.top().second,i });
-				st.pop();
-			}
-			else {
+			if (st.empty() || str[st.top()] != '[') {
 				flag = false;
 				break;
+			}
+			else {
+				arr.push_back({ st.top(), i });
+				st.pop();
 			}
 		}
 	}
@@ -71,20 +65,15 @@ int main() {
 		return 0;
 	}
 
-	sort(point.begin(), point.end());
+	sort(arr.begin(), arr.end());
 
-	sz = point.size();
-
-	int start = point[0].first;
-	int end = point[0].second;
-	int ans = solve(0,start, end);
-
-	for (int i = 1; i < sz; i++) {
-		if (point[i].first <= end) continue;
-		start = point[i].first;
-		end = point[i].second;
-		ans += solve(i,start, end);
+	int sz = arr.size(), start = 0, end = 1, ans = 0;
+	for (; end < sz; end++) {
+		if (arr[end].first < arr[start].second) continue;
+		ans += solve(start, end - 1);
+		start = end;
 	}
+	ans += solve(start, end - 1);
 
 	printf("%d", ans);
 	return 0;
