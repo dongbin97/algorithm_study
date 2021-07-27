@@ -1,46 +1,42 @@
 #include <stdio.h>
 #include <vector>
 using namespace std;
+#define MAX 4000001
 
-bool check[4000001] = { false, };
 vector<int> prime;
+bool composite[MAX] = { false, };
 
-
-void get_prime(int num) {
-	for (int i = 2; i <= num; i++) {
-		if (check[i] == false) {
-			prime.push_back(i);
-			for (int j = 2 * i; j <= num; j = j + i)
-				check[j] = true;
-		}
+void get_prime() {
+	for (int i = 2; i < MAX; i++) {
+		if (composite[i]) continue;
+		prime.push_back(i);
+		for (int j = 2 * i; j < MAX; j = j + i)
+			composite[j] = true;
 	}
 }
 
 int main() {
-	int num;
-	scanf("%d", &num);
-	get_prime(num);
+	int N;
+	scanf("%d", &N);
 
-	int size = prime.size();
+	get_prime();
+	int sz = prime.size();
 
-	vector<int> sum;
-	sum.resize(size + 1);
-	sum[0] = 0;
-	for (int i = 1; i <= size; i++) {
-		sum[i] = sum[i - 1] + prime[i - 1];
-	}
-
-	int i = 0, j = 1, cnt = 0, s;
-	while (i <= size && j <= size && i <= j) {
-		s = sum[j] - sum[i];
-		if (s < num) j++;
-		else if (s > num) i++;
+	int i = 0, j = 0, sum = prime[0], ans = 0;
+	while (i < sz && j < sz && i <= j) {
+		if (sum < N) {
+			if (j + 1 < sz) sum += prime[j + 1];
+			j++;
+		}
+		else if (sum > N) {
+			sum -= prime[i++];
+		}
 		else {
-			cnt++;
-			i++;
+			ans++;
+			sum -= prime[i++];
 		}
 	}
 
-	printf("%d", cnt);
+	printf("%d", ans);
 	return 0;
 }
