@@ -1,92 +1,84 @@
 #include <stdio.h>
-#include <map>
 #include <vector>
+#include <map>
+#include <algorithm>
 using namespace std;
 #define MAX 1000000000
 
-bool check[32000];
+int N, M, sz;
 vector<int> prime;
-map<int, int> a_map, b_map;
+bool composite[32000];
+map<int, int> A_map, B_map;
 
 void get_prime() {
 	for (int i = 2; i < 32000; i++) {
-		if (check[i]) continue;
+		if (composite[i]) continue;
 		prime.push_back(i);
-		for (int j = 2 * i; j < 32000; j = j + i)
-			check[j] = true;
+		for (int j = 2 * i; j < 3200; j = j + i)
+			composite[j] = true;
 	}
 }
 
 int main() {
-	int N, M, num;
+
 	get_prime();
-	int size = prime.size();
+	sz = prime.size();
+
+	int num;
 	scanf("%d", &N);
 	for (int i = 0; i < N; i++) {
 		scanf("%d", &num);
-		for (int i = 0; i < size; i++) {
-			while (num % prime[i] == 0) {
-				a_map[prime[i]]++;
-				num /= prime[i];
+		for (int j = 0; j < sz && prime[j] <= num; j++) {
+			while (num % prime[j] == 0) {
+				A_map[prime[j]]++;
+				num /= prime[j];
 			}
 		}
-		if (num > 1) 
-			a_map[num]++;
+		if (num > 1) A_map[num]++;
 	}
 
 	scanf("%d", &M);
 	for (int i = 0; i < M; i++) {
 		scanf("%d", &num);
-		for (int i = 0; i < size; i++) {
-			while (num % prime[i] == 0) {
-				b_map[prime[i]]++;
-				num /= prime[i];
+		for (int j = 0; j < sz && prime[j] <= num; j++) {
+			while (num % prime[j] == 0) {
+				B_map[prime[j]]++;
+				num /= prime[j];
 			}
 		}
-		if (num > 1) 
-			b_map[num]++;
+		if (num > 1) B_map[num]++;
 	}
 
-	map<int, int> ::iterator a_it = a_map.begin();
-	map<int, int> ::iterator b_it = b_map.begin();
 	bool flag = false;
 	long long ans = 1;
-	while (a_it != a_map.end() && b_it != b_map.end()) {
-		long long a_prime = (*a_it).first;
-		long long b_prime = (*b_it).first;
-		if (a_prime < b_prime)a_it++;
-		else if (a_prime > b_prime) b_it++;
+	map<int, int> ::iterator A_it = A_map.begin(), B_it = B_map.begin();
+	while (A_it != A_map.end() && B_it != B_map.end()) {
+		int A_prime = A_it->first;
+		int B_prime = B_it->first;
+		if (A_prime < B_prime) A_it++;
+		else if (A_prime > B_prime) B_it++;
 		else {
-			int a = (*a_it).second;
-			int b = (*b_it).second;
-
-			if (a < b) {
-				while (a--) {
-					if (ans * a_prime > MAX) flag = true;
-					ans = (ans * a_prime) % MAX;
+			int n = min(A_it->second, B_it->second);
+			while (n--) {
+				ans = ans * A_it->first;
+				if (ans > MAX) {
+					flag = true;
+					ans %= MAX;
 				}
 			}
-			else {
-				while (b--) {
-					if (ans * b_prime > MAX) flag = true;
-					ans = (ans * b_prime) % MAX;
-				}
-			}
-			a_it++; b_it++;
+			A_it++; B_it++;
 		}
 	}
 
 	if (flag) {
-		char answer[10];
+		char buf[10];
 		for (int i = 8; i >= 0; i--) {
-			answer[i] = (ans % 10) + '0';
+			buf[i] = (ans % 10) + '0';
 			ans /= 10;
 		}
-		answer[9] = '\0';
-		printf("%s", answer);
+		buf[9] = '\0';
+		printf("%s", buf);
 	}
-	else
-		printf("%lld", ans);
-
+	else printf("%lld", ans);
 	return 0;
 }
