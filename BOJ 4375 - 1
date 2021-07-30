@@ -1,16 +1,14 @@
 #include <stdio.h>
-using namespace std;
 
 int main() {
 	int num;
 	while (scanf("%d", &num) != -1) {
-		long long one = 1;
-		int cnt = 1;
+		int ans = 1, one = 1;
 		while (one % num != 0) {
 			one = (one * 10 + 1) % num;
-			cnt++;
+			ans++;
 		}
-		printf("%d\n", cnt);
+		printf("%d\n", ans);
 	}
 	return 0;
 }
