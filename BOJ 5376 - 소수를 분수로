@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-using namespace std;
 
 long long GCD(long long a, long long b) {
 	if (b == 0) return a;
@@ -10,51 +9,41 @@ long long GCD(long long a, long long b) {
 int main() {
 	int T;
 	scanf("%d", &T);
-
 	while (T--) {
-		char str[20];
-		
-		scanf("%s", str);
-		int len = strlen(str), left = -1, right = -1;
-		for (int i = 2; i < len; i++) {
-			if (str[i] == '(') left = i;
-			else if (str[i] == ')') right = i;
-		}
+		char num[20];
+		scanf("%s", num);
+		int len = strlen(num);
 
-		if (left == -1 && right == -1) {
-			long long num = 0, ten = 1;
+		long long ten, res;
+		if (num[len - 1] != ')') {
+			ten = 1, res = 0;
 			for (int i = 2; i < len; i++) {
+				res = res * 10 + (num[i] - '0');
 				ten *= 10;
-				num *= 10;
-				num += (str[i] - '0');
 			}
-			long long g = GCD(num, ten);
-			num = num / g; ten = ten / g;
-			printf("%lld/%lld\n", num, ten);
 		}
 		else {
-			long long num1 = 0, num2 = 0, ten1 = 1, ten2 = 1;
-			bool find = false;
-			for (int i = 2; i < len-1; i++) {
-				if (str[i] == '(') {
-					find = true;
+			bool flag = false;
+			long long ten1 = 1, ten2 = 1, res1 = 0, res2 = 0;
+			for (int i = 2; i < len - 1; i++) {
+				if (num[i] == '(') {
+					flag = true;
 					continue;
 				}
-				
-				if (find == false) {
+				if (!flag) {
+					res1 = res1 * 10 + (num[i] - '0');
 					ten1 *= 10;
-					num1 *= 10;
-					num1 += (str[i] - '0');
 				}
+				res2 = res2 * 10 + (num[i] - '0');
 				ten2 *= 10;
-				num2 *= 10;
-				num2 += (str[i] - '0');
 			}
-			long long ten = ten2 - ten1, num = num2 - num1;
-			long long g = GCD(num, ten);
-			num = num / g; ten = ten / g;
-			printf("%lld/%lld\n", num, ten);
+			res = res2 - res1;
+			ten = ten2 - ten1;
 		}
+		long long gcd = GCD(res, ten);
+		res /= gcd;
+		ten /= gcd;
+		printf("%lld/%lld\n", res, ten);
 	}
 	return 0;
 }
