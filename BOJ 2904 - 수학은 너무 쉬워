@@ -3,7 +3,7 @@
 #include <map>
 using namespace std;
 
-map<pair<int,int> , int> m;
+map<int,int> m;
 
 bool composite[1000001] = { false };
 vector<int> prime;
@@ -29,7 +29,7 @@ int main() {
 		scanf("%d", &num);
 		for (int j = 0; j < sz; j++) {
 			while (num % prime[j] == 0) {
-				m[{prime[j], j}]++;
+				m[j]++;
 				cnt[i][j]++;
 				num /= prime[j];
 			}
@@ -39,10 +39,10 @@ int main() {
 	int idx = 0, gcd = 1, ans = 0;
 	for (auto x : m) {
 		int n = x.second / N; 
-		idx = x.first.second;
+		idx = x.first;
 		int cal = n;
 		while (cal--) 
-			gcd *= x.first.first;
+			gcd *= prime[x.first];
 		
 		for (int i = 0; i < N; i++) 
 			ans += (n > cnt[i][idx]) ? n - cnt[i][idx] : 0;
