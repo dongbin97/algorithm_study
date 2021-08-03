@@ -1,58 +1,54 @@
 #include <stdio.h>
 
-int N, type, per[20], ans[20];
-long long k, order = 1;
-long long fac[21];
-bool used[21] = { false, };
+int N, flag, arr[20], ans[20];
+long long k, fact[21], cnt = 1;
+bool used[21];
 
-
-int main() {
-	scanf("%d", &N);
-	scanf("%d", &type);
-
-	fac[0] = 1;
-	fac[1] = 1;
-	for (int i = 2; i <= 20; i++) {
-		fac[i] = fac[i - 1] * i;
-	}
-
-	if (type == 1) {
-		scanf("%lld", &k);
-		int remained = N, idx=0;
-		long long temp;
-		for (int i = 1; i <= N; i++) {
-			if (used[i]) continue;
-			if (k == 0) break;
-			temp = fac[remained - 1];
-			if (temp < k) k -= temp;
-			else {
-				ans[idx++] = i;
-				used[i] = true;
-				remained--;
-				i = 0;
-			}
-		}
-
-		for (int i = 1; i <= N; i++) {
-			if (used[i] == false)
-				ans[idx++] = i;
-		}
-
+void solve(int selected, long long k) {
+	if (selected == N) {
 		for (int i = 0; i < N; i++)
 			printf("%d ", ans[i]);
+		return;
 	}
-	else {
+
+	for (int i = 1; i <= N; i++) {
+		if (used[i]) continue;
+		if (k <= fact[N - selected - 1]) {
+			ans[selected] = i;
+			used[i] = true;
+			solve(selected + 1, k);
+			break;
+		}
+		else k -= fact[N - selected - 1];
+	}
+}
+int main() {
+	scanf("%d", &N);
+
+	fact[0] = 1;
+	for (int i = 1; i <= N; i++)
+		fact[i] = fact[i - 1] * i;
+
+	scanf("%d", &flag);
+
+	if (flag == 1) {
+		scanf("%lld", &k);
+
+		solve(0, k);
+	}
+	else if (flag == 2) {
 		for (int i = 0; i < N; i++)
-			scanf("%d", &per[i]);
+			scanf("%d", &arr[i]);
 
 		for (int i = 0; i < N; i++) {
-			for (int j = 1; j < per[i]; j++) {
-				if (used[j]) continue;
-				order += fac[N - i - 1];
+			for (int j = 1; j < arr[i]; j++) {
+				if (used[j])  continue;
+				 cnt += fact[N - i - 1];
 			}
-			used[per[i]] = true;
+			used[arr[i]] = true;
 		}
-		printf("%lld", order);
+
+		printf("%lld", cnt);
 	}
 	return 0;
 }
