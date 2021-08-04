@@ -1,33 +1,29 @@
 #include <stdio.h>
+int M, arr[50], N = 0, K;
 
 int main() {
-	int M, num[50], K, N;
-
 	scanf("%d", &M);
-	N = 0;
 	for (int i = 0; i < M; i++) {
-		scanf("%d", &num[i]);
-		N += num[i];
+		scanf("%d", &arr[i]);
+		N += arr[i];
 	}
-
 	scanf("%d", &K);
+
 	if (K > 50) {
 		printf("0");
 		return 0;
 	}
 
-	double ans = 0, local;
-	int n, total;
+	double ans = 0, res;
 	for (int i = 0; i < M; i++) {
-		if (num[i] < K) continue;
-		else {
-			n = num[i], total = N, local = 1;
-			for (int j = 0; j < K; j++) {
-				local *= (double)n / total;
-				n--; total--;
-			}
-			ans += local;
+		if (K > arr[i]) continue;
+		res = 1;
+		int x = K, up = arr[i], down = N;
+		while (x--) {
+			res *= (double)up / down;
+			up--; down--;
 		}
+		ans += res;
 	}
 
 	printf("%.12f", ans);
