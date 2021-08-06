@@ -4,47 +4,43 @@
 #include <algorithm>
 using namespace std;
 
-int N;
+int in_degree[501];
+int cost[501], time[501];
 vector<int> graph[501];
-int cost[501];
-int time[501] = { 0, };
-int in_degree[501] = { 0, };
 queue<int> q;
 
 int main() {
-	int a, pre;
+	int N, p;
 	scanf("%d", &N);
+
 	for (int i = 1; i <= N; i++) {
 		scanf("%d", &cost[i]);
 		while (1) {
-			scanf("%d", &pre);
-			if (pre == -1) break;
-			graph[pre].push_back(i);
+			scanf("%d", &p);
+			if (p == -1) break;
+			graph[p].push_back(i);
 			in_degree[i]++;
 		}
 	}
-
-	for (int i = 1; i <= N; i++)
-		if (in_degree[i] == 0) {
-			q.push(i);
-			time[i] = cost[i];
-		}
+	
+	for (int i = 1; i <= N; i++) {
+		time[i] = cost[i];
+		if (in_degree[i] == 0) q.push(i);
+	}
 
 	while (!q.empty()) {
 		int u = q.front(); q.pop();
-		int u_size = graph[u].size();
-		for (int j = 0; j < u_size; j++) {
-			int x = graph[u][j];
-			time[x] = max(time[x], time[u] + cost[x]);
 
+		for (auto x : graph[u]) {
+			time[x] = max(time[x], cost[x] + time[u]);
 			in_degree[x]--;
-			if (in_degree[x] == 0) {
+			if (in_degree[x] == 0) 
 				q.push(x);
-			}
 		}
 	}
 
 	for (int i = 1; i <= N; i++)
 		printf("%d\n", time[i]);
+
 	return 0;
- }
+}
