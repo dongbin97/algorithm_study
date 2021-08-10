@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <vector>
 #include <queue>
-#include <algorithm>
 using namespace std;
 #define INF 2000000000
 
@@ -9,14 +8,15 @@ typedef struct {
 	int to, cost;
 }st;
 
-struct comp {
-	bool operator() (st a, st b) {
-		return a.cost > b.cost;
-	}
-};
+bool operator< (st a, st b) {
+	return a.cost > b.cost;
+}
 
 vector<st> graph[1001];
 int cnt[1001] = { 0, };
+priority_queue<st> pq;
+priority_queue<int> dist[1001];
+
 
 int main() {
 	int n, m, k, a, b, c;
@@ -25,9 +25,6 @@ int main() {
 		scanf("%d %d %d", &a, &b, &c);
 		graph[a].push_back({ b,c });
 	}
-
-	priority_queue<st,vector<st>,comp > pq;
-	priority_queue<int,vector<int> ,less<> > dist[1001];
 
 	pq.push({ 1,0 });
 	dist[1].push(0);
@@ -51,8 +48,7 @@ int main() {
 	}
 
 	for (int j = 1; j <= n; j++) {
-		if (dist[j].size() < k)
-			printf("-1\n");
+		if (dist[j].size() < k) printf("-1\n");
 		else printf("%d\n", dist[j].top());
 	}
 	return 0;
