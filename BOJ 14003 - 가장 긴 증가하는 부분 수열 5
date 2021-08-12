@@ -14,7 +14,7 @@ bool comp(pii a, pii b) {
 
 vector<int> tree;
 pii arr[1000000];
-int lis[1000000], p[1000000], ans[1000000];
+int lis[1000000], parent[1000000], ans[1000000];
 
 int init(int node, int start, int end) {
 	if (start == end) return tree[node] = 0;
@@ -46,7 +46,7 @@ int main() {
 		scanf("%d", &n);
 		arr[i].first = n;
 		arr[i].second = i;
-		p[i] = n;
+		parent[i] = n;
 	}
 
 	sort(arr, arr + N, comp);
@@ -63,22 +63,22 @@ int main() {
 		update(1, 0, N - 1, arr[i].second, res + 1);
 	}
 
-	int a = tree[1], cnt = a, cur = 1000000001;
-	printf("%d\n", a);
+	int max = tree[1], len = max, cur = 1000000001;
+	printf("%d\n", max);
 
 	int idx = N - 1;
-	while (lis[idx] < a) idx--;
+	while (lis[idx] < len) idx--;
 
-	ans[--cnt] = p[idx];
-	cur = p[idx--];
-	for (idx; idx >= 0 && cnt >= 0; idx--) {
-		if (lis[idx] == cnt && p[idx] < cur) {
-			ans[--cnt] = p[idx];
-			cur = p[idx];
+	ans[--len] = parent[idx];
+	cur = parent[idx--];
+	for (; idx >= 0 && len >= 0; idx--) {
+		if (lis[idx] == len && p[idx] < cur) {
+			ans[--len] = parent[idx];
+			cur = parent[idx];
 		}
 	}
 
-	for (int i = 0; i < a; i++)
+	for (int i = 0; i < max; i++)
 		printf("%d ", ans[i]);
 	printf("\n");
 }
