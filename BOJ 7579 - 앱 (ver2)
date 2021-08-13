@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <algorithm>
 using namespace std;
-#define INF 10000001;
 
 int N, M, m[100], c[100], sum = 0, dp[10001] = { 0, };  // dp[i] : 비용이 i 일때 최대 확보할 수 있는 메모리
 
