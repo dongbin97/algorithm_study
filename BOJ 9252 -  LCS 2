@@ -1,46 +1,44 @@
 #include <stdio.h>
 #include <string.h>
-#include <stack>
 #include <algorithm>
 using namespace std;
 
 char str1[1002], str2[1002], ans[1002];
-int len1, len2;
-int dp[1002][1002];
-stack<char> st;
+int len1, len2, dp[1001][1001] = { 0, };
 
 int main() {
-	scanf("%s", str1 + 1); len1 = strlen(str1 + 1);
-	scanf("%s", str2 + 1); len2 = strlen(str2 + 1);
+	scanf("%s", str1 + 1);
+	scanf("%s", str2 + 1);
 
-	for (int i = 1; i <= len2; i++) {
-		for (int j = 1; j <= len1; j++) {
-			if (str1[j] == str2[i])
+	len1 = strlen(str1 + 1);
+	len2 = strlen(str2 + 1);
+
+	for (int i = 1; i <= len1; i++) {
+		for (int j = 1; j <= len2; j++) {
+			if (str1[i] == str2[j])
 				dp[i][j] = dp[i - 1][j - 1] + 1;
 			else
-				dp[i][j] = max(dp[i][j - 1], dp[i - 1][j]);
+				dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
 		}
 	}
-	
-	printf("%d\n", dp[len2][len1]);
 
-	int i = len2, j = len1;
+	int x = dp[len1][len2];
+	printf("%d\n", x);
+
+	ans[x] = '\0';
+	int i = len1, j = len2;
 	while (i >= 1 && j >= 1) {
-		if (str2[i] == str1[j]) {
-			st.push(str2[i]);
+		if (str1[i] == str2[j]) {
+			ans[--x] = str1[i];
 			i--; j--;
 		}
 		else {
-			if (dp[i][j - 1] > dp[i - 1][j])
-				j--;
-			else i--;
+			if (dp[i - 1][j] > dp[i][j - 1]) i--;
+			else j--;
 		}
 	}
 
-	while (!st.empty()) {
-		printf("%c", st.top());
-		st.pop();
-	}
-
+	printf("%s", ans);
+	
 	return 0;
 }
