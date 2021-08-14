@@ -8,12 +8,6 @@ typedef struct {
 	int memory, cost;
 }app;
 
-bool comp(app a, app b) {
-	if (a.cost == b.cost)
-		return a.memory < b.memory;
-	return a.cost > b.cost;
-}
-
 int dp[2][10000001]; // j의 메모리를 확보하기 위해 (i%2)번째 앱을 비활성화할때 필요한 최소비용
 app list[101];
 
@@ -27,8 +21,6 @@ int main() {
 	for (int i = 1; i <= N; i++) 
 		scanf("%d", &list[i].cost);
 
-	sort(list + 1, list + N, comp);
-	
 	for (int j = 1; j <= M; j++) {
 		dp[0][j] = INF;
 		dp[1][j] = INF;
