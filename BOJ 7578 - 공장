@@ -3,13 +3,13 @@
 #include <cmath>
 #include <algorithm>
 using namespace std;
-
 typedef pair<int, int> pii;
 
-vector<pii> arr1, arr2, v;
-vector<long long> tree;
+int N, order[500000];
+pii arr1[500000], arr2[500000];
+vector<int> tree;
 
-long long init(int node, int start, int end) {
+int init(int node, int start, int end) {
 	if (start == end) return tree[node] = 0;
 	int mid = (start + end) / 2;
 	return tree[node] = init(2 * node, start, mid) + init(2 * node + 1, mid + 1, end);
@@ -18,12 +18,13 @@ long long init(int node, int start, int end) {
 void update(int node, int start, int end, int idx) {
 	tree[node] += 1;
 	if (start == end) return;
+
 	int mid = (start + end) / 2;
 	if (idx <= mid) update(2 * node, start, mid, idx);
 	else update(2 * node + 1, mid + 1, end, idx);
 }
 
-long long query(int node, int start, int end, int left, int right) {
+int query(int node, int start, int end, int left, int right) {
 	if (right<start || left>end) return 0;
 	else if (left <= start && end <= right) return tree[node];
 	int mid = (start + end) / 2;
@@ -31,25 +32,22 @@ long long query(int node, int start, int end, int left, int right) {
 }
 
 int main() {
-	int N, num;
 	scanf("%d", &N);
 	for (int i = 0; i < N; i++) {
-		scanf("%d", &num);
-		arr1.push_back({ num,i });
+		scanf("%d", &arr1[i].first);
+		arr1[i].second = i;
 	}
 
 	for (int i = 0; i < N; i++) {
-		scanf("%d", &num);
-		arr2.push_back({ num,i });
+		scanf("%d", &arr2[i].first);
+		arr2[i].second = i;
 	}
 
-	sort(arr1.begin(), arr1.end());
-	sort(arr2.begin(), arr2.end());
+	sort(arr1, arr1 + N);
+	sort(arr2, arr2 + N);
 
-	for (int i = 0; i < N; i++)
-		v.push_back({ arr1[i].second,arr2[i].second });
-
-	sort(v.begin(), v.end());
+	for (int i = 0; i < N; i++) 
+		order[arr1[i].second] = arr2[i].second;
 
 	int h = (int)ceil(log2(N));
 	int t_size = 1 << (h + 1);
@@ -58,9 +56,9 @@ int main() {
 	init(1, 0, N - 1);
 	long long ans = 0;
 	for (int i = 0; i < N; i++) {
-		int x = v[i].second;
-		ans += query(1, 0, N - 1, x + 1, N - 1);
-		update(1, 0, N - 1, x);
+		int res = query(1, 0, N - 1, order[i] + 1, N - 1);
+		ans = ans + res;
+		update(1, 0, N - 1, order[i]);
 	}
 
 	printf("%lld", ans);
