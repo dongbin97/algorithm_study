@@ -1,20 +1,13 @@
 #include <stdio.h>
-#include <cmath>
 #include <vector>
+#include <cmath>
 #include <algorithm>
 using namespace std;
-
 typedef pair<int, int> pii;
 
-vector<long long> tree;
-vector<pii> edge;
 int N, M;
-
-bool comp(pii a, pii b) {
-	if (a.first == b.first)
-		return a.second < b.second;
-	else return a.first < b.first;
-}
+vector<pii> arr;
+vector<long long> tree;
 
 long long init(int node, int start, int end) {
 	if (start == end) return tree[node] = 0;
@@ -32,7 +25,7 @@ void update(int node, int start, int end, int idx) {
 }
 
 long long query(int node, int start, int end, int left, int right) {
-	if (left > end || right < start) return 0;
+	if (right<start || left>end) return 0;
 	else if (left <= start && end <= right) return tree[node];
 	int mid = (start + end) / 2;
 	return query(2 * node, start, mid, left, right) + query(2 * node + 1, mid + 1, end, left, right);
@@ -41,24 +34,23 @@ long long query(int node, int start, int end, int left, int right) {
 int main() {
 	int a, b;
 	scanf("%d %d", &N, &M);
-	
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d", &a, &b);
+		arr.push_back({ a,b });
+	}
+
+	sort(arr.begin(), arr.end());
+
 	int h = (int)ceil(log2(N));
 	int t_size = 1 << (h + 1);
 	tree.resize(t_size);
 
-	init(1, 0, N-1);
-	for (int i = 0; i < M; i++) {
-		scanf("%d %d", &a, &b);
-		edge.push_back({ a,b });
-	}
-	
-	sort(edge.begin(), edge.end(), comp);
-	
+	init(1, 1, N);
 	long long ans = 0;
 	for (int i = 0; i < M; i++) {
-		b = edge[i].second;
-		ans += query(1, 0, N - 1, b, N - 1);
-		update(1, 0, N - 1, b - 1);
+		long long res = query(1, 1, N, arr[i].second + 1, N);
+		ans = ans + res;
+		update(1, 1, N, arr[i].second);
 	}
 
 	printf("%lld", ans);
