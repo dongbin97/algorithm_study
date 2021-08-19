@@ -1,0 +1,53 @@
+#include <stdio.h>
+
+int N, M, parent[100001], weight[100001];
+
+int find(int a) {
+	if (parent[a] == -1) return a;
+
+	int p = find(parent[a]);
+	weight[a] += weight[parent[a]];
+	return parent[a] = p;
+}
+
+void merge(int b, int a, int w) {
+	int v = find(b);
+	int u = find(a);
+
+	if (u == v) return;
+
+	weight[u] = -weight[a] + w + weight[b];
+	parent[u] = v;
+	return;
+} 
+
+int main() {
+	char type;
+	int a, b, w;
+
+	while (1) {
+		scanf("%d %d", &N, &M);
+		if (N == 0 && M == 0) break;
+
+		for (int i = 1; i <= N; i++) {
+			parent[i] = -1;
+			weight[i] = 0;
+		}
+
+		for (int i = 0; i < M; i++) {
+			scanf("\n%c", &type);
+			if (type == '!') {
+				scanf("%d %d %d", &a, &b, &w);
+				merge(b, a, w);
+			}
+			else if (type == '?') {
+				scanf("%d %d", &a, &b);
+				int u = find(a), v = find(b);
+				if (u != v) printf("UNKNOWN\n");
+				else
+					printf("%d\n", weight[a] - weight[b]);
+			}
+		}
+	}
+	return 0;
+}
