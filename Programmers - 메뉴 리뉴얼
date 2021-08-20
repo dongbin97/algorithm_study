@@ -1,0 +1,63 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <map>
+using namespace std;
+
+vector<char> src;
+char a[11];
+map<string, int> m[11];
+bool vt[10];
+
+void get_str(int idx, int selected, int len, int size){
+    if(selected == size){
+        a[selected] = '\0';
+        string str(a);
+        m[size][str]++;
+        return;
+    }
+    if(idx >= len) return;
+    
+    a[selected] = src[idx];
+    vt[idx] = true;
+    get_str(idx + 1, selected + 1, len, size);
+    vt[idx] = false;
+    get_str(idx + 1, selected, len, size);
+}
+vector<string> solution(vector<string> orders, vector<int> course) {
+    vector<string> answer;
+    
+    int order_sz = orders.size();
+    int course_sz = course.size();
+    for(int i = 0; i < order_sz; i++){
+        int len = orders[i].length();
+        for(int j = 0; j < len; j++){
+            src.push_back(orders[i][j]);
+        }
+        
+        sort(src.begin(), src.end());
+        
+        for(int k = 0; k < course_sz; k++){
+            if(course[k] > len) break;
+            get_str(0, 0, len, course[k]);
+        }
+        src.clear();
+    }
+    
+    for(int i = 0; i < course_sz; i++){
+        int max = 0;
+        for(auto x: m[course[i]]){
+            if(x.second > max)
+                max = x.second;
+        }
+        if(max < 2) continue;
+        for(auto x: m[course[i]]){
+            if(x.second == max)
+                answer.push_back(x.first);
+        }
+    }
+    
+    sort(answer.begin(), answer.end());
+    
+    return answer;
+}
