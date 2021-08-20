@@ -1,0 +1,48 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+
+string solution(string new_id) {
+    string answer = "";
+    string res = "";
+    
+    int len = new_id.length();
+    
+    for(int i = 0; i < len; i++){
+        // 1단계
+        if('A' <= new_id[i] && new_id[i] <= 'Z')
+            new_id[i] = tolower(new_id[i]);
+        // 2단계
+        if(('a' <= new_id[i] && new_id[i] <= 'z') || ('0' <= new_id[i] && new_id[i] <= '9') 
+          || new_id[i] == '-' || new_id[i] == '_' || new_id[i] == '.')
+                res += new_id[i];
+    }
+        
+    // 3단계
+    len = res.length();
+    for(int i = 1; i < len; i++){
+         if(res[i] == '.' && res[i-1] == '.'){
+            res.erase(i,1); len--; i--;
+        }
+    }
+       
+    // 4단계
+    if(res.front() == '.') res.erase(res.begin());
+    if(res.back() == '.') res.erase(res.end() - 1);
+    
+    // 5단계
+    if(res.empty()) res += "a";
+    
+    // 6단계
+    if(res.length() >= 16) res = res.substr(0,15);
+    if(res.back() == '.') res.erase(res.end() - 1);
+    
+    // 7단계
+    while(res.length() <= 2)
+        res = res + res.back();
+    
+    answer = res;
+   
+    return answer;
+}
