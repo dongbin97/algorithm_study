@@ -10,10 +10,8 @@ vector<pii> ans;
 
 void dfnlow(int u, int prev) {
 	dfn[u] = low[u] = num++;
-	int child = 0;
 	for (int x : graph[u]) {
 		if (dfn[x] < 0) {
-			child++;
 			dfnlow(x, u);
 			low[u] = min(low[u], low[x]);
 			if (dfn[u] < low[x]) {
