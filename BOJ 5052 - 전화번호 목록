@@ -1,0 +1,64 @@
+#include <stdio.h>
+
+struct TRIE {
+	bool finish;
+	TRIE* node[10];
+
+	TRIE() {
+		finish = false;
+		for (int i = 0; i < 10; i++) node[i] = NULL;
+	}
+
+	void insert(char* str) {
+		if (*str == NULL) {
+			finish = true;
+			return;
+		}
+
+		int cur = *str - '0';
+		if (node[cur] == NULL) node[cur] = new TRIE();
+		node[cur]->insert(str + 1);
+	}
+
+	int find(char* str) {
+		if (*str == NULL) {
+			int cnt = 0;
+			for (int i = 0; i < 10; i++)
+				if (node[i] != NULL) cnt++;
+			return cnt;
+		}
+
+		int cur = *str - '0';
+		return node[cur]->find(str + 1);
+	}
+};
+
+int main() {
+	int T, N;
+	char str[10001][11];
+
+	scanf("%d", &T);
+	while (T--) {
+		TRIE* trie = new TRIE();
+		bool ans = true;
+		scanf("%d", &N);
+
+		for (int i = 0; i < N; i++) {
+			scanf("%s", str[i]);
+			trie->insert(str[i]);
+		}
+
+		for (int i = 0; i < N; i++) {
+			int res = trie->find(str[i]);
+			if (res > 0) {
+				ans = false;
+				break;
+			}
+		}
+
+		if (ans) printf("YES\n");
+		else printf("NO\n");
+	}
+
+	return 0;
+}
