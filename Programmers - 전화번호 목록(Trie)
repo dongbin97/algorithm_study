@@ -1,0 +1,56 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+struct TRIE{
+    bool finish;
+    TRIE *node[10];
+    TRIE(){
+        finish = false;
+        for(int i = 0; i < 10; i++) node[i] = NULL;
+    }
+    
+    void insert(int idx, string str, int len){
+       if(idx >= len){
+          finish = true;
+          return;
+       }
+      
+       int cur = str[idx] - '0';
+       if(node[cur] == NULL) node[cur] = new TRIE();
+        node[cur] -> insert(idx + 1, str, len);
+    }
+    
+    int find(int idx, string str, int len){
+        if(idx>=len){
+            int cnt = 0;
+            for(int i = 0; i < 10; i++)
+                if(node[i] != NULL) cnt++;
+            return cnt;
+        }
+        
+        int cur = str[idx] - '0';
+        return node[cur] -> find(idx + 1, str, len);
+    }
+};
+
+bool solution(vector<string> phone_book) {
+    bool answer = true;
+    
+    TRIE* trie = new TRIE();
+    
+    int sz = phone_book.size();
+    for(int i = 0; i < sz; i++)
+        trie -> insert(0,phone_book[i],phone_book[i].length());
+    
+    for(int i = 0; i < sz; i++){
+        int res = trie -> find(0,phone_book[i], phone_book[i].length());
+        if(res > 0){
+            answer = false;
+            break;
+        }
+    }
+    
+    return answer;
+}
