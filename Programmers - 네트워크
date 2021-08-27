@@ -1,0 +1,25 @@
+#include <string>
+#include <vector>
+using namespace std;
+
+bool vt[200] = { false, };
+
+void DFS(vector<vector<int>> computers, int n, int src){
+    vt[src] = true;
+    for(int i = 0; i < n; i++){
+        if(computers[src][i] == 0) continue;
+        if(vt[i]) continue;
+        DFS(computers, n, i);
+    }
+}
+
+int solution(int n, vector<vector<int>> computers) {
+    int answer = 0;
+    
+    for(int i = 0; i < n; i++){
+        if(vt[i]) continue;
+        DFS(computers, n, i);
+        answer++;
+    }
+    return answer;
+}
