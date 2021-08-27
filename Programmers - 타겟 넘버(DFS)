@@ -1,0 +1,25 @@
+#include <string>
+#include <vector>
+using namespace std;
+
+int cnt = 0;
+
+void DFS(vector<int> numbers, int target, int idx, int sz, int value){
+    if(idx >= sz){
+        if(value == target) cnt++;
+        return;
+    }
+    
+    DFS(numbers, target, idx + 1, sz, value + numbers[idx]);
+    DFS(numbers, target, idx + 1, sz, value - numbers[idx]);
+}
+
+int solution(vector<int> numbers, int target) {
+    int answer = 0;
+    int sz = numbers.size();
+    
+    DFS(numbers, target, 0, sz, 0);
+    answer = cnt;
+    
+    return answer;
+}
