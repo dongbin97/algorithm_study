@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <string.h>
+#define MOD 1000000
+
+char num[5001];
+int dp[5001] = { 0, };
+int len;
+bool flag = true;
+
+int solve(int idx) {
+	if (dp[idx] > 0) return dp[idx];
+	if (idx > len) return 0;
+	if (idx == len) return 1;
+
+	if (num[idx] == '0') 
+		dp[idx] = 0;
+	else if (num[idx] == '1') {
+		if (idx + 1 < len && num[idx + 1] == '0')
+			dp[idx] = solve(idx + 2);
+		else 
+			dp[idx] = (solve(idx + 1) + solve(idx + 2)) % MOD;
+	}
+	else if (num[idx] == '2') {
+		if (idx + 1 < len && num[idx + 1] == '0')
+			dp[idx] = solve(idx + 2);
+		else if (idx + 1 < len && num[idx + 1] <= '6')
+			dp[idx] = (solve(idx + 1) + solve(idx + 2)) % MOD;
+		else
+			dp[idx] = solve(idx + 1);
+	}
+	else
+		dp[idx] = solve(idx + 1);
+
+	return dp[idx];
+}
+
+int main() {
+	scanf("%s", num);
+	len = strlen(num);
+	
+	printf("%d", solve(0));
+	return 0;
+}
