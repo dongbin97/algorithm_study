@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int N;
+long long arr[2000], dp[2000][2000], ans = 0;
+
+int mod(int idx) {
+	if (idx < 0) return (idx + N) % N;
+	else return idx % N;
+}
+
+long long solve(int start, int end) {
+	if (dp[start][end] > 0) return dp[start][end];
+	if (start == end) return arr[start];
+	if (mod(start + 1) == end) return dp[start][end] = max(arr[start], arr[end]);
+
+	long long c1 = arr[start];
+	if (arr[mod(start + 1)] > arr[end]) c1 += solve(mod(start + 2), end);
+	else c1 += solve(mod(start + 1), mod(end - 1));
+
+	long long c2 = arr[end];
+	if (arr[start] > arr[mod(end - 1)]) c2 += solve(mod(start + 1), mod(end - 1));
+	else c2 += solve(start, mod(end - 2));
+
+	return dp[start][end] = max(c1, c2);
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		scanf("%lld", &arr[i]);
+
+	if (N == 1)  ans = arr[0];
+	else if (N == 2) ans = max(arr[0], arr[1]);
+	else {
+		for (int i = 0; i < N; i++) {
+			long long score = arr[i];
+			int start = mod(i + 1), end = mod(i - 1);
+			if (arr[start] > arr[end])
+				score += solve(mod(start + 1), end);
+			else
+				score += solve(start, mod(end - 1));
+
+			if (ans < score) ans = score;
+		}
+	}
+
+	printf("%lld", ans);
+	return 0;
+}
