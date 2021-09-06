@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+typedef struct {
+	int Rrow, Rcol, Brow, Bcol;
+}st;
+
+char map[10][11];
+int N, M, dx[] = { 0,0,1,-1 }, dy[] = { 1,-1,0,0 }, ans = -1;
+int vt[9000];
+queue<st> q;
+
+int get_num(st a) {
+	return  a.Rrow * 1000 + a.Rcol * 100 + a.Brow * 10 + a.Bcol;
+}
+
+st get_next(st cur, int dir) {
+	st next = cur;
+
+	while (map[next.Rrow + dx[dir]][next.Rcol + dy[dir]] == '.') {
+		next.Rrow += dx[dir];
+		next.Rcol += dy[dir];
+	}
+	while (map[next.Brow + dx[dir]][next.Bcol + dy[dir]] == '.') {
+		next.Brow += dx[dir];
+		next.Bcol += dy[dir];
+	}
+	if (map[next.Rrow + dx[dir]][next.Rcol + dy[dir]] == 'O') {
+		next.Rrow += dx[dir];
+		next.Rcol += dy[dir];
+	}
+	if (map[next.Brow + dx[dir]][next.Bcol + dy[dir]] == 'O') {
+		next.Brow += dx[dir];
+		next.Bcol += dy[dir];
+	}
+
+	if (next.Rrow == next.Brow && next.Rcol == next.Bcol && map[next.Rrow][next.Rcol] != 'O') {
+		if (dir == 0) { //right
+			if (cur.Rcol < cur.Bcol) next.Rcol--;
+			else next.Bcol--;
+		}
+		else if (dir == 1) { //left
+			if (cur.Rcol < cur.Bcol) next.Bcol++;
+			else next.Rcol++;
+		}
+		else if (dir == 2) { //down
+			if (cur.Rrow < cur.Brow) next.Rrow--;
+			else next.Brow--;
+		}
+		else if (dir == 3) { //up
+			if (cur.Rrow < cur.Brow) next.Brow++;
+			else next.Rrow++;
+		}
+	}
+	
+	return next;
+}
+
+int main() {
+	int Rrow, Rcol, Brow, Bcol;
+	scanf("%d %d", &N, &M);
+
+	for (int i = 0; i < N; i++) {
+		scanf("%s", map[i]);
+		for (int j = 0; j < M; j++) {
+			if (map[i][j] == 'R') {
+				map[i][j] = '.';
+				Rrow = i; Rcol = j;
+			}
+			else if (map[i][j] == 'B') {
+				map[i][j] = '.';
+				Brow = i; Bcol = j;
+			}
+		}
+	}
+
+	st start = { Rrow,Rcol,Brow,Bcol };
+	q.push(start);
+	vt[get_num(start)] = 1;
+	while (!q.empty() && ans < 0) {
+		st cur = q.front(); q.pop();
+		int cur_num = get_num(cur);
+		if (vt[cur_num] > 10) break;
+		for (int i = 0; i < 4; i++) {
+			st next = get_next(cur, i);
+			int next_num = get_num(next);
+			if (vt[next_num] > 0) continue;
+			if (map[next.Brow][next.Bcol] == 'O') continue;
+
+			vt[next_num] = vt[cur_num] + 1;
+			if (map[next.Rrow][next.Rcol] == 'O') {
+				ans = vt[next_num] - 1;
+				break;
+			}
+			q.push(next);
+		}
+	}
+
+	printf("%d", ans);
+	return 0;
+}
