@@ -1,0 +1,18 @@
+#include <stdio.h>
+
+int main() {
+	int N;
+	int dp[31] = { 0, };
+	scanf("%d", &N);
+
+	dp[0] = 1;
+	dp[2] = 3;
+	for (int i = 4; i <= N; i = i + 2) {
+		dp[i] = dp[i - 2] * 3;
+		for (int j = 4; i - j >= 0; j = j + 2) {
+			dp[i] += dp[i - j] * 2;
+		}
+	}
+
+	printf("%d", dp[N]);
+}
