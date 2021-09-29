@@ -1,0 +1,12 @@
+#include <stdio.h>
+
+int main() {
+	int N, start, end, len, count = 0;
+	scanf("%d", &N);
+	for (start = 1, len = 1; start <= N; start *= 10, len++) {
+		end = start * 10 - 1;
+		if (end > N) end = N;
+		count += (end - start + 1) * len;
+	}
+	printf("%d\n", count);
+}
