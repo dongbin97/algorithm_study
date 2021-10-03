@@ -1,18 +1,27 @@
 #include <stdio.h>
 
+int T;
+int M, N, x, y;
+
+int gcd(int a, int b) {
+	if (b == 0) return a;
+	else return gcd(b, a % b);
+}
+
 int main() {
-	int T, N, M, x, y;
 	scanf("%d", &T);
 	while (T--) {
-		scanf("%d %d %d %d", &N, &M, &x, &y);
-
-		int idx;
-		for (idx = x; idx <= N * M; idx += N) {
-			if (idx % M == y % M)
+		scanf("%d %d %d %d", &M, &N, &x, &y);
+		int g = gcd(M, N);
+		int lcm = g * (M / g) * (N / g);
+		int ans = -1;
+		for (int i = x; i <= lcm; i = i + M) {
+			if (i % N == y % N) {
+				ans = i;
 				break;
+			}
 		}
-		if (idx > N * M)
-			printf("-1\n");
-		else printf("%d\n", idx);
+
+		printf("%d\n", ans);
 	}
 }
