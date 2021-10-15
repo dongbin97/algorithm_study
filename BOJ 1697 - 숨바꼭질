@@ -1,0 +1,48 @@
+#include <iostream>
+#include <queue>
+#define SIZE 100001
+using namespace std;
+
+int N, K, check[SIZE];
+queue<int> q;
+bool found = false;
+int main() {
+	int cnt = 1;
+	scanf("%d %d", &N, &K);
+	if (N == K) {
+		printf("0\n");
+		return 0;
+	}
+	q.push(N);
+	check[N] = 0;
+	while (!found) {
+		int x = q.front();
+		q.pop();
+		if (x + 1 == K || x - 1 == K || 2 * x == K) {
+			check[K] = check[x]+1;
+			found = true;
+		}
+		else {
+			if (x + 1 <= 100000 && x + 1 != N) {
+				if (check[x + 1] == 0) {
+					check[x + 1] = check[x] + 1;
+					q.push(x + 1);
+				}
+			}
+			if (0 <= x - 1 && x - 1 != N) {
+				if (check[x - 1] == 0) {
+					check[x - 1] = check[x] + 1;
+					q.push(x - 1);
+				}
+			}
+			if (2 * x <= 100000 && 2 * x != N) {
+				if (check[2 * x] == 0) {
+					check[2 * x] = check[x] + 1;
+					q.push(2 * x);
+				}
+			}
+		}
+	}
+	printf("%d\n", check[K]);
+	return 0;
+}
