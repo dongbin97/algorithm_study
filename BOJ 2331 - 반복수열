@@ -1,0 +1,29 @@
+#include <iostream>
+#include <math.h>
+#include <vector>
+#define SIZE 300000
+using namespace std;
+
+vector<int> a;
+bool check[SIZE];
+int main() {
+	int A, P;
+	int num2 = 0, temp, count = 0,i;
+	scanf("%d %d", &A, &P);
+	a.push_back(A);
+	while (check[A] == false) {
+		check[A] = true;
+		while (A != 0) {
+			num2 += pow(A%10,P);
+			A /= 10;
+		}
+		a.push_back(num2);
+		A = num2;
+		num2 = 0;
+	}
+	for (i = 0; i < a.size(); i++) {
+		if (a[i] == A)
+			break;
+	}
+	printf("%d\n", i);
+}
