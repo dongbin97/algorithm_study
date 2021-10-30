@@ -1,0 +1,30 @@
+#include <iostream>
+#include <algorithm>
+#define SIZE 200000
+using namespace std;
+
+int main() {
+	int N, M,num[SIZE],i,j;
+	scanf("%d %d", &N, &M);
+	for (i = 0; i < N; i++)
+		scanf("%d", &num[i]);
+	sort(num, num + N);
+	long long start = 1, end = num[N-1], mid,cnt,x,ans;
+	while (start <= end) {
+		mid = (start + end) / 2;
+		x = num[0], cnt = 1;
+		for (j = 0; j < N; j++) {
+			if (num[j] >= x + mid) {
+				cnt++;
+				x = num[j];
+			}
+		}
+		if (cnt < M)
+			end = mid - 1;
+		else {
+			start = mid + 1;
+			ans = mid;
+		}
+	}
+	printf("%lld\n", ans);
+}
