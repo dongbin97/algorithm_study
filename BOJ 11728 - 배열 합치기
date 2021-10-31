@@ -1,0 +1,48 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int main() {
+	int N, M;
+	int n, i, j;
+	vector<int> A, B, C;
+	scanf("%d %d", &N, &M);
+	for (i = 0; i < N; i++) {
+		scanf("%d", &n);
+		A.push_back(n);
+	}
+	for (i = 0; i < M; i++) {
+		scanf("%d", &n);
+		B.push_back(n);
+	}
+	sort(A.begin(), A.end());
+	sort(B.begin(), B.end());
+	i = j = 0;
+	while (i < N && j < M) {
+		if (A[i] < B[j]) {
+			C.push_back(A[i]);
+			i++;
+		}
+		else if (A[i] == B[j]) {
+			C.push_back(A[i]);
+			C.push_back(B[j]);
+			i++, j++;
+		}
+		else {
+			C.push_back(B[j]);
+			j++;
+		}
+	}
+	while (i < N) {
+		C.push_back(A[i]);
+		i++;
+	}
+	while (j < M) {
+		C.push_back(B[j]);
+		j++;
+	}
+	for (i = 0; i < C.size(); i++)
+		printf("%d ", C[i]);
+	printf("\n");
+}
