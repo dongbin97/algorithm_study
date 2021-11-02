@@ -1,0 +1,44 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#define SIZE 2200
+using namespace std;
+
+int N, num[SIZE][SIZE];
+int cnt[3];
+void check(int x, int y, int size) {
+	int i, j;
+	if (size < 1) return;
+	else if (size == 1) {
+		for (i = x; i < x + size; i++)
+			for (j = y; j < y + size; j++)
+				cnt[num[i][j] + 1]++;
+		return;
+	}
+	int ans=num[x][y],flag=1;
+	for (i = x; i < x+size; i++) {
+		for (j = y; j < y+size; j++) {
+			if (num[i][j] != ans) {
+				flag = 0;
+				break;
+			}
+		}
+	}
+	if (flag == 0) {
+		for (i = x; i < x + size; i += (size / 3))
+			for (j = y; j < y + size; j += (size / 3))
+				check(i, j, size / 3);
+	}
+	else cnt[ans + 1]++;
+}
+int main() {
+	int i,j;
+	scanf("%d", &N);
+	for (i = 0; i < N; i++)
+		for (j = 0; j < N; j++)
+			scanf("%d", &num[i][j]);
+	check(0, 0, N);
+	for (i = 0; i < 3; i++)
+		printf("%d\n", cnt[i]);
+	return 0;
+}
