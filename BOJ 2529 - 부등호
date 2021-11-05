@@ -1,0 +1,52 @@
+#include <iostream>
+using namespace std;
+
+int N, flag=1, a[10],c[10] = { 0, };
+char sign[10];
+int check(int n) {
+	if (n < 1) return 1;
+	if (sign[n - 1] == '<') {
+		if (a[n - 1] < a[n])
+			return 1;
+		else return 0;
+	}
+	else {
+		if (a[n - 1] > a[n])
+			return 1;
+		else return 0;
+	}
+}
+
+void get(int i, int start, int d) {
+	if (flag) {
+		int j;
+		if (i == N + 1) {
+			for (j = 0; j < N + 1; j++)
+				printf("%d", a[j]);
+			printf("\n");
+			flag = 0;
+			return;
+		}
+		for (j = start; j >= 0 && j < 10; j =j+ d) {
+			if (flag == 0 || c[j] == 1) continue;
+			c[j] = 1;
+			a[i] = j;
+			if (check(i))
+				get(i + 1,start,d);
+			c[j] = 0;
+		}
+	}
+}
+int main() {
+	int count=0;
+	char ch;
+	scanf("%d", &N);
+	while (count < N) {
+		scanf("%c", &ch);
+		if (ch != ' ' && ch != '\n')
+			sign[count++] = ch;
+	}
+	get(0, 9, -1);
+	flag = 1;
+	get(0, 0, 1);
+}
