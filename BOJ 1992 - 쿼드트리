@@ -1,0 +1,39 @@
+#include <iostream>
+#define SIZE 64
+using namespace std;
+
+int N, num[SIZE][SIZE];
+void check(int x, int y, int size) {
+	int i, j, ans = num[x][y], flag = 1;
+	if (size < 1) return;
+	else if (size == 1) {
+		printf("%d", ans);
+		return;
+	}
+	for (i = x; i < x + size; i++) {
+		for (j = y; j < y + size; j++) {
+			if (num[i][j] != ans) {
+				flag = 0;
+				break;
+			}
+		}
+	}
+	if (flag == 0) {
+		printf("(");
+		for (i = x; i < x + size; i += (size / 2))
+			for (j = y; j < y + size; j += (size / 2))
+				check(i, j, size / 2);
+		printf(")");
+	}
+	else printf("%d", ans);
+}
+int main() {
+	int i, j;
+	scanf("%d", &N);
+	for (i = 0; i < N; i++)
+		for (j = 0; j < N; j++)
+			scanf("%1d", &num[i][j]);
+	check(0, 0, N);
+	printf("\n");
+	return 0;
+}
