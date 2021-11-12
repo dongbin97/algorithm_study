@@ -1,0 +1,31 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+	int t, i, n;
+	scanf("%d", &t);
+	vector<int> dp;
+	for (i = 0; i < t; i++) {
+		scanf("%d", &n);
+		if (dp.size() == 0 || dp.back() < n)
+			dp.push_back(n);
+		else {
+			int start = 0, end = dp.size() - 1, mid, ans = 0;
+			while (start <= end) {
+				mid = (start + end) / 2;
+				if (dp[mid] >= n) {
+					end = mid - 1;
+				}
+				else {
+					start = mid + 1;
+					ans = mid;
+				}
+			}
+			if (dp[ans] < n) ans++;
+			dp[ans] = n;
+		}
+	}
+	printf("%d\n", dp.size());
+	return 0;
+}
