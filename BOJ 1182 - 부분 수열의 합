@@ -1,0 +1,19 @@
+#include <iostream>
+using namespace std;
+
+int N, S, num[20], cnt = 0;
+void perm(int i, int sum) {
+	if (sum+num[i] == S)
+		cnt++;
+	if (i >= N-1) return;
+	perm(i + 1, sum);
+	perm(i + 1, sum + num[i]);
+}
+int main() {
+	int i;
+	scanf("%d %d", &N, &S);
+	for (i = 0; i < N; i++)
+		scanf("%d", &num[i]);
+	perm(0, 0);
+	printf("%d\n", cnt);
+}
