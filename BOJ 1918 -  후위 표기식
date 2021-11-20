@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+typedef enum {lparen,rparen,plus,minus,times,divides,eos,operand} precedence;
+int isp[] = { 0,19,12,12,13,13,0 };
+int icp[] = { 20,19,12,12,13,13,0 };
+
+typedef struct {
+	precedence data[1000];
+	int top;
+}stack;
+
+int empty(stack s) {
+	if (s.top == -1)
+		return 1;
+	else return 0;
+}
+void push(stack* s,precedence num) {
+	s->data[++(s->top)] = num;
+	return;
+}
+precedence pop(stack* s) {
+	if (s->top > -1)
+		return s->data[(s->top)--];
+	else
+		return -1;
+}
+precedence gettoken(char *str,char* symbol, int* n) {
+	*symbol = str[(*n)++];
+	switch (*symbol) {
+	case '(': return lparen;
+	case ')':return rparen;
+	case '+':return plus;
+	case '-':return minus;
+	case '*':return times;
+	case '/':return divides;
+	case '\0': return eos;
+	default: return operand;
+	}
+}
+void printsymbol(precedence a) {
+	switch (a) {
+	case plus: printf("+"); break;
+	case minus: printf("-"); break;
+	case times: printf("*"); break;
+	case divides: printf("/"); break;
+	}
+}
+int main() {
+	stack s;
+	s.top = -1;
+	precedence token;
+	char str[101],symbol;
+	int n = 0;
+	scanf("%s", str);
+	push(&s, eos);
+	for (token = gettoken(str, &symbol, &n); token != eos; token = gettoken(str, &symbol, &n)) {
+		if (token == operand)
+			printf("%c", symbol);
+		else if (token == rparen) {
+			while (s.data[s.top] != lparen)
+				printsymbol(pop(&s));
+			pop(&s);
+		}
+		else {
+			while (isp[s.data[s.top]] >= icp[token])
+				printsymbol(pop(&s));
+			push(&s, token);
+		}
+	}
+	while (s.data[s.top] != eos)
+		printsymbol(pop(&s));
+	printf("\n");
+}
