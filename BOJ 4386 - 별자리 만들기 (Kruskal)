@@ -1,0 +1,80 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+#include <math.h>
+using namespace std;
+
+typedef struct {
+	int from, to;
+	float cost;
+}edge;
+
+typedef struct {
+	float x, y;
+}coordinate;
+
+struct comp {
+	bool operator()(edge a, edge b) {
+		return a.cost > b.cost;
+	}
+};
+
+int n, p[101];
+priority_queue<edge, vector<edge>, comp> pq;
+vector<coordinate> point;
+
+int find(int u) {
+	int root, x, temp;
+	for (root = u; p[root] >= 0; root = p[root]);
+	for (x = u; x != root; x = temp) {
+		temp = p[x];
+		p[x] = root;
+	}
+
+	return root;
+}
+
+void merge(int u, int v) {
+	int temp = p[u] + p[v];
+	if (p[u] < p[v]) {
+		p[v] = u;
+		p[u] = temp;
+	}
+	else {
+		p[u] = v;
+		p[v] = temp;
+	}
+}
+
+int main() {
+	float x, y;
+	scanf("%d", &n);
+	
+	for (int i = 0; i < n; i++) p[i] = -1;
+
+	for (int i = 0; i < n; i++) {
+		scanf("%f %f", &x, &y);
+		point.push_back({ x,y });
+	}
+
+	for (int i = 0; i < n-1; i++) {
+		for (int j = i + 1; j < n; j++) {
+			float cost = sqrt(pow(point[i].x - point[j].x, 2) + pow(point[i].y - point[j].y, 2));
+			pq.push({ i,j,cost });
+		}
+	}
+
+	int cnt = 0;
+	float cost = 0;
+	while (cnt < n - 1) {
+		edge e = pq.top(); pq.pop();
+		int u = find(e.from), v = find(e.to);
+
+		if (u == v) continue;
+
+		merge(u, v);
+		cnt++;
+		cost += e.cost;
+	}
+	printf("%f", cost);
+}
