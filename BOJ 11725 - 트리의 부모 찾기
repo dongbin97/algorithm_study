@@ -1,37 +1,33 @@
-#include <iostream>
+#include <stdio.h>
 #include <vector>
-#include <queue>
-#define SIZE 100001
 using namespace std;
 
-vector<int> a[SIZE];
-queue<int> q;
-bool check[SIZE];
-int parent[SIZE];
+int N, parent[100001];
+vector<int> graph[100001];
+bool v[100001];
+
+void dfs(int u) {
+	v[u] = true;
+
+	for (auto x : graph[u]) {
+		if (v[x]) continue;
+		parent[x] = u;
+		dfs(x);
+	}
+}
 
 int main() {
-	int N;
-	int n1, n2,i;
 	scanf("%d", &N);
-	for (i = 0; i < N-1; i++) {
-		scanf("%d %d", &n1, &n2);
-		a[n1].push_back(n2);
-		a[n2].push_back(n1);
+
+	int a, b;
+	for (int i = 0; i < N - 1; i++) {
+		scanf("%d %d", &a, &b);
+		graph[a].push_back(b);
+		graph[b].push_back(a);
 	}
-	q.push(1);
-	parent[1] = 0;
-	check[1] = true;
-	while (!q.empty()) {
-		int x = q.front();
-		q.pop();
-		for (i = 0; i < a[x].size(); i++) {
-			if (check[a[x][i]] == false) {
-				check[a[x][i]] = true;
-				parent[a[x][i]] = x;
-				q.push(a[x][i]);
-			}
-		}
-	}
-	for (i = 2; i <= N; i++)
+
+	dfs(1);
+
+	for (int i = 2; i <= N; i++)
 		printf("%d\n", parent[i]);
 }
