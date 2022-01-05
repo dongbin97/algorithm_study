@@ -1,41 +1,37 @@
-#include <iostream>
-#define SIZE 100001
-using namespace std;
+#include <stdio.h>
 
-int a[SIZE], check[SIZE], cnt = 0;
+int T, n, arr[100001];
+bool prj[100001];
 
 int main() {
-	int t, i;
-	scanf("%d", &t);
-	while (t--) {
-		int n, num;
-		cnt = 0;
-    
-		for (int i = 0; i < SIZE; i++) {
-			a[i] = 0;
-			check[i] = 0;
-		}
-    
+	scanf("%d", &T);
+
+	while (T--) {
+		int cnt = 0;
+
 		scanf("%d", &n);
+		for (int i = 1; i <= n; i++) prj[i] = 0;
+
 		for (int i = 1; i <= n; i++) {
-			scanf("%d", &num);
-			a[i] = num;
+			scanf("%d", &arr[i]);
+			if (i == arr[i]) prj[i] = true;
 		}
-    
-		for (i = 1; i <= n; i++) {
-			if (check[i] == 1) continue;
-			int v = i;
-			while (check[v] == 0) {
-				check[v] = 1;
-				v = a[v];
+		
+		for (int i = 1; i <= n; i++) {
+			if (prj[i]) continue;
+
+			int k = i;
+			while (prj[k] == false) {
+				prj[k] = true;
+				k = arr[k];
 			}
-			int w = i;
-			while (w != v) {
+			
+			int j = i;
+			while (j != k) {
 				cnt++;
-				w = a[w];
+				j = arr[j];
 			}
 		}
-    
 		printf("%d\n", cnt);
 	}
 }
