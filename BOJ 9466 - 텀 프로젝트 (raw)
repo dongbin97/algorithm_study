@@ -1,0 +1,48 @@
+#include <stdio.h>
+
+int T, n, arr[100001], prj[100001], cycle_start;
+
+int dfs(int u, int start) {
+	prj[u] = 0;
+	int x = arr[u];
+
+	int k;
+	if (prj[x] < 0) k = dfs(x, start);
+	else if (prj[x] == 0) {
+		cycle_start = x;
+		k = 2;
+	}
+	else k = 1;
+
+	prj[u] = k;
+
+	if (u == cycle_start) return 1;
+	else return k;
+}
+
+int main() {
+	scanf("%d", &T);
+
+	while (T--) {
+		scanf("%d", &n);
+
+		for (int i = 1; i <= n; i++) prj[i] = -1;
+
+		for (int i = 1; i <= n; i++) {
+			scanf("%d", &arr[i]);
+			if (i == arr[i]) prj[i] = 2;
+		}
+		
+		for (int i = 1; i <= n; i++) {
+			if (prj[i] >= 0) continue;
+
+			dfs(i, i);
+		}
+
+		int cnt = 0;
+		for (int i = 1; i <= n; i++)
+			if (prj[i] < 2) cnt++;
+
+		printf("%d\n", cnt);
+	}
+}
