@@ -49,8 +49,8 @@ int main() {
 		pq.push({ A,B,C });
 	}
 
-	int cost = 0;
-	while (!pq.empty()) {
+	int cnt = 0, cost = 0;
+	while (cnt < V - 1) {
 		
 		edge e = pq.top(); pq.pop();
 		int u = find(e.from), v = find(e.to);
@@ -58,6 +58,7 @@ int main() {
 		if (u == v) continue;
 		
 		merge(u, v);
+        cnt++;
 		cost += e.cost;
 	}
 
