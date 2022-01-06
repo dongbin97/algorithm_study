@@ -1,39 +1,41 @@
-#include <iostream>
-#define SIZE 64
-using namespace std;
+#include <stdio.h>
 
-int N, num[SIZE][SIZE];
-void check(int x, int y, int size) {
-	int i, j, ans = num[x][y], flag = 1;
-	if (size < 1) return;
-	else if (size == 1) {
-		printf("%d", ans);
+int N;
+char map[64][65];
+
+void recur(int row, int col, int size) {
+	if (size == 1) {
+		printf("%c", map[row][col]);
 		return;
 	}
-	for (i = x; i < x + size; i++) {
-		for (j = y; j < y + size; j++) {
-			if (num[i][j] != ans) {
-				flag = 0;
+
+	bool flag = true;
+	for (int i = row; i < row + size; i++) {
+		for (int j = col; j < col + size; j++) {
+			if (map[i][j] != map[row][col]) {
+				flag = false;
 				break;
 			}
 		}
 	}
-	if (flag == 0) {
+
+	if (flag) {
+		printf("%c", map[row][col]);
+		return;
+	}
+	else {
 		printf("(");
-		for (i = x; i < x + size; i += (size / 2))
-			for (j = y; j < y + size; j += (size / 2))
-				check(i, j, size / 2);
+		for (int i = 0; i < 2; i++)
+			for (int j = 0; j < 2; j++)
+				recur(row + i * size / 2, col + j * size / 2, size / 2);
 		printf(")");
 	}
-	else printf("%d", ans);
 }
+
 int main() {
-	int i, j;
 	scanf("%d", &N);
-	for (i = 0; i < N; i++)
-		for (j = 0; j < N; j++)
-			scanf("%1d", &num[i][j]);
-	check(0, 0, N);
-	printf("\n");
-	return 0;
+	for (int i = 0; i < N; i++)
+		scanf("%s", map[i]);
+
+	recur(0, 0, N);
 }
