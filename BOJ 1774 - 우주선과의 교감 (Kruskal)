@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <queue>
+#include <math.h>
+using namespace std;
+
+typedef struct {
+	int x, y;
+}coor;
+
+typedef struct {
+	int from, to;
+	double cost;
+}edge;
+
+struct comp {
+	bool operator()(edge a, edge b) {
+		return a.cost > b.cost;
+	}
+};
+
+int N, M, p[1001];
+bool already[1001][1001];
+vector<coor> space;
+priority_queue<edge, vector<edge>, comp> pq;
+
+int find(int u) {
+	int root, x, temp;
+	for (root = u; p[root] >= 0; root = p[root]);
+	for (x = u; x != root; x = temp) {
+		temp = p[x];
+		p[x] = root;
+	}
+	return root;
+}
+
+void merge(int u, int v) {
+	int temp = p[u] + p[v];
+	if (p[u] < p[v]) {
+		p[v] = u;
+		p[u] = temp;
+	}
+	else {
+		p[u] = v;
+		p[v] = temp;
+	}
+}
+
+int main() {
+	int X, Y;
+	scanf("%d %d", &N, &M);
+	
+	for (int i = 1; i <= N; i++) p[i] = -1;
+
+	for (int i = 0; i < N; i++) {
+		scanf("%d %d", &X, &Y);
+		space.push_back({ X,Y });
+	}
+
+	int cnt = 0;
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d", &X, &Y);
+		already[X][Y] = true;
+		already[Y][X] = true;
+
+		int u = find(X), v = find(Y);
+		if (u == v) continue;
+		merge(u, v);
+		cnt++;
+	}
+
+	for (int i = 1; i < N; i++) {
+		for (int j = i + 1; j <= N; j++) {
+			if (already[i][j]) continue;
+			double cost = sqrt(pow(space[i - 1].x - space[j - 1].x, 2) + pow(space[i - 1].y - space[j - 1].y, 2));
+			pq.push({ i,j,cost });
+		}
+	}
+
+	
+	double cost = 0;
+	while (cnt < N - 1) {
+		edge e = pq.top(); pq.pop();
+		int u = find(e.from), v = find(e.to);
+
+		if (u == v) continue;
+		merge(u, v);
+		cnt++;
+		cost += e.cost;
+	}
+
+	printf("%.02f", cost);
+}
