@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+typedef struct {
+	int to, cost;
+}st;
+
+int V, dist[100001];
+vector<st> graph[100001];
+bool v[100001];
+
+void dfs(int u, int cost) {
+	v[u] = true;
+	dist[u] = cost;
+
+	for (st x : graph[u]) {
+		if (v[x.to]) continue;
+		dfs(x.to, cost + x.cost);
+	}
+
+	v[u] = false;
+}
+
+int main() {
+	int X, Y, C;
+	scanf("%d", &V);
+	for (int i = 0; i < V; i++) {
+		scanf("%d", &X);
+		while (1) {
+			scanf("%d", &Y);
+			if (Y == -1) break;
+			scanf("%d", &C);
+			graph[X].push_back({ Y,C });
+		}
+	}
+
+	dfs(1, 0);
+
+	int max = dist[1], pos = 1;
+	for (int i = 2; i <= V; i++) {
+		if (max < dist[i]) {
+			max = dist[i];
+			pos = i;
+		}
+	}
+
+	for (int i = 1; i <= V; i++) dist[i] = 0;
+
+	dfs(pos, 0);
+
+	int ans = 0;
+	for (int i = 1; i <= V; i++)
+		if (ans < dist[i])
+			ans = dist[i];
+		
+	printf("%d", ans);
+}
