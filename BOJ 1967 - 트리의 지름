@@ -4,17 +4,17 @@ using namespace std;
 
 typedef struct {
 	int to, cost;
-} edge;
+}st;
 
-vector<edge> graph[10001];
-int n, ans = 0;
+int n, dist[10001];
+vector<st> graph[10001];
 bool v[10001];
 
 void dfs(int u, int cost) {
 	v[u] = true;
-	if (ans < cost) ans = cost;
+	dist[u] = cost;
 
-	for (edge x : graph[u]) {
+	for (st x : graph[u]) {
 		if (v[x.to]) continue;
 		dfs(x.to, cost + x.cost);
 	}
@@ -23,18 +23,33 @@ void dfs(int u, int cost) {
 }
 
 int main() {
-	int a, b, c;
-
+	int X, Y, C;
 	scanf("%d", &n);
 	for (int i = 0; i < n - 1; i++) {
-		scanf("%d %d %d", &a, &b, &c);
-		graph[a].push_back({ b,c });
-		graph[b].push_back({ a,c });
+		scanf("%d %d %d", &X, &Y, &C);
+		graph[X].push_back({ Y,C });
+		graph[Y].push_back({ X,C });
 	}
 
-	for (int i = 1; i <= n; i++) 
-		dfs(i, 0);
-	
+	dfs(1, 0);
+
+	int max = dist[1], pos = 1;
+	for (int i = 2; i <= n; i++) {
+		if (max < dist[i]) {
+			max = dist[i];
+			pos = i;
+		}
+	}
+
+	for (int i = 1; i <= n; i++) dist[i] = 0;
+
+	dfs(pos, 0);
+
+	int ans = 0;
+	for (int i = 1; i <= n; i++)
+		if (ans < dist[i])
+			ans = dist[i];
+		
 	printf("%d", ans);
 }
 
