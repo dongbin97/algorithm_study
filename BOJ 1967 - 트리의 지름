@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+typedef struct {
+	int to, cost;
+} edge;
+
+vector<edge> graph[10001];
+int n, ans = 0;
+bool v[10001];
+
+void dfs(int u, int cost) {
+	v[u] = true;
+	if (ans < cost) ans = cost;
+
+	for (edge x : graph[u]) {
+		if (v[x.to]) continue;
+		dfs(x.to, cost + x.cost);
+	}
+
+	v[u] = false;
+}
+
+int main() {
+	int a, b, c;
+
+	scanf("%d", &n);
+	for (int i = 0; i < n - 1; i++) {
+		scanf("%d %d %d", &a, &b, &c);
+		graph[a].push_back({ b,c });
+		graph[b].push_back({ a,c });
+	}
+
+	for (int i = 1; i <= n; i++) 
+		dfs(i, 0);
+	
+	printf("%d", ans);
+}
+
