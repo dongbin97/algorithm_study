@@ -1,36 +1,33 @@
-#include <iostream>
-#include <vector>
-using namespace std;
+#include <stdio.h>
 
-char c[21][21];
-int N, M, ans = 0;
-int dx[4] = { -1,0,1,0 }, dy[4] = { 0,1,0,-1 };
-bool visited[26];
+int R, C, ans = 0;
+int dx[4] = { -1,1,0,0 }, dy[4] = { 0,0,-1,1 };
+char board[20][21];
+bool v[20][20], used[26];
 
-void dfs(int x, int y,int cnt) {
-	int flag = 0;
-	visited[c[x][y]-'A'] = true;
+void dfs(int row, int col, int length) {
+	v[row][col] = true;
+	used[board[row][col] - 'A'] = true;
+	if (ans < length) ans = length;
+
 	for (int i = 0; i < 4; i++) {
-		int nx = x + dx[i], ny = y + dy[i];
-		if (0 <= nx && nx < N && 0 <= ny && ny < M) {
-			if (visited[c[nx][ny]-'A'] == false) {
-				flag = 1;
-				dfs(nx, ny,cnt+1);
-			}
-		}
+		int nrow = row + dx[i], ncol = col + dy[i];
+		if (nrow < 0 || nrow >= R || ncol < 0 || ncol >= C) continue;
+		if (v[nrow][ncol]) continue;
+		if (used[board[nrow][ncol] - 'A']) continue;
+		dfs(nrow, ncol, length + 1);
 	}
-	visited[c[x][y]-'A'] = false;
-	if (flag == 0) {
-		if (ans < cnt)
-			ans = cnt;
-	}
+
+	v[row][col] = false;
+	used[board[row][col] - 'A'] = false;
 }
 
 int main() {
-	scanf("%d %d", &N, &M);
-	for (int i = 0; i < N; i++)
-		scanf("%s", c[i]);
+	scanf("%d %d", &R, &C);
+	for (int i = 0; i < R; i++)
+		scanf("%s", board[i]);
 
 	dfs(0, 0, 1);
-	printf("%d\n", ans);
+
+	printf("%d", ans);
 }
