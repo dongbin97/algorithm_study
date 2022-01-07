@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <queue>
+#include <math.h>
+using namespace std;
+
+typedef struct {
+	float x, y;
+}coor;
+
+typedef struct {
+	int to;
+	float cost;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		return a.cost > b.cost;
+	}
+};
+
+int n;
+vector<coor> star;
+vector<st> graph[100];
+priority_queue<st, vector<st>, comp> pq;
+bool used[100];
+
+int main() {
+	float x, y;
+	scanf("%d", &n);
+	for (int i = 0; i < n; i++) {
+		scanf("%f %f", &x, &y);
+		star.push_back({ x,y });
+	}
+
+	for (int i = 0; i < n-1; i++) {
+		for (int j = i + 1; j < n; j++) {
+			float cost = sqrt(pow(star[i].x - star[j].x, 2) + pow(star[i].y - star[j].y, 2));
+			graph[i].push_back({ j,cost });
+			graph[j].push_back({ i,cost });
+		}
+	}
+
+	used[0] = true;
+	for (st x : graph[0]) pq.push(x);
+
+	int cnt = 0;
+	float cost = 0;
+	while (cnt < n - 1) {
+		st e = pq.top(); pq.pop();
+		if (used[e.to]) continue;
+		used[e.to] = true;
+		cnt++;
+		cost += e.cost;
+
+		for (st x : graph[e.to]) {
+			if (used[x.to]) continue;
+			pq.push(x);
+		}
+	}
+
+	printf("%f", cost);
+}
