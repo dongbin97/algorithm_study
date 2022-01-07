@@ -1,48 +1,46 @@
-#include <iostream>
+#include <stdio.h>
 #include <queue>
-#define SIZE 100001
 using namespace std;
 
-int N, K, check[SIZE];
+#define INF 100001
+
+int N, K, dp[INF];
 queue<int> q;
-bool found = false;
+
 int main() {
-	int cnt = 1;
 	scanf("%d %d", &N, &K);
-	if (N == K) {
-		printf("0\n");
-		return 0;
-	}
-	q.push(N);
-	check[N] = 0;
-	while (!found) {
-		int x = q.front();
-		q.pop();
-		if (x + 1 == K || x - 1 == K || 2 * x == K) {
-			check[K] = check[x]+1;
-			found = true;
-		}
-		else {
-			if (x + 1 <= 100000 && x + 1 != N) {
-				if (check[x + 1] == 0) {
-					check[x + 1] = check[x] + 1;
-					q.push(x + 1);
-				}
+
+	if (N == K) dp[K] = 0;
+	else {
+		for (int i = 0; i < INF; i++) dp[i] = INF;
+		bool found = false;
+
+		dp[N] = 0;
+		q.push(N);
+		while (!found) {
+			int x = q.front(); q.pop();
+
+			if (x == K) {
+				found = true;
+				break;
 			}
-			if (0 <= x - 1 && x - 1 != N) {
-				if (check[x - 1] == 0) {
-					check[x - 1] = check[x] + 1;
-					q.push(x - 1);
-				}
+
+			if (x + 1 < INF && dp[x] + 1 < dp[x + 1]) {
+				dp[x + 1] = dp[x] + 1;
+				q.push(x + 1);
 			}
-			if (2 * x <= 100000 && 2 * x != N) {
-				if (check[2 * x] == 0) {
-					check[2 * x] = check[x] + 1;
-					q.push(2 * x);
-				}
+
+			if (x - 1 >= 0 && dp[x] + 1 < dp[x - 1]) {
+				dp[x - 1] = dp[x] + 1;
+				q.push(x - 1);
+			}
+
+			if (2 * x < INF && dp[x] + 1 < dp[2 * x]) {
+				dp[2 * x] = dp[x] + 1;
+				q.push(2 * x);
 			}
 		}
 	}
-	printf("%d\n", check[K]);
-	return 0;
+
+	printf("%d", dp[K]);
 }
