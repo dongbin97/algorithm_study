@@ -1,49 +1,52 @@
-#include <iostream>
+#include <stdio.h>
 #include <vector>
 using namespace std;
 
-bool check[50][50];
-int w,h,num[50][50];
-int dx[8] = { -1,-1,0,1,1,1,0,-1 }, dy[8] = { 0,1,1,1,0,-1,-1,-1 };
+typedef struct {
+	int row, col;
+} coor;
 
-void dfs(int x,int y) {
-	int nx, ny;
-	check[x][y] = true;
-	for (int i = 0; i < 8; i++){
-		nx = x + dx[i];
-		ny = y + dy[i];
-		if (0 <= nx && nx < h && 0 <= ny && ny < w) {
-			if (num[nx][ny] == 1 && check[nx][ny] == false)
-				dfs(nx, ny);
-		}
+int h, w, map[50][50];
+int dx[] = { -1,-1,0,1,1,1,0,-1 }, dy[] = { 0,1,1,1,0,-1,-1,-1 };
+vector<coor> island;
+bool v[50][50];
+
+void dfs(int row, int col) {
+	v[row][col] = true;
+
+	for (int i = 0; i < 8; i++) {
+		int nrow = row + dx[i], ncol = col + dy[i];
+		if (nrow < 0 || nrow >= h || ncol < 0 || ncol >= w) continue;
+		if (v[nrow][ncol] || map[nrow][ncol] == 0) continue;
+		dfs(nrow, ncol);
 	}
 }
 
-int main(void)
-{
-	int i, j,count;
+int main() {
 	while (1) {
-		count = 0;
-		for (i = 0; i < 50; i++)
-			for (j = 0; j < 50; j++)
-				check[i][j] = false;
+		scanf("%d %d", &w, &h);
+		if (w == 0 && h == 0) break;
 
-		scanf("%d %d", &w,&h);
-		if (h == 0 && w == 0) break;
-		for (i = 0; i < h; i++) {
-			for (j = 0; j < w; j++)
-				scanf("%d", &num[i][j]);
-		}
-
-		for (i = 0; i < h; i++) {
-			for (j = 0; j < w; j++) {
-				if (num[i][j] == 1 && check[i][j] == false) {
-					dfs(i, j);
-					count++;
-				}
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				scanf("%d", &map[i][j]);
+				if (map[i][j] == 1) island.push_back({ i,j });
 			}
 		}
-		printf("%d\n", count);
+
+		int cnt = 0;
+		for (coor x : island) {
+			if (v[x.row][x.col]) continue;
+			dfs(x.row, x.col);
+			cnt++;
+		}
+
+		printf("%d\n", cnt);
+
+		for (int i = 0; i < h; i++)
+			for (int j = 0; j < w; j++)
+				v[i][j] = false;
+
+		island.clear();
 	}
-	return 0;
 }
