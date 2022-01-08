@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+
+typedef struct {
+	int to, cost;
+} st;
+
+struct smaller {
+	bool operator()(st a, st b) {
+		return a.cost > b.cost;
+	}
+};
+
+
+struct bigger {
+	bool operator()(st a, st b) {
+		return a.cost < b.cost;
+	}
+};
+
+int N, M;
+vector<st> graph[1001];
+priority_queue<st, vector<st>, smaller> pq1;
+priority_queue<st, vector<st>, bigger> pq2;
+bool used[1001];
+
+int main() {
+	int A, B, C;
+	scanf("%d %d", &N, &M);
+	for (int i = 0; i <= M; i++) {
+		scanf("%d %d %d", &A, &B, &C);
+		graph[A].push_back({ B,C });
+		graph[B].push_back({ A,C });
+	}
+
+	used[0] = true;
+	for (st x : graph[0]) pq1.push(x);
+
+	int cnt = 0, cost = 0, ans;
+	while (cnt < N) {
+		st e = pq1.top(); pq1.pop();
+		if (used[e.to]) continue;
+		used[e.to] = true;
+		cnt++;
+		if (e.cost == 0) cost++;
+
+		for (st x : graph[e.to]) {
+			if (used[x.to]) continue;
+			pq1.push(x);
+		}
+	}
+
+	ans = cost * cost;
+
+	for (int i = 0; i <= N; i++) used[i] = false;
+	used[0] = true;
+	for (st x : graph[0]) pq2.push(x);
+
+	cnt = 0, cost = 0;
+	while (cnt < N) {
+		st e = pq2.top(); pq2.pop();
+		if (used[e.to]) continue;
+		used[e.to] = true;
+		cnt++;
+		if (e.cost == 0) cost++;
+
+		for (st x : graph[e.to]) {
+			if (used[x.to]) continue;
+			pq2.push(x);
+		}
+	}
+
+	ans -= cost * cost;
+
+	printf("%d", ans);
+}
