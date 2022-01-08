@@ -1,0 +1,90 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+using namespace std;
+
+typedef struct {
+	int row, col;
+}coor;
+
+typedef struct {
+	int to_row, to_col, cost;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		return a.cost > b.cost;
+	}
+};
+
+int N, M, srow, scol;
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+char map[50][51];
+bool v[50][50], used[50][50];
+vector<coor> key;
+vector<st> graph[50][50];
+queue<pair<coor, int>> q;
+priority_queue<st, vector<st>, comp> pq;
+
+int main() {
+	scanf("%d %d", &N, &M);
+	for (int i = 0; i < N; i++) 
+		scanf("%s", map[i]);
+	
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (map[i][j] == 'S' || map[i][j] == 'K') {
+				key.push_back({ i,j });
+				if (map[i][j] == 'S') 
+					srow = i, scol = j;
+			}
+		}
+	}
+
+	for (coor x : key) {
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < N; j++)
+				v[i][j] = false;
+
+		q.push({ x,0 });
+
+		while (!q.empty()) {
+			int row = q.front().first.row;
+			int col = q.front().first.col;
+			int cost = q.front().second;
+			q.pop();
+
+			if (v[row][col]) continue;
+			v[row][col] = true;
+			if (!(row == x.row && col == x.col) && (map[row][col] == 'S' || map[row][col] == 'K'))
+				graph[x.row][x.col].push_back({ row,col,cost });
+
+			for (int i = 0; i < 4; i++) {
+				int nrow = row + dx[i], ncol = col + dy[i];
+				if (nrow < 0 || nrow >= N || ncol < 0 || ncol >= N) continue;
+				if (map[nrow][ncol] == '1' || v[nrow][ncol]) continue;
+				q.push({ {nrow,ncol},cost + 1 });
+			}
+		}
+	}
+
+	used[srow][scol] = true;
+	for (st x : graph[srow][scol]) pq.push(x);
+
+	int cnt = 0, cost = 0;
+	while (cnt < M && !pq.empty()) {
+		st e = pq.top(); pq.pop();
+		if (used[e.to_row][e.to_col]) continue;
+		used[e.to_row][e.to_col] = true;
+		cnt++;
+		cost += e.cost;
+
+		for (st x : graph[e.to_row][e.to_col]) {
+			if (used[x.to_row][x.to_col]) continue;
+			pq.push(x);
+		}
+	}
+
+	if (cnt < M) cost = -1;
+	printf("%d", cost);
+}
