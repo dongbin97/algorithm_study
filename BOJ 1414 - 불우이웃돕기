@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int to, cost;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		return a.cost > b.cost;
+	}
+};
+
+int N, l[50][50];
+char c[50][51];
+vector<st> graph[50];
+priority_queue<st, vector<st>, comp> pq;
+bool used[50];
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		scanf("%s", c[i]);
+
+	int cost = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (c[i][j] == '0')  l[i][j] = 100;
+			else {
+				if ('a' <= c[i][j] && c[i][j] <= 'z') l[i][j] = c[i][j] - 'a' + 1;
+				else if ('A' <= c[i][j] && c[i][j] <= 'Z') l[i][j] = c[i][j] - 'A' + 27;
+				cost += l[i][j];
+			}
+		}
+	}
+
+	for (int i = 0; i < N-1; i++) {
+		for (int j = i + 1; j < N; j++) {
+			if (l[i][j] == 100 && l[j][i] == 100) continue;
+			int cost = min(l[i][j], l[j][i]);
+			graph[i].push_back({ j,cost });
+			graph[j].push_back({ i,cost });
+		}
+	}
+
+	used[0] = true;
+	for (st x : graph[0]) pq.push(x);
+
+	int cnt = 0;
+	while (cnt < N - 1 && !pq.empty()) {
+		st e = pq.top(); pq.pop();
+		if (used[e.to]) continue;
+		used[e.to] = true;
+		cnt++;
+		cost -= e.cost;
+
+		for (st x : graph[e.to]) {
+			if (used[x.to]) continue;
+			pq.push(x);
+		}
+	}
+
+	if (cnt < N - 1) cost = -1;
+	printf("%d", cost);
+}
