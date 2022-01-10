@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int to_row, to_col, cost;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		return a.cost > b.cost;
+	}
+};
+
+int N, c[1000][1000];
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+vector<st> graph[1000][1000];
+priority_queue<st, vector<st>, comp> pq;
+bool used[1000][1000];
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			scanf("%d", &c[i][j]);
+
+	for (int row = 0; row < N; row++) {
+		for (int col = 0; col < N; col++) {
+			for (int i = 0; i < 4; i++) {
+				int nrow = row + dx[i], ncol = col + dy[i];
+				if (nrow < 0 || nrow >= N || ncol < 0 || ncol >= N) continue;
+				int cost = abs(c[row][col] - c[nrow][ncol]);
+				graph[row][col].push_back({ nrow,ncol,cost });
+			}
+		}
+	}
+
+	used[0][0] = true;
+	for (st x : graph[0][0]) pq.push(x);
+
+	int cnt = 0, cost = 0;
+	while (cnt < N * N - 1) {
+		st e = pq.top(); pq.pop();
+		if (used[e.to_row][e.to_col]) continue;
+		used[e.to_row][e.to_col] = true;
+		cnt++;
+		if (cost < e.cost) cost = e.cost;
+
+		if (e.to_row == N - 1 && e.to_col == N - 1) break;
+
+		for (st x : graph[e.to_row][e.to_col]) {
+			if (used[x.to_row][x.to_col]) continue;
+			pq.push(x);
+		}
+	}
+
+	printf("%d", cost);
+}
