@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <queue>
+#include <algorithm>
+using namespace std;
+#define INF 100000001
+
+typedef struct {
+	int to, cost;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		return a.cost > b.cost;
+	}
+};
+
+int V, E, P, dist[2][5001];
+vector<st> graph[5001];
+priority_queue<st, vector<st>, comp> pq;
+
+int main() {
+	int a, b, c;
+	scanf("%d %d %d", &V, &E, &P);
+	for (int i = 0; i < E; i++) {
+		scanf("%d %d %d", &a, &b, &c);
+		graph[a].push_back({ b,c });
+		graph[b].push_back({ a,c });
+	}
+
+	for (int i = 0; i < 2; i++)
+		for (int j = 1; j <= V; j++)
+			dist[i][j] = INF;
+
+	for (int i = 0; i < 2; i++) {
+		int start;
+		if (i == 0) start = 1;
+		else start = P;
+
+		dist[i][start] = 0;
+		pq.push({ start,0 });
+
+		while (!pq.empty()) {
+			st e = pq.top(); pq.pop();
+
+			for (st x : graph[e.to]) {
+				if (dist[i][x.to] > x.cost + e.cost) {
+					dist[i][x.to] = x.cost + e.cost;
+					pq.push({ x.to,dist[i][x.to] });
+				}
+			}
+		}
+	}
+
+	if (dist[0][P] + dist[1][V] <= dist[0][V]) printf("SAVE HIM");
+	else printf("GOOD BYE");
+}
