@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <queue>
+#include <algorithm>
+using namespace std;
+#define INF 100001
+
+typedef struct {
+	int to_row, to_col, cost;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		return a.cost > b.cost;
+	}
+};
+
+int N, map[125][125], dist[125][125];
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+vector<st> graph[125][125];
+priority_queue<st, vector<st>, comp> pq;
+
+int main() {
+	int T = 1;
+	while (1) {
+		scanf("%d", &N);
+		if (N == 0) break;
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				scanf("%d", &map[i][j]);
+				dist[i][j] = INF;
+			}
+		}
+			
+		for (int row = 0; row < N; row++) {
+			for (int col = 0; col < N; col++) {
+				for (int i = 0; i < 4; i++) {
+					int nrow = row + dx[i], ncol = col + dy[i];
+					if (nrow < 0 || nrow >= N || ncol < 0 || ncol >= N) continue;
+					graph[row][col].push_back({ nrow,ncol,map[nrow][ncol] });
+				}
+			}
+		}
+
+		dist[0][0] = map[0][0];
+		pq.push({ 0,0,dist[0][0] });
+
+		while (!pq.empty()) {
+			st e = pq.top(); pq.pop();
+
+			for (st x : graph[e.to_row][e.to_col]) {
+				if (dist[x.to_row][x.to_col] > x.cost + e.cost) {
+					dist[x.to_row][x.to_col] = x.cost + e.cost;
+					pq.push({ x.to_row,x.to_col,dist[x.to_row][x.to_col] });
+				}
+			}
+		}
+
+		printf("Problem %d: %d\n", T, dist[N - 1][N - 1]);
+
+		T++;
+
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < N; j++)
+				graph[i][j].clear();
+	}
+}
