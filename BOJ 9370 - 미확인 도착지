@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <queue>
+#include <algorithm>
+using namespace std;
+#define INF 10000000
+
+typedef struct {
+	int to, cost;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		return a.cost > b.cost;
+	}
+};
+
+int T, n, m, t, s, g, h, x[100], dist[3][2001];
+vector<st> graph[2001];
+queue<int> q;
+priority_queue<st, vector<st>, comp> pq;
+
+int main() {
+	int a, b, d;
+	scanf("%d", &T);
+	while (T--) {
+		scanf("%d %d %d", &n, &m, &t);
+		scanf("%d %d %d", &s, &g, &h);
+		for (int i = 0; i < m; i++) {
+			scanf("%d %d %d", &a, &b, &d);
+			graph[a].push_back({ b,d });
+			graph[b].push_back({ a,d });
+		}
+		for (int i = 0; i < t; i++)
+			scanf("%d", &x[i]);
+		sort(x, x + t);
+
+		for (int i = 0; i < 3; i++)
+			for (int j = 1; j <= n; j++) 
+				dist[i][j] = INF;
+
+		for (int i = 0; i < 3; i++) {
+			int start;
+			if (i == 0) start = s;
+			else if (i == 1) start = g;
+			else start = h;
+
+			dist[i][start] = 0;
+			pq.push({ start,dist[i][start] });
+
+			while (!pq.empty()) {
+				st e = pq.top(); pq.pop();
+				for (st x : graph[e.to]) {
+					if (dist[i][x.to] > x.cost + e.cost) {
+						dist[i][x.to] = x.cost + e.cost;
+						pq.push({ x.to,dist[i][x.to] });
+					}
+				}
+			}
+		}
+		
+		for (int i = 0; i < t; i++) {
+			if (dist[0][g] + dist[1][h] + dist[2][x[i]] == dist[0][x[i]] ||
+				dist[0][h] + dist[2][g] + dist[1][x[i]] == dist[0][x[i]])
+				printf("%d ", x[i]);
+		}
+		printf("\n");
+
+		for (int i = 1; i <= n; i++)
+			graph[i].clear();
+	}
+}
