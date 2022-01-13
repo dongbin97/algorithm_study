@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+#define INF 100000000
+
+typedef struct {
+	int to, cost;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		return a.cost > b.cost;
+	}
+};
+
+int n, m, dist[201][201], parent[201][201], ans[201][201];
+vector<st> graph[201];
+priority_queue<st, vector<st>, comp> pq;
+bool used[201][201];
+
+int main() {
+	int a, b, c;
+	scanf("%d %d", &n, &m);
+	for (int i = 0; i < m; i++) {
+		scanf("%d %d %d", &a, &b, &c);
+		graph[a].push_back({ b,c });
+		graph[b].push_back({ a,c });
+	}
+
+	for (int i = 1; i <= n; i++)
+		for (int j = 1; j <= n; j++)
+			dist[i][j] = INF;
+
+	for (int i = 1; i <= n; i++) {
+		dist[i][i] = 0;
+		parent[i][i] = -1;
+		pq.push({ i,dist[i][i] });
+
+		while (!pq.empty()) {
+			st e = pq.top(); pq.pop();
+
+			for (st x : graph[e.to]) {
+				if (dist[i][x.to] > x.cost + e.cost) {
+					dist[i][x.to] = x.cost + e.cost;
+					parent[i][x.to] = e.to;
+					pq.push({ x.to,dist[i][x.to] });
+				}
+			}
+		}
+	}
+
+	for (int i = 1; i <= n; i++) {
+		used[i][i] = true;
+		for (int j = 1; j <= n; j++) {
+			if (used[i][j]) continue;
+			queue<int> q;
+			int point = j;
+			while (parent[i][point] != i) {
+				q.push(point);
+				point = parent[i][point];
+			}
+			q.push(point);
+
+			while (!q.empty()) {
+				used[i][q.front()] = true;
+				ans[i][q.front()] = point;
+				q.pop();
+			}
+		}
+	}
+
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= n; j++) {
+			if (i == j) printf("- ");
+			else printf("%d ", ans[i][j]);
+		}
+		printf("\n");
+	}
+}
