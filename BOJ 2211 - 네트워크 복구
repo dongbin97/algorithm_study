@@ -14,9 +14,8 @@ struct comp {
 };
 
 int N, M, dist[1001], parent[1001];
-vector<st> graph[1001], ans;
+vector<st> graph[1001];
 priority_queue<st, vector<st>, comp> pq;
-bool used[1001];
 
 int main() {
 	int A, B, C;
