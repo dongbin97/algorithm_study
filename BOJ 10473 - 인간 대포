@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <queue>
+#include <algorithm>
+#include <math.h>
+using namespace std;
+#define INF 10000000
+
+typedef struct {
+	float x, y;
+}coor;
+
+typedef struct {
+	int to;
+	float cost;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		return a.cost > b.cost;
+	}
+};
+
+int n;
+float dist[102];
+coor point[102];
+vector<st> graph[102];
+priority_queue<st, vector<st>, comp> pq;
+
+float distance(float ix, float iy, float jx, float jy) {
+	return sqrt(pow(ix - jx, 2) + pow(iy - jy, 2));
+}
+
+int main() {
+	float X, Y;
+	scanf("%f %f", &X, &Y); point[0] = { X,Y };
+	scanf("%f %f", &X, &Y); point[1] = { X,Y };
+	scanf("%d", &n);
+	for (int i = 2; i < n + 2; i++) {
+		scanf("%f %f", &X, &Y);
+		point[i] = { X,Y };
+	}
+
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < n + 2; j++) {
+			if (i == j) continue;
+			float d = distance(point[i].x, point[i].y, point[j].x, point[j].y);
+			graph[i].push_back({ j,d / 5 });
+		}
+	}
+
+	for (int i = 2; i < n + 2; i++) {
+		for (int j = 0; j < n + 2; j++) {
+			if (i == j) continue;
+			float d = distance(point[i].x, point[i].y, point[j].x, point[j].y), t;
+			if (d < 50) t = min(2 + (50 - d) / 5, d / 5);
+			else t = min(2 + (d - 50) / 5, d / 5);
+			graph[i].push_back({ j, t });
+		}
+	}
+
+	for (int i = 0; i < n + 2; i++) dist[i] = INF;
+
+	dist[0] = 0;
+	pq.push({ 0,0 });
+
+	while (!pq.empty()) {
+		st e = pq.top(); pq.pop();
+
+		for (st x : graph[e.to]) {
+			if (dist[x.to] > x.cost + e.cost) {
+				dist[x.to] = x.cost + e.cost;
+				pq.push({ x.to,dist[x.to] });
+			}
+		}
+	}
+
+	printf("%f", dist[1]);
+}
