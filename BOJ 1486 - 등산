@@ -1,0 +1,122 @@
+#include <stdio.h>
+#include <queue>
+#include <algorithm>
+#include <math.h>
+using namespace std;
+#define INF 10000000
+
+typedef struct {
+	int to_row, to_col, cost;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		return a.cost > b.cost;
+	}
+};
+
+int N, M, T, D, mount[25][25], dist[25][25], ret[25][25][25][25];
+int dx[] = { 0,1 }, dy[] = { 1,0 };
+char map[25][26];
+vector<st> graph[25][25];
+priority_queue<st, vector<st>, comp> pq;
+bool v[25][25];
+
+int main() {
+	scanf("%d %d %d %d", &N, &M, &T, &D);
+	for (int i = 0; i < N; i++)
+		scanf("%s", map[i]);
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			if ('A' <= map[i][j] && map[i][j] <= 'Z')
+				mount[i][j] = map[i][j] - 'A';
+			else if ('a' <= map[i][j] && map[i][j] <= 'z')
+				mount[i][j] = map[i][j] - 'a' + 26;
+		}
+	}
+
+	for (int row = 0; row < N; row++) {
+		for (int col = 0; col < M; col++) {
+			for (int i = 0; i < 2; i++) {
+				int nrow = row + dx[i], ncol = col + dy[i];
+				if (nrow < 0 || nrow >= N || ncol < 0 || ncol >= M) continue;
+				if (abs(mount[row][col] - mount[nrow][ncol]) > T) continue;
+				int cost = pow(mount[row][col] - mount[nrow][ncol], 2);
+				if (mount[row][col] < mount[nrow][ncol]) {
+					graph[row][col].push_back({ nrow,ncol,cost });
+					graph[nrow][ncol].push_back({ row,col,1 });
+				}
+				else if (mount[row][col] > mount[nrow][ncol]) {
+					graph[row][col].push_back({ nrow,ncol,1 });
+					graph[nrow][ncol].push_back({ row,col,cost });
+				}
+				else {
+					graph[row][col].push_back({ nrow,ncol,1 });
+					graph[nrow][ncol].push_back({ row,col,1 });
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < M; j++)
+			dist[i][j] = INF;
+
+	dist[0][0] = 0;
+	pq.push({ 0,0,dist[0][0] });
+
+	while (!pq.empty()) {
+		st e = pq.top(); pq.pop();
+		v[e.to_row][e.to_col] = true;
+
+		for (st x : graph[e.to_row][e.to_col]) {
+			if (x.cost + e.cost > D) continue;
+			if (dist[x.to_row][x.to_col] > x.cost + e.cost) {
+				dist[x.to_row][x.to_col] = x.cost + e.cost;
+				pq.push({ x.to_row,x.to_col,dist[x.to_row][x.to_col] });
+			}
+		}
+	}
+
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < M; j++)
+			for (int k = 0; k < N; k++)
+				for (int l = 0; l < M; l++)
+					ret[i][j][k][l] = INF;
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			if (!v[i][j]) continue;
+
+			ret[i][j][i][j] = 0;
+			pq.push({ i,j,0 });
+
+			while (!pq.empty()) {
+				st e = pq.top(); pq.pop();
+				if (e.to_row == 0 && e.to_col == 0) break;
+
+				for (st x : graph[e.to_row][e.to_col]) {
+					if (x.cost + e.cost > D) continue;
+					if (ret[i][j][x.to_row][x.to_col] > x.cost + e.cost) {
+						ret[i][j][x.to_row][x.to_col] = x.cost + e.cost;
+						pq.push({ x.to_row,x.to_col,ret[i][j][x.to_row][x.to_col] });
+					}
+				}
+			}
+
+			while (!pq.empty()) pq.pop();
+		}
+	}
+
+	int ans = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			if (!v[i][j]) continue;
+			if (dist[i][j] + ret[i][j][0][0] <= D && ans < mount[i][j])
+				ans = mount[i][j];
+		}
+	}
+
+	printf("%d", ans);
+}
