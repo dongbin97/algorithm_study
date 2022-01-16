@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+#define MIN -300000000000
+
+typedef struct {
+	int from, to;
+	long long cost;
+}st;
+
+int N, A, B, M;
+long long x[50], dist[50];
+vector<st> graph[50], path;
+bool v[50];
+
+bool dfs(int u) {
+	v[u] = true;
+	if (u == B) return true;
+
+	for (st x : graph[u]) {
+		if (v[x.to]) continue;
+		if (dfs(x.to)) return true;
+	}
+	return false;
+}
+
+int main() {
+	int a, b;
+	long long c;
+	scanf("%d %d %d %d", &N, &A, &B, &M);
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d %lld", &a, &b, &c);
+		path.push_back({ a,b,c });
+	}
+	for (int i = 0; i < N; i++)
+		scanf("%lld", &x[i]);
+
+	for (int i = 0; i < M; i++) {
+		path[i].cost = x[path[i].to] - path[i].cost;
+		graph[path[i].from].push_back(path[i]);
+	}
+
+	for (int i = 0; i < N; i++) dist[i] = MIN;
+
+	bool cycle = false;
+	dist[A] = x[A];
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (dist[j] == MIN) continue;
+			for (st x : graph[j]) {
+				if (dist[x.to] < dist[j] + x.cost) {
+					dist[x.to] = dist[j] + x.cost;
+					if (i == N - 1) {
+						for (int k = 0; k < 50; k++) v[k] = false;
+						if (dfs(x.to))
+							cycle = true;
+					}
+				}
+			}
+		}
+	}
+
+	if (dist[B] == MIN) printf("gg");
+	else if (cycle) printf("Gee");
+	else printf("%lld", dist[B]);
+}
