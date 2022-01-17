@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+#define INF 100000000
+
+int n, m, x[101][101], cnt[101][101], p[101][101];
+
+void path(int i, int j) {
+	if (p[i][j] == 0) return;
+	path(i, p[i][j]);
+	printf("%d ", p[i][j]);
+	path(p[i][j], j);
+}
+
+int main() {
+	int a, b, c;
+	scanf("%d", &n);
+	scanf("%d", &m);
+
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= n; j++) {
+			if (i == j) 
+				x[i][j] = 0;
+			else 
+				x[i][j] = INF;
+		}
+	}
+
+	for (int i = 0; i < m; i++) {
+		scanf("%d %d %d", &a, &b, &c);
+		x[a][b] = min(x[a][b], c);
+		cnt[a][b] = 2;
+	}
+
+	for (int k = 1; k <= n; k++) {
+		for (int i = 1; i <= n; i++) {
+			for (int j = 1; j <= n; j++) {
+				if (x[i][j] > x[i][k] + x[k][j]) {
+					x[i][j] = x[i][k] + x[k][j];
+					cnt[i][j] = cnt[i][k] + cnt[k][j] - 1;
+					p[i][j] = k;
+				}
+			}
+		}
+	}
+
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= n; j++) {
+			if (x[i][j] == INF) x[i][j] = 0;
+			printf("%d ", x[i][j]);
+		}
+		printf("\n");
+	}
+
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= n; j++) {
+			if (x[i][j] == 0) printf("0\n");
+			else {
+				printf("%d ", cnt[i][j]);
+				printf("%d ", i);
+				path(i, j);
+				printf("%d\n", j);
+			}
+		}
+	}
+}
