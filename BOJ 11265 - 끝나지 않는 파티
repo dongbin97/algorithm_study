@@ -1,0 +1,24 @@
+#include <stdio.h>
+#define INF 1000000000
+
+int N, M, x[501][501];
+
+int main() {
+	int A, B, C;
+	scanf("%d %d", &N, &M);
+	for (int i = 1; i <= N; i++)
+		for (int j = 1; j <= N; j++)
+			scanf("%d", &x[i][j]);
+
+	for (int k = 1; k <= N; k++)
+		for (int i = 1; i <= N; i++)
+			for (int j = 1; j <= N; j++)
+				if (x[i][j] > x[i][k] + x[k][j])
+					x[i][j] = x[i][k] + x[k][j];
+
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d %d", &A, &B, &C);
+		if (x[A][B] <= C) printf("Enjoy other party\n");
+		else printf("Stay here\n");
+	}
+}
