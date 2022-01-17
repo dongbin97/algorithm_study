@@ -1,0 +1,44 @@
+#include <stdio.h>
+#define INF 10000
+
+int N, M, x[101][101];
+
+int main() {
+	int A, B;
+	scanf("%d %d", &N, &M);
+
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			if (i == j) x[i][j] = 0;
+			else x[i][j] = INF;
+		}
+	}
+
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d", &A, &B);
+		x[A][B] = 1;
+		x[B][A] = 1;
+	}
+
+	for (int k = 1; k <= N; k++) {
+		for (int i = 1; i <= N; i++) {
+			for (int j = 1; j <= N; j++) {
+				if (x[i][j] > x[i][k] + x[k][j])
+					x[i][j] = x[i][k] + x[k][j];
+			}
+		}
+	}
+
+	int min = INF, ans = -1;
+	for (int i = 1; i <= N; i++) {
+		int sum = 0;
+		for (int j = 1; j <= N; j++) 
+			sum += x[i][j];
+		if (min > sum) {
+			min = sum;
+			ans = i;
+		}
+	}
+
+	printf("%d", ans);
+}
