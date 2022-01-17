@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+#define INF 100
+
+int N, x[51][51];
+vector<int> arr;
+
+int main() {
+	int a, b;
+	scanf("%d", &N);
+
+	for (int i = 1; i <= N; i++)
+		for (int j = 1; j <= N; j++)
+			x[i][j] = INF;
+
+	while (1) {
+		scanf("%d %d", &a, &b);
+		if (a == -1 && b == -1) break;
+
+		x[a][b] = 1;
+		x[b][a] = 1;
+	}
+
+	for (int k = 1; k <= N; k++)
+		for (int i = 1; i <= N; i++)
+			for (int j = 1; j <= N; j++)
+				if (x[i][j] > x[i][k] + x[k][j])
+					x[i][j] = x[i][k] + x[k][j];
+
+	int ans = INF;
+	for (int i = 1; i <= N; i++) {
+		int max = 0;
+		for (int j = 1; j <= N; j++) {
+			if (i == j) continue;
+			if (max < x[i][j]) 
+				max = x[i][j];
+		}
+			
+
+		if (ans > max) {
+			ans = max;
+			arr.clear();
+			arr.push_back(i);
+		}
+		else if (ans == max)
+			arr.push_back(i);
+	}
+	printf("%d %d\n", ans, arr.size());
+	for (int a : arr)
+		printf("%d ", a);
+}
