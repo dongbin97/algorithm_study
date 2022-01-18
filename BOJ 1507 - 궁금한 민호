@@ -1,0 +1,36 @@
+#include <stdio.h>
+
+int N, x[20][20];
+
+int main() {
+	scanf("%d", &N);
+
+	int sum = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			scanf("%d", &x[i][j]);
+			sum += x[i][j];
+		}
+	}
+
+	sum /= 2;
+
+	for (int i = 0; i < N - 1; i++) {
+		for (int j = i + 1; j < N; j++) {
+			for (int k = 0; k < N; k++) {
+				if (k == i || k == j) continue;
+				if (x[i][j] > x[i][k] + x[k][j]) {
+					printf("-1");
+					return 0;
+				}
+				else if (x[i][j] == x[i][k] + x[k][j]) {
+					sum -= x[i][j];
+					break;
+				}
+			}
+		}
+	}
+
+	printf("%d", sum);
+	return 0;
+}
