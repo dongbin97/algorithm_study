@@ -1,0 +1,75 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+#define INF 10000
+
+int N, M, x[101][101];
+vector<int> graph[101], c[100], ans;
+bool v[101];
+
+void dfs(int u, int K) {
+	v[u] = true;
+	c[K].push_back(u);
+
+	for (int x : graph[u]) {
+		if (v[x]) continue;
+		else dfs(x, K);
+	}
+}
+
+int main() {
+	int a, b, K = 0;
+	scanf("%d", &N);
+	scanf("%d", &M);
+
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			if (i == j) x[i][j] = 0;
+			else x[i][j] = INF;
+		}
+	}
+
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d", &a, &b);
+		x[a][b] = 1;
+		x[b][a] = 1;
+		graph[a].push_back(b);
+		graph[b].push_back(a);
+	}
+
+	for (int i = 1; i <= N; i++) {
+		if (v[i]) continue;
+		dfs(i, K);
+		K++;
+	}
+
+
+	for (int t = 0; t < K;t++) {
+		for (int k : c[t])
+			for (int i : c[t])
+				for (int j : c[t])
+					if (x[i][j] > x[i][k] + x[k][j])
+						x[i][j] = x[i][k] + x[k][j];
+
+		int pos = -1, local_min = INF;
+		for (int i : c[t]) {
+			int local_max = 0;
+			for (int j : c[t]) {
+				if (local_max < x[j][i])
+					local_max = x[j][i];
+			}
+			if (local_min > local_max) {
+				local_min = local_max;
+				pos = i;
+			}
+		}
+
+		ans.push_back(pos);
+	}
+
+	sort(ans.begin(), ans.end());
+	printf("%d\n", K);
+	for (int a : ans)
+		printf("%d\n", a);
+}
