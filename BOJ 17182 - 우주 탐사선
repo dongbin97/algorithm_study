@@ -1,0 +1,45 @@
+#include <stdio.h>
+#define INF 1000000
+
+int N, K, x[10][10], a[10], ans = INF;
+bool used[10];
+
+void recur(int num, int selected) {
+	if (selected == N) {
+		int sum = 0;
+
+		for (int i = 0; i < N - 1; i++)
+			sum += x[a[i]][a[i + 1]];
+
+		if (ans > sum) ans = sum;
+		return;
+	}
+
+	for (int i = 0; i < N; i++) {
+		if (used[i]) continue;
+		a[selected] = i;
+		used[i] = true;
+		recur(i, selected + 1);
+		used[i] = false;
+	}
+
+}
+
+int main() {
+	scanf("%d %d", &N, &K);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			scanf("%d", &x[i][j]);
+
+	for (int k = 0; k < N; k++)
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < N; j++)
+				if (x[i][j] > x[i][k] + x[k][j])
+					x[i][j] = x[i][k] + x[k][j];
+
+	a[0] = K;
+	used[K] = true;
+	recur(K, 1);
+
+	printf("%d", ans);
+}
