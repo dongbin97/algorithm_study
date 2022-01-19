@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+int N;
+char c[10000][10];
+vector<pair<char, char>> ans;
+bool x[52][52];
+
+int main() {
+	char c1, c2;
+	int a1, a2;
+	scanf("%d\n", &N);
+	for (int i = 0; i < N; i++) {
+		fgets(c[i], 10, stdin);
+		c1 = c[i][0], c2 = c[i][5];
+
+		if ('A' <= c1 && c1 <= 'Z') a1 = c1 - 'A';
+		else a1 = c1 - 'a' + 26;
+		if ('A' <= c2 && c2 <= 'Z') a2 = c2 - 'A';
+		else a2 = c2 - 'a' + 26;
+
+		x[a1][a2] = true;
+	}
+
+	for (int k = 0; k < 52; k++) {
+		for (int i = 0; i < 52; i++) {
+			for (int j = 0; j < 52; j++) {
+				x[i][j] = x[i][j] || (x[i][k] && x[k][j]);
+			}
+		}
+	}
+
+	int cnt = 0;
+	for (int i = 0; i < 52; i++) {
+		for (int j = 0; j < 52; j++) {
+			if (i == j) continue;
+			if (x[i][j]) {
+				cnt++;
+				if (0 <= i && i < 26) c1 = i + 'A';
+				else c1 = i - 26 + 'a';
+
+				if (0 <= j && j < 26) c2 = j + 'A';
+				else c2 = j - 26 + 'a';
+
+				ans.push_back({ c1,c2 });
+			}
+		}
+	}
+
+	printf("%d\n", cnt);
+	for (auto x : ans) {
+		printf("%c => %c\n", x.first, x.second);
+	}
+}
