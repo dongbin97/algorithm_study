@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <algorithm>
+#include <vector>
+using namespace std;
+#define INF 1000000000
+
+int N, M, Q, x[501][501], p[501][501];
+vector<pair<int,int>> c;
+
+int main() {
+	int a, b, d;
+	scanf("%d %d %d", &N, &M, &Q);
+
+	for (int i = 1; i <= N; i++) {
+		scanf("%d", &d);
+		c.push_back({ d,i });
+	}
+
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			if (i == j) {
+				p[i][j] = c[i - 1].first;
+				x[i][j] = p[i][j];
+			}
+			else {
+				p[i][j] = 0;
+				x[i][j] = INF;
+			}
+		}
+	}
+
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d %d", &a, &b, &d);
+		p[a][b] = p[b][a] = max(c[a - 1].first, c[b - 1].first);
+		x[a][b] = min(x[a][b], d + p[a][b]);
+		x[b][a] = min(x[b][a], d + p[b][a]);
+	}
+
+	sort(c.begin(), c.end());
+
+	for (int t = 0; t < N; t++) {
+		int k = c[t].second;
+		for (int i = 1; i <= N; i++) {
+			for (int j = 1; j <= N; j++) {
+				int cost = max(p[i][k], p[k][j]);
+				if (x[i][j] > x[i][k] - p[i][k] + x[k][j] - p[k][j] + cost) {
+					x[i][j] = x[i][k] - p[i][k] + x[k][j] - p[k][j] + cost;
+					p[i][j] = cost;
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < Q; i++) {
+		scanf("%d %d", &a, &b);
+		if (x[a][b] == INF) printf("-1\n");
+		else printf("%d\n", x[a][b]);
+	}
+}
