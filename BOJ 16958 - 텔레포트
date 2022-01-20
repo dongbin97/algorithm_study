@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+#define INF 1000000000
+
+typedef struct {
+	int x, y;
+}coor;
+
+int N, M, T, c[1001][1001];
+coor point[1001];
+bool special[1001];
+
+int main() {
+	int s, x, y;
+	scanf("%d %d", &N, &T);
+	for (int i = 1; i <= N; i++) {
+		scanf("%d %d %d", &s, &x, &y);
+		if (s == 1) special[i] = true;
+		point[i] = { x,y };
+	}
+
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			if (i == j) c[i][j] = 0;
+			else c[i][j] = INF;
+		}
+	}
+
+	for (int i = 1; i < N; i++) {
+		for (int j = i + 1; j <= N; j++) {
+			int cost = abs(point[i].x - point[j].x) + abs(point[i].y - point[j].y);
+			if (special[i] && special[j]) cost = min(cost, T);
+			c[i][j] = c[j][i] = cost;
+		}
+	}
+
+	for (int k = 1; k <= N; k++)
+		for (int i = 1; i <= N; i++)
+			for (int j = 1; j <= N; j++)
+				if (c[i][j] > c[i][k] + c[k][j])
+					c[i][j] = c[i][k] + c[k][j];
+
+	scanf("%d", &M);
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d", &x, &y);
+		printf("%d\n", c[x][y]);
+	}
+}
