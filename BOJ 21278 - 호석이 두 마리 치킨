@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+#define INF 10000
+
+int N, M, x[101][101];
+
+int main() {
+	int A, B;
+	scanf("%d %d", &N, &M);
+	
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			if (i == j) x[i][j] = 0;
+			else x[i][j] = INF;
+		}
+	}
+		
+
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d", &A, &B);
+		x[A][B] = x[B][A] = 2;
+	}
+
+	for (int k = 1; k <= N; k++)
+		for (int i = 1; i <= N; i++)
+			for (int j = 1; j <= N; j++)
+				if (x[i][j] > x[i][k] + x[k][j])
+					x[i][j] = x[i][k] + x[k][j];
+
+	int ans1, ans2, comp = INF;
+	for (int i = 1; i < N; i++) {
+		for (int j = i + 1; j <= N; j++) {
+			int sum = 0;
+			for (int k = 1; k <= N; k++)
+				sum += min(x[k][i], x[k][j]);
+
+			if (comp > sum) {
+				comp = sum;
+				ans1 = i;
+				ans2 = j;
+			}
+		}
+	}
+
+	printf("%d %d %d", ans1, ans2, comp);
+}
