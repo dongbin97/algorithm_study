@@ -1,0 +1,25 @@
+#include <stdio.h>
+#include <string.h>
+
+char A[51], B[51];
+
+int main() {
+	scanf("%s", A);
+	scanf("%s", B);
+
+	int a_sz = strlen(A);
+	int b_sz = strlen(B);
+
+	int ans = 100;
+	for (int i = 0; i <= b_sz - a_sz; i++) {
+		int cnt = 0;
+		for (int j = 0; j < a_sz; j++) 
+			if (A[j] != B[i + j]) 
+				cnt++;
+		
+		if (ans > cnt) ans = cnt;
+	}
+
+	printf("%d", ans);
+
+}
