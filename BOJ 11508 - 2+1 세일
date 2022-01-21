@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int N;
+long long C[100000];
+
+bool comp(long long a, long long b) {
+	return a > b;
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		scanf("%lld", &C[i]);
+
+	sort(C, C + N, comp);
+
+	long long cost = 0;
+	for (int i = 0; i < N; i = i + 3) {
+		cost += C[i];
+		if (i + 1 < N) cost += C[i+1];
+	}
+
+	printf("%lld", cost);
+}
