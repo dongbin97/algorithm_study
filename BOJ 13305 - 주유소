@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	long long cost;
+	int index;
+}st;
+
+bool comp(st a, st b) {
+	if (a.cost == b.cost) return a.index < b.index;
+	else return a.cost < b.cost;
+}
+
+int N;
+long long len[100000], sum_len[100000];
+vector<st> c;
+
+int main() {
+	long long cost;
+
+	scanf("%d", &N);
+
+	sum_len[0] = 0;
+	for (int i = 1; i < N; i++) {
+		scanf("%lld", &len[i]);
+		sum_len[i] = sum_len[i - 1] + len[i];
+	}
+
+	for (int i = 0; i < N; i++) {
+		scanf("%lld", &cost);
+		c.push_back({ cost,i });
+	}
+
+	sort(c.begin(), c.end(), comp);
+
+	int end = N - 1;
+	long long ans = 0;
+	for (st x : c) {
+		if (x.index > end) continue;
+
+		int need = sum_len[end] - sum_len[x.index];
+		ans += (x.cost * need);
+		end = x.index;
+
+		if (end == 0) break;
+	}
+
+	printf("%lld", ans);
+}
