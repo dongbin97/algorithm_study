@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int N;
+long long t[10000];
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		scanf("%lld", &t[i]);
+
+	sort(t, t + N);
+
+	long long M;
+	if (N % 2 == 0) {
+		M = 0;
+		for (int i = 0; i < N / 2; i++) {
+			if (M < t[i] + t[N - 1 - i])
+				M = t[i] + t[N - 1 - i];
+		}
+	}
+	else {
+		M = t[N - 1];
+		for (int i = 0; i < (N - 1) / 2; i++) {
+			if (M < t[i] + t[N - 2 - i])
+				M = t[i] + t[N - 2 - i];
+		}
+	}
+
+	printf("%lld", M);
+}
