@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int N;
+char str[500001];
+
+int main() {
+	scanf("%d", &N);
+	scanf("%s", str);
+
+	bool blue = false, red = false;
+	int b_cnt = 0, r_cnt = 0;
+	for (int i = 0; i < N; i++) {
+		if (str[i] == 'B' && !blue) {
+			blue = true;
+			red = false;
+			b_cnt++;
+		}
+		else if (str[i] == 'R' && !red) {
+			red = true;
+			blue = false;
+			r_cnt++;
+		}
+	}
+
+	printf("%d", min(b_cnt, r_cnt) + 1);
+}
