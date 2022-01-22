@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <vector>
+using namespace std;
+
+char str[51],ex[51];
+vector<int> num;
+
+int main() {
+	scanf("%s", str);
+	strcpy(ex, str);
+	
+	int sz = strlen(str);
+
+	char* temp = strtok(str, "+-");
+	while (temp != NULL) {
+		num.push_back(atoi(temp));
+		temp = strtok(NULL, "+-");
+	}
+
+	int n_sz = num.size(), idx = n_sz, cnt = 0;
+	for (int i = 0; i < sz; i++) {
+		if (ex[i] == '-') {
+			idx = cnt;
+			break;
+		}
+		else if (ex[i] == '+')
+			cnt++;
+	}
+
+	int sum = 0;
+	for (int i = 0; i < n_sz; i++) {
+		if (i <= idx) sum += num[i];
+		else sum -= num[i];
+	}
+
+	printf("%d", sum);
+}
