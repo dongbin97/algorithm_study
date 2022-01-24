@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int start, end;
+}time;
+
+bool comp(time a, time b) {
+	if (a.start == b.start) return a.end < b.end;
+	else return a.start < b.start;
+}
+
+int N;
+time x[100000];
+priority_queue<int, vector<int>, greater<>> pq;
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		scanf("%d %d", &x[i].start, &x[i].end);
+
+	sort(x, x + N, comp);
+
+	int cnt = 1;
+	pq.push(x[0].end);
+	for (int i = 1; i < N; i++) {
+		if (x[i].start < pq.top()) {
+			cnt++;
+			pq.push(x[i].end);
+		}
+		else {
+			pq.pop();
+			pq.push(x[i].end);
+		}
+	}
+
+	printf("%d", cnt);
+}
