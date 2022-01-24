@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+bool comp(int a, int b) {
+	return a > b;
+}
+
+int N, M, crane[50], box[10000];
+bool v[10000];
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		scanf("%d", &crane[i]);
+
+	scanf("%d", &M);
+	for (int i = 0; i < M; i++)
+		scanf("%d", &box[i]);
+
+	sort(crane, crane + N, comp);
+	sort(box, box + M, comp);
+
+	if (box[0] > crane[0]) {
+		printf("-1");
+		return 0;
+	}
+
+	int time = 0, cnt = 0, c, b;
+	while (cnt < M) {
+		c = 0, b = 0;
+		while (c < N && b < M) {
+			while (b < M && (v[b] || box[b] > crane[c])) b++;
+			if (b == M) break;
+			v[b] = true;
+			cnt++;
+			c++;
+		}
+		time++;
+	}
+
+	printf("%d", time);
+}
