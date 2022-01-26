@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int X;
+	long long A;
+}st;
+
+bool comp(st a, st b) {
+	return a.X < b.X;
+}
+
+int N;
+st arr[100000];
+long long sum[100000];
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%d %lld", &arr[i].X, &arr[i].A);
+	}
+
+	sort(arr, arr + N, comp);
+
+	sum[0] = arr[0].A;
+	for (int i = 1; i < N; i++) 
+		sum[i] = sum[i - 1] + arr[i].A;
+	
+	int start = 0, end = N - 1;
+	while (start <= end) {
+		int mid = (start + end) / 2;
+		if (sum[mid] >= sum[N - 1] - sum[mid])
+			end = mid - 1;
+		else start = mid + 1;
+	}
+
+	printf("%d", arr[start].X);
+}
