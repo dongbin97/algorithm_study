@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <deque>
+using namespace std;
+
+int N, K;
+char num[500001];
+deque<char> dq;
+
+int main() {
+	scanf("%d %d", &N, &K);
+	scanf("%s", num);
+
+	int cnt = 0;
+	for (int i = 0; i < N; i++) {
+		while (cnt < K && !dq.empty()) {
+			if (dq.back() < num[i]) {
+				dq.pop_back();
+				cnt++;
+			}
+			else break;
+		}
+		dq.push_back(num[i]);
+	}
+
+	cnt = N - K;
+	while (cnt--) {
+		printf("%c", dq.front());
+		dq.pop_front();
+	}
+}
