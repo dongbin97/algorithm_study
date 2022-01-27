@@ -1,0 +1,33 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+#include <algorithm>
+using namespace std;
+
+int N;
+string str;
+map <string, int> m;
+vector<string> v;
+
+bool comp(string a, string b) {
+	if (a.size() == b.size()) return a.compare(b) < 0;
+	else return a.size() < b.size();
+}
+
+int main() {
+	cin >> N;
+
+	for (int i = 0; i < N; i++) {
+		cin >> str;
+		if (m[str] == 0) {
+			v.push_back(str);
+			m[str]++;
+		}
+	}
+
+	sort(v.begin(), v.end(), comp);
+
+	for (string x : v)
+		cout << x << "\n";
+}
