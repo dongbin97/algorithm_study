@@ -1,0 +1,49 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+string str;
+bool vowel[26];
+
+bool check(int idx) {
+	if (vowel[str.at(idx - 2) - 'a'] && vowel[str.at(idx - 1) - 'a'] && vowel[str.at(idx) - 'a']) return false;
+	else if (!vowel[str.at(idx - 2) - 'a'] && !vowel[str.at(idx - 1) - 'a'] && !vowel[str.at(idx) - 'a']) return false;
+	return true;
+}
+
+int main() {
+	bool used[26];
+
+	vowel['a' - 'a'] = true;
+	vowel['e' - 'a'] = true;
+	vowel['i' - 'a'] = true;
+	vowel['o' - 'a'] = true;
+	vowel['u' - 'a'] = true;
+
+	while (1) {
+		cin >> str;
+		if (!str.compare("end")) break;
+
+		for (int i = 0; i < 26; i++) used[i] = false;
+
+		int sz = str.size();
+		bool acceptable = true;
+		for (int i = 0; i < sz; i++) {
+			used[str.at(i) - 'a'] = true;
+			if (i >= 2 && !check(i)) {
+				acceptable = false;
+				break;
+			}
+			if (i >= 1 && str.at(i) == str.at(i - 1) && str.at(i) != 'e' && str.at(i) != 'o') {
+				acceptable = false;
+				break;
+			}
+		}
+
+		if (!used['a' - 'a'] && !used['e' - 'a'] && !used['i' - 'a'] && !used['o' - 'a'] && !used['u' - 'a'])
+			acceptable = false;
+
+		if (acceptable) cout << "<" + str + "> is acceptable.\n";
+		else cout << "<" + str + "> is not acceptable.\n";
+	}
+}
