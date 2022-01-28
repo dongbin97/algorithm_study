@@ -1,0 +1,38 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+int T;
+
+bool check(string str) {
+	int sz = str.size();
+
+	if (sz < 3) return false;
+	if (str.at(0) > 'F') return false;
+	if (str.at(0) != 'A' && str.at(1) != 'A') return false;
+	if (str.at(sz - 1) > 'F') return false;
+	if (str.at(sz - 1) != 'C' && str.at(sz - 2) != 'C') return false;
+
+	int idx = 0;
+	if (str.at(0) != 'A') idx = 1;
+	while (str.at(idx) == 'A') idx++;
+
+	if (str.at(idx) != 'F') return false;
+	while (str.at(idx) == 'F') idx++;
+
+	if (str.at(idx) != 'C') return false;
+
+	return true;
+}
+
+int main() {
+	string str;
+
+	cin >> T;
+	while (T--) {
+		cin >> str;
+
+		if (check(str)) printf("Infected!\n");
+		else printf("Good\n");
+	}
+}
