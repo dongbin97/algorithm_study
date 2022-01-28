@@ -1,0 +1,37 @@
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+int T, K;
+string W;
+vector<int> ch[26];
+
+
+int main() {
+	cin >> T;
+	while (T--) {
+		cin >> W >> K;
+
+		for (int i = 0; i < 26; i++) ch[i].clear();
+
+		int sz = W.size();
+		for (int i = 0; i < sz; i++) 
+			ch[W.at(i) - 'a'].push_back(i);
+		
+		int min = 10001, max = 0;
+		for (int i = 0; i < 26; i++) {
+			int c_sz = ch[i].size();
+			if (c_sz < K) continue;
+
+			for (int j = 0; j + K - 1 < c_sz; j++) {
+				int length = ch[i][j + K - 1] - ch[i][j] + 1;
+				if (min > length) min = length;
+				if (max < length) max = length;
+			}
+		}
+
+		if (max == 0 && min == 10001) cout << -1 << "\n";
+		else cout << min << " " << max << "\n";
+	}
+}
