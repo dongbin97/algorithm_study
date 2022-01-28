@@ -1,0 +1,28 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+string s, t;
+
+int main() {
+	while (cin >> s >> t) {
+		int s_sz = s.size(), t_sz = t.size();
+		int i = 0, j = 0;
+		bool found = false;
+		while (j < t_sz) {
+			if (s.at(i) != t.at(j)) {
+				j++;
+				continue;
+			}
+
+			i++; j++;
+			if (i == s_sz) {
+				found = true;
+				break;
+			}
+		}
+
+		if (found) cout << "Yes" << "\n";
+		else cout << "No" << "\n";
+	}
+}
