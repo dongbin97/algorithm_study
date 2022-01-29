@@ -1,0 +1,23 @@
+#include <stdio.h>
+#include <string.h>
+using namespace std;
+
+int N, H, W;
+char str[10][1001];
+
+int main() {
+	scanf("%d %d %d", &N, &H, &W);
+	for (int i = 0; i < H; i++)
+		scanf("%s", str[i]);
+
+	for (int k = 0; k < N * W; k = k + W) {
+		char ch = '?';
+		for (int i = 0; i < H; i++) {
+			for (int j = k; j < k + W; j++) {
+				if (str[i][j] != '?')
+					ch = str[i][j];
+			}
+		}
+		printf("%c", ch);
+	}
+}
