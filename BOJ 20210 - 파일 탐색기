@@ -1,0 +1,117 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int N, prior[52];
+string str;
+vector<string> arr;
+
+void get_count() {
+	for (int i = 0; i < 26; i++)
+		prior[i] = 2 * i;
+	for (int i = 26; i < 52; i++)
+		prior[i] = (i - 26) * 2 + 1;
+}
+
+bool comp(string a, string b) {
+	vector<string> a_v, b_v;
+	int a_sz = a.size(), b_sz = b.size();
+	int a_cnt = 0, b_cnt = 0;
+	string temp = "";
+
+	int i = 0;
+	while (i < a_sz) {
+		if ('0' <= a.at(i) && a.at(i) <= '9') {
+			while (i < a_sz && '0' <= a.at(i) && a.at(i) <= '9') {
+				temp += a.at(i);
+				i++;
+			}
+			a_v.push_back(temp);
+			a_cnt++;
+			temp = "";
+		}
+		else {
+			a_v.push_back(temp + a.at(i));
+			a_cnt++;
+			i++;
+		}
+	}
+
+	i = 0;
+	while (i < b_sz) {
+		if ('0' <= b.at(i) && b.at(i) <= '9') {
+			while (i < b_sz && '0' <= b.at(i) && b.at(i) <= '9') {
+				temp += b.at(i);
+				i++;
+			}
+			b_v.push_back(temp);
+			b_cnt++;
+			temp = "";
+		}
+		else {
+			b_v.push_back(temp + b.at(i));
+			b_cnt++;
+			i++;
+		}
+	}
+	int a_idx = 0, b_idx = 0;
+	while (a_idx < a_cnt && b_idx < b_cnt && !a_v[a_idx].compare(b_v[b_idx])) {
+		a_idx++; b_idx++;
+	}
+
+	if (a_idx == a_cnt && b_idx == b_cnt) return a_cnt < b_cnt;
+	else if (a_idx == a_cnt) return true;
+	else if (b_idx == b_cnt) return false;
+
+	string a_side = a_v[a_idx], b_side = b_v[b_idx];
+
+	if (('0' <= a_side.at(0) && a_side.at(0) <= '9') && ('0' <= b_side.at(0) && b_side.at(0) <= '9')) {
+		int a_side_sz = a_side.size(), b_side_sz = b_side.size();
+		int a_i = 0, b_i = 0;
+		while (a_i < a_side_sz && a_side.at(a_i) == '0') a_i++;
+		while (b_i < b_side_sz && b_side.at(b_i) == '0') b_i++;
+
+		if (a_i == a_side_sz && b_i == b_side_sz) return a_side_sz < b_side_sz;
+		else if (a_i == a_side_sz) return true;
+		else if (b_i == b_side_sz) return false;
+
+		string a_temp = a_side.substr(a_i), b_temp = b_side.substr(b_i);
+
+		if (a_temp.size() == b_temp.size()) {
+			if (!a_temp.compare(b_temp)) return a_side.size() < b_side.size();
+			return a_temp < b_temp;
+		}
+		else return a_temp.size() < b_temp.size();
+	}
+	else if ('0' <= a_side.at(0) && a_side.at(0) <= '9') return true;
+	else if ('0' <= b_side.at(0) && b_side.at(0) <= '9') return false;
+	else {
+		int a_c, b_c;
+		if ('A' <= a_side.at(0) && a_side.at(0) <= 'Z') a_c = a_side.at(0) - 'A';
+		else a_c = a_side.at(0) - 'a' + 26;
+
+		if ('A' <= b_side.at(0) && b_side.at(0) <= 'Z') b_c = b_side.at(0) - 'A';
+		else b_c = b_side.at(0) - 'a' + 26;
+
+		return prior[a_c] < prior[b_c];
+	}
+}
+
+int main() {
+	
+	get_count();
+
+	cin >> N;
+
+	for (int i = 0; i < N; i++) {
+		cin >> str;
+		arr.push_back(str);
+	}
+
+	sort(arr.begin(), arr.end(), comp);
+
+	for (string x: arr)
+		cout << x << "\n";
+}
