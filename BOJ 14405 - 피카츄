@@ -1,0 +1,45 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+string str;
+
+int main() {
+	cin >> str;
+	int sz = str.size(), i = 0;
+	bool possible = true;
+
+	while (i < sz) {
+		if (str.at(i) == 'p') {
+			if (i + 1 < sz && str.at(i + 1) == 'i')
+				i = i + 2;
+			else {
+				possible = false;
+				break;
+			}
+		}
+		else if (str.at(i) == 'k') {
+			if (i + 1 < sz && str.at(i + 1) == 'a')
+				i = i + 2;
+			else {
+				possible = false;
+				break;
+			}
+		}
+		else if (str.at(i) == 'c') {
+			if (i + 2 < sz && str.at(i + 1) == 'h' && str.at(i + 2) == 'u')
+				i = i + 3;
+			else {
+				possible = false;
+				break;
+			}
+		}
+		else {
+			possible = false;
+			break;
+		}
+	}
+
+	if (possible) cout << "YES";
+	else cout << "NO";
+}
