@@ -1,0 +1,42 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+int alpha[26];
+string str;
+char vow[6] = { 'a','i','y','e','o','u' },
+con[20] = { 'b','k','x','z','n','h','d','c','w','g','p','v','j','q','t','s','r','l','m','f' };
+
+bool is_vow(char c) {
+	if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u' || c == 'y') return true;
+	else return false;
+}
+
+int main() {
+	for (int i = 0; i < 6; i++)
+		alpha[vow[i] - 'a'] = i - 3 < 0 ? (i - 3) % 6 + 6 : (i - 3) % 6;
+	
+	for (int i = 0; i < 20; i++)
+		alpha[con[i] - 'a'] = i - 10 < 0 ? (i - 10) % 20 + 20 : (i - 10) % 20;
+
+	while (getline(cin, str)) {
+		int sz = str.size();
+
+		for (int i = 0; i < sz; i++) {
+			if ('A' <= str.at(i) && str.at(i) <= 'Z') {
+				if (is_vow((char)(str.at(i) - 'A' + 'a')))
+					cout << (char)(vow[alpha[str.at(i) - 'A']] - 'a' + 'A');
+				else
+					cout << (char)(con[alpha[str.at(i) - 'A']] - 'a' + 'A');
+			}
+			else if ('a' <= str.at(i) && str.at(i) <= 'z') {
+				if (is_vow(str.at(i)))
+					cout << (char)vow[alpha[str.at(i) - 'a']];
+				else
+					cout << (char)con[alpha[str.at(i) - 'a']];
+			}
+			else cout << str.at(i);
+		}
+		cout << "\n";
+	}
+}
