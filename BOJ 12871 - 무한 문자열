@@ -1,0 +1,33 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+string s, t, temp;
+
+int gcd(int a, int b) {
+	if (b == 0) return a;
+	else return gcd(b, a % b);
+}
+
+int main() {
+	cin >> s >> t;
+	int s_sz = s.size(), t_sz = t.size();
+
+	int g = gcd(s_sz, t_sz);
+	int lcm = g * (s_sz / g) * (t_sz / g);
+
+	string S = "", T = "";
+	int size = 0;
+	while (size != lcm) {
+		S = S + s;
+		size += s_sz;
+	}
+	size = 0;
+	while (size != lcm) {
+		T = T + t;
+		size += t_sz;
+	}
+
+	if (!S.compare(T)) cout << 1;
+	else cout << 0;
+}
