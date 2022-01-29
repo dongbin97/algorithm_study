@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <string.h>
+
+char str[101];
+
+int main() {
+	scanf("%s", str);
+	int sz = strlen(str), i = 0, ans = 0;
+
+	while (i < sz) {
+		char ch = str[i];
+		if (ch == 'c') {
+			if (i + 1 < sz && (str[i + 1] == '-' || str[i + 1] == '='))
+				i = i + 2;
+			else i++;
+		}
+		else if (ch == 'd') {
+			if (i + 1 < sz && str[i + 1] == 'z') {
+				if (i + 2 < sz && str[i + 2] == '=')
+					i = i + 3;
+				else i = i++;
+			}
+			else if (i + 1 < sz && str[i + 1] == '-')
+				i = i + 2;
+			else i++;
+		}
+		else if (ch == 'l') {
+			if (i + 1 < sz && str[i + 1] == 'j')
+				i = i + 2;
+			else i++;
+		}
+		else if (ch == 'n') {
+			if (i + 1 < sz && str[i + 1] == 'j')
+				i = i + 2;
+			else i++;
+		}
+		else if (ch == 's') {
+			if (i + 1 < sz && str[i + 1] == '=')
+				i = i + 2;
+			else i++;
+		}
+		else if (ch == 'z') {
+			if (i + 1 < sz && str[i + 1] == '=')
+				i = i + 2;
+			else i++;
+		}
+		else
+			i++;
+
+		ans++;
+	}
+
+	printf("%d", ans);
+}
