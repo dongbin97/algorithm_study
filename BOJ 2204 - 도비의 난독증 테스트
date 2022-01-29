@@ -1,0 +1,38 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int n;
+string str, temp;
+vector<string> s;
+vector<pair<string,int>> t;
+
+int main() {
+	while (1) {
+		cin >> n;
+		if (n == 0) break;
+
+		for (int i = 0; i < n; i++) {
+			cin >> str;
+			int sz = str.size();
+			s.push_back(str);
+
+			temp = "";
+			for (int j = 0; j < sz; j++)
+				if ('A' <= str.at(j) && str.at(j) <= 'Z')
+					temp += (str.at(j) - 'A' + 'a');
+				else temp += str.at(j);
+
+			t.push_back({ temp,i });
+		}
+
+		sort(t.begin(), t.end());
+
+		cout << s[t[0].second] << "\n";
+		
+		s.clear();
+		t.clear();
+	}
+}
