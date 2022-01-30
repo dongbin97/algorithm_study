@@ -1,0 +1,47 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <stack>
+using namespace std;
+
+string str, ans = "";
+int cnt[26];
+stack<char> st;
+
+int main() {
+	ios::ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	cin >> str;
+	int sz = str.size();
+	for (int i = 0; i < sz; i++) 
+		cnt[str.at(i) - 'A']++;
+	
+	int odd = 0, odd_pos = -1;
+	for (int i = 0; i < 26; i++) {
+		if (cnt[i] % 2 == 1) {
+			odd++;
+			odd_pos = i;
+		}
+	}
+
+	if (odd > 1) {
+		cout << "I'm Sorry Hansoo";
+		return 0;
+	}
+
+	for (int i = 0; i < 26; i++) {
+		for (int j = 0; j < cnt[i] / 2; j++) {
+			ans += (char)(i + 'A');
+			st.push(i + 'A');
+		}
+	}
+
+	if (odd == 1) ans += (char)(odd_pos + 'A');
+	while (!st.empty()) {
+		ans += st.top();
+		st.pop();
+	}
+
+	cout << ans;
+}
