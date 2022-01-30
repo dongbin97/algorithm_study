@@ -1,0 +1,43 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+using namespace std;
+
+string str;
+vector<string> sound;
+map<string, int> m;
+int T;
+
+int main() {
+	cin >> T;
+	getline(cin, str);
+	while (T--) {
+		getline(cin, str);
+		int sz = str.size();
+
+		string temp = "";
+		for (int i = 0; i < sz; i++) {
+			if (str.at(i) == ' ') {
+				sound.push_back(temp);
+				temp = "";
+			}
+			else temp += str.at(i);
+		}
+		sound.push_back(temp);
+
+		while (1) {
+			getline(cin, str);
+			if (!str.compare("what does the fox say?")) break;
+			temp = str.substr(str.find("goes") + 5);
+			m[temp]++;
+		}
+
+		for (string x : sound)
+			if (m[x] == 0) 
+				cout << x << " ";
+		cout << "\n";
+
+		sound.clear();
+	}
+}
