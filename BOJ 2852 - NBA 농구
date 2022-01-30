@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+int N, t;
+char timestamp[10];
+vector<pair<int, int>> v;
+
+int main() {
+	scanf("%d\n", &N);
+
+	int score[3] = { 0,0 }, start[3] = { 0,0 }, ts[3] = { 0,0 };
+	for (int i = 0; i < N; i++) {
+		fgets(timestamp, 10, stdin);
+		t = timestamp[0] - '0';
+		int second = ((timestamp[2] - '0') * 10 + (timestamp[3] - '0')) * 60 + ((timestamp[5] - '0') * 10 + (timestamp[6] - '0'));
+		
+		if (ts[1] == ts[2]) {
+			ts[t]++;
+			start[t] = second;
+		}
+		else if (ts[1] > ts[2]) {
+			ts[t]++;
+			if (ts[1] == ts[2])
+				score[1] += (second - start[1]);
+		}
+		else if (ts[1] < ts[2]) {
+			ts[t]++;
+			if (ts[1] == ts[2])
+				score[2] += (second - start[2]);
+		}
+	}
+
+	if (ts[1] > ts[2])
+		score[1] += (2880 - start[1]);
+	else if (ts[1] < ts[2])
+		score[2] += (2880 - start[2]);
+
+	printf("%02d:%02d\n", score[1] / 60, score[1] % 60);
+	printf("%02d:%02d", score[2] / 60, score[2] % 60);
+}
