@@ -1,0 +1,32 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+using namespace std;
+
+int N, M;
+string str;
+vector<string> v;
+map<string, int> m;
+
+int main() {
+    ios::ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+    
+	cin >> N >> M;
+	v.push_back("default");
+	for (int i = 1; i <= N; i++) {
+		cin >> str;
+		v.push_back(str);
+		m[str] = i;
+	}
+
+	for (int i = 0; i < M; i++) {
+		cin >> str;
+		if ('0' <= str.at(0) && str.at(0) <= '9') {
+			int num = stoi(str);
+			cout << v[num] << "\n";
+		}
+		else cout << m[str] << "\n";
+	}
+}
