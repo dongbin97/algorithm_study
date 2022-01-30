@@ -1,0 +1,40 @@
+#include <iostream>
+#include <string>
+#include <map>
+using namespace std;
+
+string str;
+map<string, int> m;
+
+int main() {
+	ios::ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	while (1) {
+		getline(cin, str);
+		if (!str.compare("*")) break;
+
+		int sz = str.size();
+		bool surprising = true;
+
+		string temp;
+		for (int D = 0; D < sz - 1; D++) {
+			for (int i = 0; i < sz - D - 1; i++) {
+				temp = "";
+				temp += str.at(i);
+				temp += str.at(i + D + 1);
+				if (m[temp] > 0) {
+					surprising = false;
+					m.clear();
+					break;
+				}
+				else m[temp]++;
+			}
+			if (!surprising) break;
+			else m.clear();
+		}
+
+		if (surprising) cout << str + " is surprising.\n";
+		else cout << str + " is NOT surprising.\n";
+	}
+}
