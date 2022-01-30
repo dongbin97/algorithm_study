@@ -1,0 +1,32 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+string a, b;
+vector<char> v;
+
+int main() {
+	while (getline(cin,a) && getline(cin,b)) {
+		int a_sz = a.size(), b_sz = b.size();
+		sort(a.begin(), a.end());
+		sort(b.begin(), b.end());
+
+		int i = 0, j = 0;
+		while (i < a_sz && j < b_sz) {
+			if (a.at(i) < b.at(j)) i++;
+			else if (a.at(i) > b.at(j)) j++;
+			else {
+				v.push_back({ a.at(i) });
+				i++; j++;
+			}
+		}
+
+		for (char x : v)
+			cout << x;
+		cout << "\n";
+
+		v.clear();
+	}
+}
