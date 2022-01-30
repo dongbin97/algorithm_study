@@ -1,0 +1,70 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+string str, ans = "";
+
+int main() {
+	cin >> str;
+	int sz = str.size();
+
+	int type = 0;
+	bool error = false;
+
+	if (!('a' <= str.at(0) && str.at(0) <= 'z')) error = true;
+	else{
+		int i = 0;
+		while (i<sz) {
+			if ('a' <= str.at(i) && str.at(i) <= 'z') {
+				ans += str.at(i);
+				i++;
+			}
+			else if ('A' <= str.at(i) && str.at(i) <= 'Z') {
+				if (type == 0) {
+					type = 1;
+					ans += '_';
+					ans += (char)(str.at(i) - 'A' + 'a');
+				}
+				else if (type == 1) {
+					ans += '_';
+					ans += (char)(str.at(i) - 'A' + 'a');
+				}
+				else if (type == 2) {
+					error = true;
+					break;
+				}
+				i++;
+			}
+			else if (str.at(i) == '_') {
+				if (type == 0) {
+					type = 2;
+					if (i + 1 < sz && 'a' <= str.at(i + 1) && str.at(i + 1) <= 'z') {
+						ans += (char)(str.at(i + 1) - 'a' + 'A');
+						i = i + 2;
+					}
+					else {
+						error = true;
+						break;
+					}
+				}
+				else if (type == 1) {
+					error = true;
+					break;
+				}
+				else if (type == 2) {
+					if (i + 1 < sz && 'a' <= str.at(i + 1) && str.at(i + 1) <= 'z') {
+						ans += (char)(str.at(i + 1) - 'a' + 'A');
+						i = i + 2;
+					}
+					else {
+						error = true;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	if (error) cout << "Error!";
+	else cout << ans;
+}
