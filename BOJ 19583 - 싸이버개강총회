@@ -1,0 +1,35 @@
+#include <iostream>
+#include <string>
+#include <map>
+using namespace std;
+
+int start, endtime, quit;
+string S, E, Q;
+map<string, int> before,after;
+
+int second(string s) {
+	return  stoi(s.substr(0, 2)) * 60 + stoi(s.substr(3, 2));
+}
+
+int main() {
+	cin >> S >> E >> Q;
+	start = second(S);
+	endtime = second(E);
+	quit = second(Q);
+
+	int time, cnt = 0;
+	string timestamp, name;
+	while (cin>>timestamp>>name) {
+		time = second(timestamp);
+
+		if (time <= start) before[name]++;
+		else if (endtime <= time && time <= quit) {
+			if (before[name] > 0 && !(after[name] > 0)) {
+				after[name]++;
+				cnt++;
+			}
+		}
+	}
+
+	cout << cnt;
+}
