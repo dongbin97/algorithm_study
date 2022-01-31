@@ -1,0 +1,77 @@
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+int space, alpha[26];
+string str;
+vector<string> v;
+
+int main() {
+	getline(cin, str);
+	cin >> space;
+	for (int i = 0; i < 26; i++)
+		cin >> alpha[i];
+
+	int sz = str.size();
+	char prev = '0';
+	string temp = "";
+	bool possible = true;
+	for (int i = 0; i < sz; i++) {
+		char ch = str.at(i);
+		if (ch == ' ') {
+			if (prev != ch) {
+				if (space == 0) {
+					possible = false;
+					break;
+				}
+				else {
+					space--;
+					v.push_back(temp);
+					temp = "";
+				}
+			}
+		}
+		else {
+			if ('A' <= ch && ch <= 'Z')
+				ch = ch - 'A' + 'a';
+			temp += ch;
+
+			if (prev != str.at(i)) {
+				if (alpha[ch - 'a'] == 0) {
+					possible = false;
+					break;
+				}
+				else 
+					alpha[ch - 'a']--;
+			}
+		}
+		prev = str.at(i);
+	}
+	v.push_back(temp);
+
+	if (!possible) {
+		cout << -1;
+		return 0;
+	}
+
+	string ans = "";
+	prev = '0';
+	for (string x : v) {
+		char ch = x.at(0);
+		ans += (char)(ch - 'a' + 'A');
+
+		if (prev != ch) {
+			if (alpha[ch - 'a'] == 0) {
+				possible = false;
+				break;
+			}
+			else 
+				alpha[ch - 'a']--;
+		}
+		prev = ch;
+	}
+
+	if (possible) cout << ans;
+	else cout << -1;
+}
