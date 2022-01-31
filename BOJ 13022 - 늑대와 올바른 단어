@@ -1,0 +1,45 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+char wolf[4] = { 'w','o','l','f' };
+
+int main() {
+	string str;
+	cin >> str;
+	int sz = str.size();
+	
+	if (str.at(0) != 'w' || str.at(sz - 1) != 'f') {
+		cout << 0;
+		return 0;
+	}
+
+	bool possible = true;
+	int len = 0, order = 0, cnt = 1;
+	for (int i = 1; i < sz; i++) {
+		if (str.at(i) == wolf[order]) cnt++;
+		else {
+			if (order == 0) {
+				len = cnt;
+				cnt = 0;
+			}
+			else {
+				if (cnt != len) {
+					possible = false;
+					break;
+				}
+				else cnt = 0;
+			}
+			order = (order + 1) % 4;
+			if (str.at(i) != wolf[order]) {
+				possible = false;
+				break;
+			}
+			else cnt++;
+		}
+	}
+	if (cnt != len) possible = false;
+
+	if (possible) cout << 1;
+	else cout << 0;
+}
