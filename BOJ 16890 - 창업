@@ -1,0 +1,47 @@
+#include <iostream>
+#include <string>
+#include <deque>
+#include <algorithm>
+using namespace std;
+
+int N;
+string g, c, front = "", back = "";
+deque<int> goo, cube;
+
+bool comp(char a, char b) {
+	return a > b;
+}
+
+int main() {
+	cin >> g >> c;
+	N = g.size();
+
+	sort(g.begin(), g.end());
+	sort(c.begin(), c.end(), comp);
+
+	for (int i = 0; i < N / 2; i++) {
+		goo.push_back(g.at(i));
+		cube.push_back(c.at(i));
+	}
+	if (N % 2 == 1) goo.push_back(g.at(N / 2));
+
+	int i = 1;
+	while (i <= N) {
+		if (i % 2 == 1) {
+			if (cube.empty() || goo.front() < cube.front())
+				front += goo.front(), goo.pop_front();
+			else
+				back += goo.back(), goo.pop_back();
+		}
+		else {
+			if (goo.empty() || cube.front() > goo.front())
+				front += cube.front(), cube.pop_front();
+			else
+				back += cube.back(), cube.pop_back();
+		}
+		i++;
+	}
+	
+	reverse(back.begin(), back.end());
+	cout << front << back;
+}
