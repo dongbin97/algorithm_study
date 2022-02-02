@@ -1,0 +1,69 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <queue>
+using namespace std;
+
+vector<int> quack[5];
+queue<int> q;
+
+int main() {
+	string str;
+	cin >> str;
+	int sz = str.size();
+	bool error = false;
+
+	if (sz % 5 != 0) {
+		cout << -1;
+		return 0;
+	}
+
+	for (int i = 0; i < sz; i++) {
+		if (str.at(i) == 'q')
+			quack[0].push_back(i);
+		else if (str.at(i) == 'u')
+			quack[1].push_back(i);
+		else if (str.at(i) == 'a')
+			quack[2].push_back(i);
+		else if (str.at(i) == 'c')
+			quack[3].push_back(i);
+		else if (str.at(i) == 'k')
+			quack[4].push_back(i);
+		else {
+			cout << -1;
+			return 0;
+		}
+	}
+
+	int cnt = quack[0].size();
+	for (int i = 1; i < 5; i++) {
+		if (quack[i].size() != cnt) {
+			cout << -1;
+			return 0;
+		}
+	}
+
+	int ans = 0;
+	for (int i = 0; i < sz / 5; i++) {
+		if (!(quack[0][i] < quack[1][i] && quack[1][i] < quack[2][i] && quack[2][i] < quack[3][i] && quack[3][i] < quack[4][i])) {
+			cout << -1;
+			return 0;
+		}
+		if (q.empty()) {
+			ans++;
+			q.push(quack[4][i]);
+		}
+		else {
+			if (quack[0][i] < q.front()) {
+				ans++;
+				q.push(quack[4][i]);
+			}
+			else {
+				q.pop();
+				q.push(quack[4][i]);
+			}
+		}
+	}
+
+	cout << ans;	
+}
