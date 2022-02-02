@@ -1,0 +1,40 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+int T;
+string str;
+
+int check(string s) {
+	int sz = s.size();
+	for (int i = 0; i < sz / 2; i++) {
+		if (s.at(i) != s.at(sz - 1 - i))
+			return i;
+	}
+	return -1;
+}
+
+int main() {
+	cin >> T;
+	while (T--) {
+		cin >> str;
+		int sz = str.size();
+
+		int idx = check(str);
+		if (idx < 0) cout << 0 << "\n";
+		else {
+			string temp1, temp2;
+			if (idx == 0) {
+				temp1 = str.substr(1);
+				temp2 = str.substr(0, sz - 1);
+			}
+			else {
+				temp1 = str.substr(0, idx) + str.substr(idx + 1);
+				temp2 = str.substr(0, sz - idx - 1) + str.substr(sz - idx);
+			}
+
+			if (check(temp1) < 0 || check(temp2) < 0) cout << 1 << "\n";
+			else cout << 2 << "\n";
+		}
+	}
+}
