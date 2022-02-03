@@ -1,0 +1,24 @@
+#include <stdio.h>
+
+int N, M, book[50];
+
+int main() {
+	scanf("%d %d", &N, &M);
+	if (N == 0) {
+		printf("0");
+		return 0;
+	}
+
+	int remain = M, cnt = 1;
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &book[i]);
+		if (book[i] <= remain) 
+			remain -= book[i];
+		else {
+			cnt++;
+			remain = M - book[i];
+		}
+	}
+
+	printf("%d", cnt);
+}
