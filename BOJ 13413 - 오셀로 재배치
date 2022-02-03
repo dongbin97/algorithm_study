@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int T, N;
+char init[100001], target[100001];
+
+int main() {
+	scanf("%d", &T);
+	while (T--) {
+		scanf("%d", &N);
+		scanf("%s", init);
+		scanf("%s", target);
+
+		int iB = 0, tB = 0, e = 0;
+		for (int i = 0; i < N; i++) {
+			if (init[i] == 'B') iB++;
+			if (target[i] == 'B') tB++;
+			if (init[i] == 'B' && target[i] == 'B') e++;
+		}
+
+		int ans = 0;
+		ans += abs(iB - tB);
+		ans += (min(iB, tB) - e);
+
+		printf("%d\n", ans);
+	}
+}
