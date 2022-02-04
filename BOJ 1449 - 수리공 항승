@@ -1,0 +1,25 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int N, L, point[1000];
+
+int main() {
+	scanf("%d %d", &N, &L);
+	for (int i = 0; i < N; i++)
+		scanf("%d", &point[i]);
+
+	sort(point, point + N);
+
+	int start = point[0];
+	int i = 1, cnt = 1;
+	while (i < N) {
+		if (point[i] - start >= L) {
+			cnt++;
+			start = point[i];
+		}
+		i++;
+	}
+
+	printf("%d", cnt);
+}
