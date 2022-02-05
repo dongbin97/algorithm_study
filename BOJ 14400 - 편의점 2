@@ -1,0 +1,23 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int n;
+long long x[100000], y[100000];
+
+int main() {
+	scanf("%d", &n);
+	for (int i = 0; i < n; i++) 
+		scanf("%lld %lld", &x[i], &y[i]);
+
+	sort(x, x + n);
+	sort(y, y + n);
+
+	long long X = x[n / 2], Y = y[n / 2], ans = 0;
+	for (int i = 0; i < n; i++) {
+		ans += abs(X - x[i]);
+		ans += abs(Y - y[i]);
+	}
+
+	printf("%lld", ans);
+}
