@@ -1,0 +1,53 @@
+#include <stdio.h>
+
+int N, M, A[50][50], B[50][50];
+
+int main() {
+	scanf("%d %d", &N, &M);
+
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < M; j++)
+			scanf("%1d", &A[i][j]);
+
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < M; j++)
+			scanf("%1d", &B[i][j]);
+
+	int ans = 0;
+	if (N < 3 || M < 3) {
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				if (A[i][j] != B[i][j]) {
+					ans = -1;
+					break;
+				}
+			}
+			if (ans == -1) break;
+		}
+	}
+	else {
+		for (int i = 0; i < N - 2; i++) {
+			for (int j = 0; j < M - 2; j++) {
+				if (A[i][j] != B[i][j]) {
+					ans++;
+					for (int k = 0; k < 3; k++)
+						for (int l = 0; l < 3; l++)
+							A[i + k][j + l] = 1 - A[i + k][j + l];
+				}
+			}
+			if (A[i][M - 2] != B[i][M - 2] || A[i][M - 1] != B[i][M - 1]) {
+				ans = -1;
+				break;
+			}
+		}
+		
+		for (int j = 0; j < M; j++) {
+			if (A[N - 2][j] != B[N - 2][j] || A[N - 1][j] != B[N - 1][j]) {
+				ans = -1;
+				break;
+			}
+		}
+	}
+	
+	printf("%d", ans);
+}
