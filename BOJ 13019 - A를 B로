@@ -1,0 +1,31 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+string A, B;
+
+int main() {
+	ios::ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	cin >> A >> B;
+	int sz = A.size();
+
+	int aidx = sz - 1, ans = sz;
+	for (int i = sz - 1; i >= 0; i--) {
+		while (aidx >= 0 && B.at(i) != A.at(aidx))
+			aidx--;
+
+		if (aidx < 0) break;
+
+		ans--;
+		aidx--;
+	}
+
+	sort(A.begin(), A.end());
+	sort(B.begin(), B.end());
+
+	if (A.compare(B) != 0) cout << -1;
+	else cout << ans;
+}
