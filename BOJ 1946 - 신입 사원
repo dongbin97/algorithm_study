@@ -1,0 +1,27 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+typedef pair<int, int> pii;
+
+int T, N;
+pii x[100000];
+
+int main() {
+	scanf("%d", &T);
+	while (T--) {
+		scanf("%d", &N);
+		for (int i = 0; i < N; i++) 
+			scanf("%d %d", &x[i].first, &x[i].second);
+		
+		sort(x, x + N);
+
+		int m = x[0].second, ans = N;
+		for (int i = 1; i < N; i++) {
+			if (m > x[i].second) m = x[i].second;
+			else ans--;
+		}
+		
+		printf("%d\n", ans);
+	}
+}
