@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int value, idx;
+}st;
+
+bool comp(st a, st b) {
+	if (a.value == b.value) return a.idx < b.idx;
+	else return a.value > b.value;
+}
+
+int N;
+st H[1000000];
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &H[i].value);
+		H[i].idx = i;
+	}
+
+	sort(H, H + N, comp);
+
+	int ans = 0, arrow, index;
+	for (int i = 0; i < N; i++) {
+		if (H[i].value == 0) continue;
+	
+		ans++;
+
+		arrow = H[i].value - 1;
+		index = H[i].idx;
+
+		H[i].value = 0;
+		for (int j = i + 1; j < N; j++) {
+			if (H[j].value == arrow && index < H[j].idx) {
+				arrow--;
+				index = H[j].idx;
+				H[j].value = 0;
+			}
+		}
+	}
+
+	printf("%d", ans);
+}
