@@ -1,0 +1,51 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+int N, M, start[10];
+bool ch[10];
+string str[10];
+
+int main() {
+	ios::ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	cin >> N >> M;
+	
+	int sum = 0;
+	for (int i = 0; i < N; i++) {
+		cin >> str[i];
+		sum += str[i].size();
+		if ('a' <= str[i].at(0) && str[i].at(0) <= 'z') 
+			ch[i] = true;
+	}
+
+	int base = (M - sum) / (N - 1);
+	int extra = (M - sum) % (N - 1);
+
+	start[0] = 0;
+
+	string ans = str[0];
+	for (int i = 1; i < N; i++) {
+		for (int j = 0; j < base; j++) ans += '_';
+
+		if (ch[i] && extra > 0) {
+			ans += '_';
+			extra--;
+		}
+		
+		start[i] = ans.size();
+		ans += str[i];
+	}
+
+	if (extra > 0) {
+		int index = N - 1;
+		while(extra--) {
+			while (ch[index]) index--;
+			ans = ans.substr(0, start[index]) + "_" + ans.substr(start[index]);
+			index--;
+		}
+	}
+
+	cout << ans;
+}
