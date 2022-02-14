@@ -1,0 +1,40 @@
+#include <stdio.h>
+
+int N, A[5000];
+
+bool check(int start, int size) {
+	if (start + 2 * size - 1 >= N) return false;
+
+	for (int i = 0; i < size; i++)
+		if (A[start + i] != A[start + 2 * size - 1 - i]) return false;
+	
+	return true;
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		scanf("%d", &A[i]);
+
+	bool possible = true;
+	int size, idx = 0, ans = 0, remain;
+
+	while (idx < N) {
+		remain = (N - idx) / 2;
+		for (size = 1; size <= remain; size++) {
+			if (check(idx, size)) {
+				ans++;
+				idx = idx + 2 * size;
+				break;
+			}
+		}
+
+		if (size > remain) {
+			possible = false;
+			break;
+		}
+	}
+
+	if (possible) printf("%d", ans);
+	else printf("-1");
+}
