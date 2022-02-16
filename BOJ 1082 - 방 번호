@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int N, M, P[10];
+char ans[51];
+
+int main() {
+	scanf("%d", &N);
+
+	int minimum = 51, minpos;
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &P[i]);
+		if (i > 0 && minimum >= P[i]) {
+			minimum = P[i];
+			minpos = i;
+		}
+	}
+
+	scanf("%d", &M);
+
+	if (N < 2 || M < minimum) {
+		printf("0");
+		return 0;
+	}
+
+	int second = minimum, secpos = minpos;
+	if (minimum > P[0]) {
+		second = P[0];
+		secpos = 0;
+	}
+
+	int cnt = 1 + (M - minimum) / second;
+	int cost = minimum + (cnt - 1) * second;
+
+	ans[0] = '0' + minpos;
+	for (int i = 1; i < cnt; i++)
+		ans[i] = '0' + secpos;
+
+	for (int i = N - 1; i > minpos; i--) {
+		if (cost - minimum + P[i] <= M) {
+			cost = cost - minimum + P[i];
+			ans[0] = '0' + i;
+			break;
+		}
+	}
+
+	int idx = 1;
+	while (idx<cnt && M>cost) {
+		for (int i = N - 1; i > secpos; i--) {
+			if (cost - second + P[i] <= M) {
+				cost = cost - second + P[i];
+				ans[idx] = '0' + i;
+				break;
+			}
+		}
+		idx++;
+	}
+
+	ans[cnt] = '\0';
+	printf("%s", ans);
+}
