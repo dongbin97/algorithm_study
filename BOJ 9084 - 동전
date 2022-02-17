@@ -1,0 +1,35 @@
+#include <stdio.h>
+
+int T, N, M, coin[20], dp[20][10001];
+
+int main() {
+	scanf("%d", &T);
+	while (T--) {
+		scanf("%d", &N);
+		for (int i = 0; i < N; i++)
+			scanf("%d", &coin[i]);
+		scanf("%d", &M);
+
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j <= M; j++)
+				dp[i][j] = 0;
+
+		for (int j = 0; j <= M; j++) {
+			if (j % coin[0] == 0)
+				dp[0][j] = 1;
+		}
+
+		for (int cur = 1; cur < N; cur++) {
+			dp[cur][0] = 1;
+			for (int j = 1; j <= M; j++) {
+				for (int i = 0; i <= cur; i++) {
+					if (j >= coin[i])
+						dp[cur][j] += dp[i][j - coin[i]];
+					else break;
+				}
+			}
+		}
+
+		printf("%d\n", dp[N - 1][M]);
+	}
+}
