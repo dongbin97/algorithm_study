@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+int N, M, in_deg[1001], ans[1001];
+vector<int> out[1001];
+queue<int> q;
+
+int main() {
+	int A, B;
+
+	scanf("%d %d", &N, &M);
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d", &A, &B);
+		in_deg[B]++;
+		out[A].push_back(B);
+	}
+
+	for (int i = 1; i <= N; i++) {
+		if (in_deg[i] == 0) {
+			q.push(i);
+			ans[i] = 1;
+		}
+	}
+
+	while (!q.empty()) {
+		int sz = q.size();
+		while (sz--) {
+			int x = q.front(); q.pop();
+			for (int next : out[x]) {
+				ans[next] = max(ans[next], ans[x] + 1);
+				in_deg[next]--;
+				if (in_deg[next] == 0) 
+					q.push(next);
+			}
+		}
+	}
+
+	for (int i = 1; i <= N; i++)
+		printf("%d ", ans[i]);
+}
