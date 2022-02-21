@@ -1,0 +1,42 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+int C;
+string str;
+
+int main() {
+	ios::ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	cin >> C;
+	int ans = 0;
+	while(C--){
+		int cnt = 0;
+		cin >> str;
+
+		int sz = str.size();
+		int idx = 0;
+		while (idx < sz) {
+			if (str.at(idx) == 'f') {
+				if (idx + 2 < sz && !str.substr(idx, 3).compare("for")) {
+					cnt++;
+					idx += 3;
+				}
+				else idx++;
+			}
+			else if (str.at(idx) == 'w') {
+				if (idx + 4 < sz && !str.substr(idx, 5).compare("while")) {
+					cnt++;
+					idx += 5;
+				}
+				else idx++;
+			}
+			else idx++;
+		}
+
+		if (ans < cnt) ans = cnt;
+	}
+
+	cout << ans;
+}
