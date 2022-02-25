@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int p, n;
+}st;
+
+bool comp(st a, st b) {
+	return a.p < b.p;
+}
+
+int T, k, dp[100][10001];
+st arr[100];
+
+int main() {
+	scanf("%d", &T);
+	scanf("%d", &k);
+	for (int i = 0; i < k; i++)
+		scanf("%d %d", &arr[i].p, &arr[i].n);
+
+	sort(arr, arr + k, comp);
+
+	int m = arr[0].p * arr[0].n;
+	dp[0][0] = 1;
+	while (m > 0) {
+		if (m <= T)
+			dp[0][m] = 1;
+		m -= arr[0].p;
+	}
+
+	for (int i = 1; i < k; i++) {
+		dp[i][0] = 1;
+		for (int j = 1; j <= T; j++) {
+			for (int l = 0; l <= arr[i].n; l++) {
+				if (j >= l * arr[i].p)
+					dp[i][j] += dp[i - 1][j - l * arr[i].p];
+			}
+		}
+	}
+
+	printf("%d", dp[k - 1][T]);
+}
