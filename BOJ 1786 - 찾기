@@ -1,0 +1,43 @@
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+int k[1000000];
+vector<int> ans;
+
+int main() {
+	ios::ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	string T, P;
+	getline(cin, T);
+	getline(cin, P);
+
+	int n = T.size(), m = P.size();
+
+	int j = 0;
+	for (int i = 1; i < m; i++) {
+		while (j > 0 && P.at(i) != P.at(j))
+			j = k[j - 1];
+		if (P.at(i) == P.at(j))
+			k[i] = ++j;
+	}
+
+	j = 0;
+	for (int i = 0; i < n; i++) {
+		while (j > 0 && T.at(i) != P.at(j))
+			j = k[j - 1];
+		if (T.at(i) == P.at(j)) {
+			if (j == m - 1) {
+				ans.push_back(i - m + 1);
+				j = k[j];
+			}
+			else j++;
+		}
+	}
+
+	cout << ans.size() << "\n";
+	for (int x : ans)
+		cout << x + 1 << " ";
+}
