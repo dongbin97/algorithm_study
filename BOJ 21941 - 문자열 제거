@@ -1,0 +1,46 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	string str;
+	int cost;
+}st;
+
+string S, A;
+int M, X, dp[1002];
+vector<st> v[26];
+
+int main() {
+	ios::ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	
+	string temp;
+	S = "0";
+	cin >> temp;
+	S += temp;
+
+	cin >> M;
+	for (int i = 0; i < M; i++) {
+		cin >> A >> X;
+		int a_sz = A.size();
+		if (a_sz < X) {
+			v[A.at(a_sz - 1) - 'a'].push_back({ A,X });
+		}
+	}
+
+	int s_sz = S.size(); 
+	dp[0] = 0;
+	for (int i = 1; i < s_sz; i++) {
+		dp[i] = dp[i - 1] + 1;
+		for (st t : v[S.at(i) - 'a']) {
+			int a_sz = t.str.size();
+			if (i - a_sz + 1 > 0 && !S.substr(i - a_sz + 1, a_sz).compare(t.str))
+				dp[i] = max(dp[i], dp[i - a_sz] + t.cost);
+		}
+	}
+
+	cout << dp[s_sz - 1];
+}
