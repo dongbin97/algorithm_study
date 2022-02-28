@@ -1,0 +1,67 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+int P[5000];
+
+void getP(string pat) {
+	int sz = pat.size();
+	int j = 0;
+
+	for (int i = 0; i < sz; i++)
+		P[i] = 0;
+
+	for (int i = 1; i < sz; i++) {
+		while (j > 0 && pat.at(i) != pat.at(j))
+			j = P[j - 1];
+		if (pat.at(i) == pat.at(j))
+			P[i] = ++j;
+	}
+}
+
+int kmp(string str, string pat) {
+
+	getP(pat);
+
+	int s_sz = str.size(), p_sz = pat.size();
+	int j = 0;
+	int cnt = 0;
+	for (int i = 0; i < s_sz; i++) {
+		while (j > 0 && str.at(i) != pat.at(j))
+			j = P[j - 1];
+		if (str.at(i) == pat.at(j)) {
+			if (j == p_sz - 1) {
+				cnt++;
+				if (cnt >= 2) break;
+				j = P[j];
+			}
+			else
+				j++;
+		}
+	}
+
+	if (cnt >= 2) return p_sz;
+	else return -1;
+}
+
+int main() {
+	ios::ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	string str;
+	cin >> str;
+
+	int ans = 0;
+	int sz = str.size();
+	int i = 0;
+
+	while (i < sz - ans) {
+		int len = ans + 1;
+		int res = kmp(str, str.substr(i, len));
+		
+		if (res < 0) i++;
+		else if (ans < res) ans = res;
+	}
+
+	cout << ans;
+}
