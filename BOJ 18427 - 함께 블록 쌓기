@@ -1,0 +1,45 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int N, M, H, dp[50][1001];
+vector<int> block[50];
+
+int main() {
+	cin >> N >> M >> H;;
+
+	string temp;
+	getline(cin, temp);
+
+	for (int i = 0; i < N; i++) {
+		getline(cin, temp);
+
+		size_t pos = 0;
+		while ((pos = temp.find(" ")) != string::npos) {
+			block[i].push_back(stoi(temp.substr(0, pos)));
+			temp.erase(0, pos + 1);
+		}
+		block[i].push_back(stoi(temp));
+
+		sort(block[i].begin(), block[i].end());
+	}
+
+	for (int x : block[0])
+		dp[0][x] = 1;
+
+	for (int i = 1; i < N; i++) {
+		for (int k = 0; k <= H; k++)
+			dp[i][k] = dp[i - 1][k];
+
+		int sz = block[i].size();
+		for (int j = 0; j < sz; j++) {
+			dp[i][block[i][j]] = (dp[i][block[i][j]] + 1) % 10007;
+			for (int k = block[i][j] + 1; k <= H; k++)
+				dp[i][k] = (dp[i][k] + dp[i - 1][k - block[i][j]]) % 10007;
+		}
+	}
+
+	cout << dp[N - 1][H] % 10007;
+}
