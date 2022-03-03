@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int n, m, dp[2][1000001];
+char ans[1000002], sol[1000002];
+
+int main() {
+	scanf("%d %d", &n, &m);
+	scanf("%s", ans + 1);
+	scanf("%s", sol + 1);
+
+	for (int j = 0; j <= m; j++)
+		dp[0][j] = j;
+
+	for (int i = 1; i <= n; i++) {
+		dp[i % 2][0] = dp[(i - 1) % 2][0] + 1;
+		for (int j = 1; j <= m; j++) {
+			if (ans[i] == sol[j])
+				dp[i % 2][j] = dp[(i - 1) % 2][j - 1];
+			else if ((sol[j] == 'j' || sol[j] == 'l') && ans[i] == 'i')
+				dp[i % 2][j] = dp[(i - 1) % 2][j - 1];
+			else if (sol[j] == 'w' && ans[i] == 'v')
+				dp[i % 2][j] = dp[(i - 1) % 2][j - 1];
+			else 
+				dp[i % 2][j] = min(dp[(i - 1) % 2][j - 1], min(dp[(i - 1) % 2][j], dp[i % 2][j - 1])) + 1;
+		}
+	}
+
+	printf("%d", dp[n % 2][m]);
+}
