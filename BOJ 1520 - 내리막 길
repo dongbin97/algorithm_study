@@ -1,0 +1,33 @@
+#include <stdio.h>
+
+int M, N, map[500][500], dp[500][500];
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+bool v[500][500];
+
+int dfs(int row, int col) {
+
+	for (int i = 0; i < 4; i++) {
+		int nrow = row + dx[i], ncol = col + dy[i];
+		if (nrow < 0 || nrow >= M || ncol < 0 || ncol >= N) continue;
+		if (map[row][col] > map[nrow][ncol]) {
+			if (dp[nrow][ncol] > 0)
+				dp[row][col] += dp[nrow][ncol];
+			else if(!v[nrow][ncol])
+				dp[row][col] += dfs(nrow, ncol);
+		}
+	}
+	v[row][col] = true;
+
+	return dp[row][col];
+}
+
+int main() {
+	scanf("%d %d", &M, &N);
+	for (int i = 0; i < M; i++)
+		for (int j = 0; j < N; j++)
+			scanf("%d", &map[i][j]);
+
+	dp[M - 1][N - 1] = 1;
+
+	printf("%d", dfs(0, 0));
+}
