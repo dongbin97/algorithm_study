@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+int T, N, K, D[1001], W; 
+
+int main() {
+	int X, Y;
+	scanf("%d", &T);
+	while (T--) {
+		vector<int> graph[1001];
+		queue<int> q;
+		int in_deg[1001] = { 0, }, dp[1001] = { 0, };
+
+		scanf("%d %d", &N, &K);
+		for (int i = 1; i <= N; i++) 
+			scanf("%d", &D[i]);
+		
+
+		for (int i = 0; i < K; i++) {
+			scanf("%d %d", &X, &Y);
+			graph[X].push_back(Y);
+			in_deg[Y]++;
+		}
+
+		scanf("%d", &W);
+		
+		for (int i = 1; i <= N; i++) {
+			if (in_deg[i] == 0) {
+				dp[i] = D[i];
+				q.push(i);
+			}
+		}
+			
+		while (!q.empty()) {
+			int u = q.front(); q.pop();
+			if (u == W) break;
+
+			for (int x : graph[u]) {
+				dp[x] = max(dp[x], dp[u] + D[x]);
+				in_deg[x]--;
+				if (in_deg[x] == 0)
+					q.push(x);
+			}
+		}
+
+		printf("%d\n", dp[W]);
+	}
+}
