@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+int N, M, arr[30];
+bool dp[40001];
+vector<int> v;
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) 
+		scanf("%d", &arr[i]);
+
+	dp[arr[0]] = true;
+	v.push_back(arr[0]);
+
+	for (int i = 1; i < N; i++) {
+		int sz = v.size();
+		for (int j = 0; j < sz; j++) {
+			int x = v[j];
+			if (x - arr[i] > 0 && !dp[x - arr[i]]) {
+				dp[x - arr[i]] = true;
+				v.push_back(x - arr[i]);
+			}
+			if (arr[i] - x > 0 && !dp[arr[i] - x]) {
+				dp[arr[i] - x] = true;
+				v.push_back(arr[i] - x);
+			}
+			if (!dp[arr[i] + x]) {
+				dp[arr[i] + x] = true;
+				v.push_back(arr[i] + x);
+			}
+		}
+
+		if (!dp[arr[i]]) {
+			dp[arr[i]] = true;
+			v.push_back(arr[i]);
+		}
+	}
+
+	int a;
+	scanf("%d", &M);
+	for (int i = 0; i < M; i++) {
+		scanf("%d", &a);
+		if (dp[a]) printf("Y ");
+		else printf("N ");
+	}
+}
