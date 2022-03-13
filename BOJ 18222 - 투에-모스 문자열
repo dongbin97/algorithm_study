@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <math.h>
+
+long long k;
+int cnt = 0;
+
+void recur(long long start, long long end, long long num) {
+	if (start + 1 == end)
+		return;
+
+	long long mid = (start + end) / 2;
+	if (mid <= num) {
+		cnt++;
+		recur(mid, end, num);
+	}
+	else
+		recur(start, mid, num);
+}
+
+int main() {
+	scanf("%lld", &k);
+
+	if (k == 1) {
+		printf("0");
+		return 0;
+	}
+
+	int x = log2(k - 1) + 1;
+
+	recur(0, pow(2, x), k - 1);
+
+	if (cnt % 2 == 0) printf("0");
+	else printf("1");
+}
