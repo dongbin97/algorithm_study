@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+using namespace std;
+
+typedef struct {
+	int num, d;
+}st;
+
+int T, N, depth[10001], parent[10001];
+vector<int> graph[10001];
+queue<st> q;
+
+void init() {
+	for (int i = 0; i <= 10000; i++) {
+		depth[i] = 0;
+		parent[i] = 0;
+		graph[i].clear();
+	}
+
+	while (!q.empty()) 
+		q.pop();
+}
+
+int main() {
+	int A, B;
+	scanf("%d", &T);
+	while (T--) {
+
+		init();
+
+		scanf("%d", &N);
+		for (int i = 0; i < N - 1; i++) {
+			scanf("%d %d", &A, &B);
+			graph[A].push_back(B);
+			parent[B] = A;
+		}
+
+		int root = 0;
+		for (int i = 1; i <= N; i++) {
+			if (parent[i] == 0) {
+				root = i;
+				break;
+			}
+		}
+
+		depth[root] = 1; 
+		for (int x : graph[root])
+			q.push({ x,depth[root] });
+
+		while (!q.empty()) {
+			st u = q.front(); q.pop();
+			depth[u.num] = u.d + 1;
+			
+			for (int x : graph[u.num])
+				q.push({ x,depth[u.num] });
+		}
+
+		scanf("%d %d", &A, &B);
+		while (depth[A] > depth[B]) A = parent[A];
+		while (depth[A] < depth[B]) B = parent[B];
+		while (A != B) {
+			A = parent[A];
+			B = parent[B];
+		}
+
+		printf("%d\n", A);
+	}
+}
