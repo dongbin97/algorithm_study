@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int N, B[20];
+long long l, w, h, pre = 0, cnt = 0;
+
+int main() {
+	int x, y;
+
+	scanf("%lld %lld %lld", &l, &w, &h);
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%d %d", &x, &y);
+		B[x] = y;
+	}
+
+	for (int i = 19; i >= 0; i--) {
+		pre *= 8;
+		long long temp = min((long long)B[i], (long long)(l >> i) * (w >> i) * (h >> i) - pre);
+		pre += temp, cnt += temp;
+	}
+
+	if (pre == l * w * h) printf("%lld", cnt);
+	else printf("-1");
+}
