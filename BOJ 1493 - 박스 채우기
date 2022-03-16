@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int A, B;
+}st;
+
+int l, w, h, N, cnt = 0;
+vector<st> v;
+bool pos = true;
+
+void recur(int length, int width, int height) {
+	if (!pos) return;
+	if (length == 0 || width == 0 || height == 0) return;
+
+
+	int i, size;
+	for (i = N - 1; i >= 0; i--) {
+		size = 1 << v[i].A;
+		if (size <= length && size <= width && size <= height && v[i].B > 0)
+			break;
+	}
+
+	if (i < 0) {
+		pos = false;
+		return;
+	}
+
+	v[i].B--;
+	cnt++;
+
+	recur(length - size, width, size);
+	recur(size, width - size, size);
+	recur(length, width, height - size);
+}
+
+bool comp(st a, st b) {
+	return a.A < b.A;
+}
+
+int main() {
+	int A, B;
+
+	scanf("%d %d %d", &l, &w, &h);
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%d %d", &A, &B);
+		v.push_back({ A,B });
+	}
+
+	sort(v.begin(), v.end(), comp);
+
+	recur(l, w, h);
+
+	if (!pos) printf("-1");
+	else printf("%d", cnt);
+}
