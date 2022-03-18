@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <math.h>
+
+int N;
+char temp[7][99];
+
+void recur(int start, int end, int num) {
+	if (num >= 7) return;
+	else if (start == end) {
+		temp[num][start] = temp[num - 1][start];
+		return;
+	}
+
+	int mid = (start + end) / 2;
+	for (int i = start; i <= mid; i++)
+		temp[num][i] = 'A';
+	for (int i = mid + 1; i <= end; i++)
+		temp[num][i] = 'B';
+
+	recur(start, mid, num + 1);
+	recur(mid + 1, end, num + 1);
+}
+
+int main() {
+	scanf("%d", &N);
+
+	int len = log2(N);
+	if (N > (1 << len)) len++;
+
+	recur(0, N - 1, 0);
+
+	for (int i = len; i < 7; i++) {
+		for (int j = 0; j < N - 1; j++)
+			temp[i][j] = 'A';
+		temp[i][N - 1] = 'B';
+	}
+
+	for (int i = 0; i < 7; i++) {
+		for (int j = 0; j < N; j++)
+			printf("%c", temp[i][j]);
+		printf("\n");
+	}
+}
