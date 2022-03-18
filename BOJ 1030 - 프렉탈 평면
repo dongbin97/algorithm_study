@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <math.h>
+
+int map[50][50];
+int s, N, K, R1, R2, C1, C2, K_start, K_end;
+
+bool check(int srow, int scol, int erow, int ecol) {
+	if (R1 > erow || R2 < srow || C1 > ecol || C2 < scol) return true;
+	else return false;
+}
+
+void recur(int srow, int scol, int erow, int ecol, int size, bool flag) {
+	if (check(srow, scol, erow, ecol)) return;
+	else if (flag) {
+		for (int i = R1; i <= R2; i++) {
+			for (int j = C1; j <= C2; j++) {
+				if (srow <= i && i < erow && scol <= j && j < ecol)
+					map[i - R1][j - C1] = 1;
+			}
+		}
+		return;
+	}
+	else if (size == 1) {
+		if (R1 <= srow && srow <= R2 && C1 <= scol && scol <= ecol)
+			map[srow - R1][scol - C1] = 0;
+		return;
+	}
+
+	int new_sz = size / N;
+	
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (K_start <= i && i <= K_end && K_start <= j && j <= K_end)
+				recur(srow + new_sz * i, scol + new_sz * j, srow + new_sz * (i + 1), scol + new_sz * (j + 1), new_sz, true);
+			else
+				recur(srow + new_sz * i, scol + new_sz * j, srow + new_sz * (i + 1), scol + new_sz * (j + 1), new_sz, false);
+		}
+	}
+}
+
+int main() {
+	scanf("%d %d %d %d %d %d %d", &s, &N, &K, &R1, &R2, &C1, &C2);
+
+	K_start = (N - K) / 2 ;
+	K_end = N - (N - K) / 2 - 1;
+
+	int size = pow(N, s);
+
+	recur(0, 0, size, size, size, false);
+
+	for (int i = R1; i <= R2; i++) {
+		for (int j = C1; j <= C2; j++) 
+			printf("%d", map[i - R1][j - C1]);
+		printf("\n");
+	}
+
+}
