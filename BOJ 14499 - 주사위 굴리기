@@ -1,0 +1,59 @@
+#include <stdio.h>
+
+int N, M, x, y, K, map[20][20], arr[1000], dice[6];
+int dx[] = { 0,0,0,-1,1 }, dy[] = { 0,1,-1,0,0 };
+
+void move(int dir) {
+	//0:위, 1:뒤, 2:오른쪽, 3:왼쪽, 4:앞, 5:밑
+	int temp = dice[0];
+
+	if (dir == 1) {
+		dice[0] = dice[3];
+		dice[3] = dice[5];
+		dice[5] = dice[2];
+		dice[2] = temp;
+	}
+	else if (dir == 2) {
+		dice[0] = dice[2];
+		dice[2] = dice[5];
+		dice[5] = dice[3];
+		dice[3] = temp;
+	}
+	else if (dir == 3) {
+		dice[0] = dice[4];
+		dice[4] = dice[5];
+		dice[5] = dice[1];
+		dice[1] = temp;
+	}
+	else {
+		dice[0] = dice[1];
+		dice[1] = dice[5];
+		dice[5] = dice[4];
+		dice[4] = temp;
+	}
+}
+
+int main() {
+	scanf("%d %d %d %d %d", &N, &M, &x, &y, &K);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < M; j++)
+			scanf("%d", &map[i][j]);
+
+	int row = x, col = y, dir;
+	for (int i = 0; i < K; i++) {
+		scanf("%d", &dir);
+		int nrow = row + dx[dir], ncol = col + dy[dir];
+		if (nrow < 0 || nrow >= N || ncol < 0 || ncol >= M) continue;
+
+		move(dir);
+		printf("%d\n", dice[0]);
+
+		if (map[nrow][ncol] == 0) map[nrow][ncol] = dice[5];
+		else {
+			dice[5] = map[nrow][ncol];
+			map[nrow][ncol] = 0;
+		}
+
+		row = nrow, col = ncol;
+	}
+}
