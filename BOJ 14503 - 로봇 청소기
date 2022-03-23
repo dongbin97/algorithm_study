@@ -1,0 +1,43 @@
+#include <stdio.h>
+
+int N, M, map[50][50];
+int dx[] = { -1,0,1,0 }, dy[] = { 0,1,0,-1 };
+
+int main() {
+	int r, c, d;
+
+	scanf("%d %d", &N, &M);
+	scanf("%d %d %d", &r, &c, &d);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < M; j++)
+			scanf("%d", &map[i][j]);
+
+	int ans = 0;
+	while (1) {
+		if (map[r][c] == 0) {
+			ans++;
+			map[r][c] = 2;
+		}
+
+		int i, next, nrow, ncol;
+		for (i = 0; i < 4; i++) {
+			 next = (d + 3 - i) % 4;
+			 nrow = r + dx[next], ncol = c + dy[next];
+			if (nrow < 0 || nrow >= N || ncol < 0 || ncol >= M) continue;
+			if (map[nrow][ncol] > 0) continue;
+
+			r = nrow, c = ncol, d = next;
+			break;
+		}
+
+		if (i == 4) {
+			next = (d + 2) % 4;
+			nrow = r + dx[next], ncol = c + dy[next];
+			if (nrow < 0 || nrow >= N || ncol < 0 || ncol >= M || map[nrow][ncol] == 1) break;
+			r = nrow;
+			c = ncol;
+		}
+	}
+
+	printf("%d", ans);
+}
