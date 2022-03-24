@@ -1,0 +1,48 @@
+#include <stdio.h>
+
+int K, cycle[5][8];
+bool v[5];
+
+void rotate(int num, int dir) {
+
+	v[num] = true;
+	if (num - 1 >= 1 && !v[num - 1] && cycle[num - 1][2] != cycle[num][6])
+		rotate(num - 1, dir * -1);
+
+	if (num + 1 <= 4 && !v[num + 1] && cycle[num][2] != cycle[num + 1][6])
+		rotate(num + 1, dir * -1);
+
+	int temp;
+	if (dir == 1) {
+		temp = cycle[num][7];
+		for (int i = 7; i > 0; i--)
+			cycle[num][i] = cycle[num][i - 1];
+		cycle[num][0] = temp;
+	}
+	else {
+		temp = cycle[num][0];
+		for (int i = 0; i < 7; i++)
+			cycle[num][i] = cycle[num][i + 1];
+		cycle[num][7] = temp;
+	}
+}
+
+int main() {
+	for (int i = 1; i <= 4; i++)
+		for (int j = 0; j < 8; j++)
+			scanf("%1d", &cycle[i][j]);
+
+	scanf("%d", &K);
+	int num, dir;
+	for (int i = 0; i < K; i++) {
+		scanf("%d %d", &num, &dir);
+		for (int j = 1; j <= 4; j++) v[j] = false;
+		rotate(num, dir);
+	}
+
+	int ans = 0;
+	for (int i = 1; i <= 4; i++)
+		ans += cycle[i][0] * (1 << (i - 1));
+
+	printf("%d", ans);
+}
