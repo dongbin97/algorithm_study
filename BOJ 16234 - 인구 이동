@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int row, col;
+}coor;
+
+int N, L, R, A[50][50];
+vector<coor> graph[50][50];
+vector<coor> temp;
+bool v[50][50];
+
+void init() {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			graph[i][j].clear();
+			v[i][j] = false;
+		}
+	}
+}
+
+int dfs(int row, int col) {
+	v[row][col] = true;
+	temp.push_back({ row,col });
+	int sum = A[row][col];
+
+	for (coor x : graph[row][col]) {
+		if (v[x.row][x.col]) continue;
+		sum += dfs(x.row, x.col);
+	}
+	
+	return sum;
+}
+
+int main() {
+	scanf("%d %d %d", &N, &L, &R);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			scanf("%d", &A[i][j]);
+
+	int ans = 0;
+	bool flag;
+	while (true) {
+		flag = false;
+		
+		init();
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (i + 1 < N) {
+					int diff = abs(A[i][j] - A[i + 1][j]);
+					if (L <= diff && diff <= R) {
+						graph[i][j].push_back({ i + 1,j });
+						graph[i + 1][j].push_back({ i,j });
+						flag = true;
+					}
+				}
+
+				if (j + 1 < N) {
+					int diff = abs(A[i][j] - A[i][j + 1]);
+					if (L <= diff && diff <= R) {
+						graph[i][j].push_back({ i,j + 1 });
+						graph[i][j + 1].push_back({ i,j });
+						flag = true;
+					}
+				}
+			}
+		}
+
+		if (!flag) break;
+		ans++;
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (v[i][j]) continue;
+				temp.clear();
+				int sum = dfs(i, j);
+				int val = sum / temp.size();
+
+				for (coor x : temp)
+					A[x.row][x.col] = val;
+			}
+		}
+	}
+
+	printf("%d", ans);
+}
