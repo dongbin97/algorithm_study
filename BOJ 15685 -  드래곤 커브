@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+typedef struct {
+	int row, col;
+}coor;
+
+int N, x, y, d, g, map[101][101];
+int dx[] = { 0,-1,0,1 }, dy[] = { 1,0,-1,0 };
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%d %d %d %d", &x, &y, &d, &g);
+		
+		vector<coor> v;
+
+		int row = y, col = x;
+		
+		v.push_back({ row,col });
+		v.push_back({ row + dx[d], col + dy[d] });
+
+		for (int i = 1; i <= g; i++) {
+			int v_sz = v.size();
+			int prow = v[v_sz - 1].row, pcol = v[v_sz - 1].col;
+			for (int j = v_sz - 2; j >= 0; j--) 
+				v.push_back({ prow + (v[j].col - pcol), pcol + (prow - v[j].row) });
+		}
+
+		for (coor t : v) {
+			if (0 <= t.row && t.row <= 100 && 0 <= t.col && t.col <= 100)
+				map[t.row][t.col] = true;
+		}
+	}
+
+	int ans = 0;
+	for (int i = 1; i <= 100; i++) {
+		for (int j = 1; j <= 100; j++) {
+			if (map[i - 1][j - 1] && map[i - 1][j] && map[i][j - 1] && map[i][j])
+				ans++;
+		}
+	}
+
+	printf("%d", ans);
+}
