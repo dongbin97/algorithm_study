@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+typedef struct {
+	int row, col, cam;
+}coor;
+
+int N, M, map[8][8], temp[8][8], camera[8], cnt, ans = 64;
+int dx[] = { -1,0,1,0 }, dy[] = { 0,1,0,-1 };
+vector<coor> v;
+
+void check(int i, int dir) {
+	int nrow = v[i].row + dx[dir], ncol = v[i].col + dy[dir];
+	while (0 <= nrow && nrow < N && 0 <= ncol && ncol < M && temp[nrow][ncol] != 6) {
+		temp[nrow][ncol] = -1;
+		nrow = nrow + dx[dir];
+		ncol = ncol + dy[dir];
+	}
+}
+
+void recur(int idx) {
+	if (idx == cnt) {
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < M; j++)
+				temp[i][j] = map[i][j];
+
+		for (int i = 0; i < cnt; i++) {
+			if (v[i].cam == 1) check(i, camera[i]);
+			else if (v[i].cam == 2) {
+				check(i, camera[i]);
+				check(i, camera[i] + 2);
+			}
+			else if (v[i].cam == 3) {
+				check(i, camera[i]);
+				check(i, (camera[i] + 1) % 4);
+			}
+			else if (v[i].cam == 4) {
+				check(i, (camera[i] + 3) % 4);
+				check(i, camera[i]);
+				check(i, (camera[i] + 1) % 4);
+			}
+			else {
+				for (int j = 0; j < 4; j++)
+					check(i, j);
+			}
+		}
+
+		int count = 0;
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < M; j++)
+				if (temp[i][j] == 0) count++;
+
+		if (ans > count) ans = count;
+		return;
+	}
+
+	if (v[idx].cam == 1 || v[idx].cam == 3 || v[idx].cam == 4) {
+		for (int i = 0; i < 4; i++) {
+			camera[idx] = i;
+			recur(idx + 1);
+		}
+	}
+	else if (v[idx].cam == 2) {
+		for (int i = 0; i < 2; i++) {
+			camera[idx] = i;
+			recur(idx + 1);
+		}
+	}
+	else {
+		camera[idx] = 0;
+		recur(idx + 1);
+	}
+}
+
+int main() {
+
+	scanf("%d %d", &N, &M);
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			scanf("%d", &map[i][j]);
+			if (0 < map[i][j] && map[i][j] < 6)
+				v.push_back({ i,j, map[i][j] });
+		}
+	}
+		
+	cnt = v.size();
+
+	recur(0);
+
+	printf("%d", ans);
+}
