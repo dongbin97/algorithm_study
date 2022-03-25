@@ -1,0 +1,202 @@
+#include <stdio.h>
+
+int T, n;
+char cube[6][3][3], temp[3];
+char command[3];
+
+void init() {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			cube[0][i][j] = 'w';
+			cube[1][i][j] = 'y';
+			cube[2][i][j] = 'r';
+			cube[3][i][j] = 'o';
+			cube[4][i][j] = 'g';
+			cube[5][i][j] = 'b';
+		}
+	}
+}
+
+void self(int side, char d) {
+	int temp;
+	if (d == '+') {
+		temp = cube[side][0][0];
+		cube[side][0][0] = cube[side][2][0];
+		cube[side][2][0] = cube[side][2][2];
+		cube[side][2][2] = cube[side][0][2];
+		cube[side][0][2] = temp;
+
+		temp = cube[side][0][1];
+		cube[side][0][1] = cube[side][1][0];
+		cube[side][1][0] = cube[side][2][1];
+		cube[side][2][1] = cube[side][1][2];
+		cube[side][1][2] = temp;
+	}
+	else {
+		temp = cube[side][0][0];
+		cube[side][0][0] = cube[side][0][2];
+		cube[side][0][2] = cube[side][2][2];
+		cube[side][2][2] = cube[side][2][0];
+		cube[side][2][0] = temp;
+
+		temp = cube[side][0][1];
+		cube[side][0][1] = cube[side][1][2];
+		cube[side][1][2] = cube[side][2][1];
+		cube[side][2][1] = cube[side][1][0];
+		cube[side][1][0] = temp;
+	}
+}
+
+void rotate(char s, char d) {
+	if (s == 'U') {
+		self(0, d);
+		for (int i = 0; i < 3; i++)
+			temp[i] = cube[2][0][i];
+
+		if (d == '+') {
+			for (int i = 0; i < 3; i++) {
+				cube[2][0][i] = cube[5][0][i];
+				cube[5][0][i] = cube[3][0][i];
+				cube[3][0][i] = cube[4][0][i];
+				cube[4][0][i] = temp[i];
+			}
+		}
+		else {
+			for (int i = 0; i < 3; i++) {
+				cube[2][0][i] = cube[4][0][i];
+				cube[4][0][i] = cube[3][0][i];
+				cube[3][0][i] = cube[5][0][i];
+				cube[5][0][i] = temp[i];
+			}
+		}
+	}
+	else if (s == 'D') {
+		self(1, d);
+		for (int i = 0; i < 3; i++)
+			temp[i] = cube[2][2][i];
+
+		if (d == '+') {
+			for (int i = 0; i < 3; i++) {
+				cube[2][2][i] = cube[4][2][i];
+				cube[4][2][i] = cube[3][2][i];
+				cube[3][2][i] = cube[5][2][i];
+				cube[5][2][i] = temp[i];
+			}
+		}
+		else {
+			for (int i = 0; i < 3; i++) {
+				cube[2][2][i] = cube[5][2][i];
+				cube[5][2][i] = cube[3][2][i];
+				cube[3][2][i] = cube[4][2][i];
+				cube[4][2][i] = temp[i];
+			}
+		}
+	}
+	else if (s == 'F') {
+		self(2, d);
+		for (int i = 0; i < 3; i++)
+			temp[i] = cube[0][2][i];
+
+		if (d == '+') {
+			for (int i = 0; i < 3; i++) {
+				cube[0][2][i] = cube[4][2 - i][2];
+				cube[4][2 - i][2] = cube[1][2][i];
+				cube[1][2][i] = cube[5][i][0];
+				cube[5][i][0] = temp[i];
+			}
+		}
+		else {
+			for (int i = 0; i < 3; i++) {
+				cube[0][2][i] = cube[5][i][0];
+				cube[5][i][0] = cube[1][2][i];
+				cube[1][2][i] = cube[4][2 - i][2];
+				cube[4][2 - i][2] = temp[i];
+			}
+		}
+	}
+	else if (s == 'B') {
+		self(3, d);
+		for (int i = 0; i < 3; i++)
+			temp[i] = cube[0][0][i];
+
+		if (d == '+') {
+			for (int i = 0; i < 3; i++) {
+				cube[0][0][i] = cube[5][i][2];
+				cube[5][i][2] = cube[1][0][i];
+				cube[1][0][i] = cube[4][2 - i][0];
+				cube[4][2 - i][0] = temp[i];
+			}
+		}
+		else {
+			for (int i = 0; i < 3; i++) {
+				cube[0][0][i] = cube[4][2 - i][0];
+				cube[4][2 - i][0] = cube[1][0][i];
+				cube[1][0][i] = cube[5][i][2];
+				cube[5][i][2] = temp[i];
+			}
+		}
+	}
+	else if (s == 'L') {
+		self(4, d);
+		for (int i = 0; i < 3; i++)
+			temp[i] = cube[0][i][0];
+
+		if (d == '+') {
+			for (int i = 0; i < 3; i++) {
+				cube[0][i][0] = cube[3][2 - i][2];
+				cube[3][2 - i][2] = cube[1][2 - i][2];
+				cube[1][2 - i][2] = cube[2][i][0];
+				cube[2][i][0] = temp[i];
+			}
+		}
+		else {
+			for (int i = 0; i < 3; i++) {
+				cube[0][i][0] = cube[2][i][0];
+				cube[2][i][0] = cube[1][2 - i][2];
+				cube[1][2 - i][2] = cube[3][2 - i][2];
+				cube[3][2 - i][2] = temp[i];
+			}
+		}
+	}
+	else {
+		self(5, d);
+		for (int i = 0; i < 3; i++)
+			temp[i] = cube[0][i][2];
+
+		if (d == '+') {
+			for (int i = 0; i < 3; i++) {
+				cube[0][i][2] = cube[2][i][2];
+				cube[2][i][2] = cube[1][2 - i][0];
+				cube[1][2 - i][0] = cube[3][2 - i][0];
+				cube[3][2 - i][0] = temp[i];
+			}
+		}
+		else {
+			for (int i = 0; i < 3; i++) {
+				cube[0][i][2] = cube[3][2 - i][0];
+				cube[3][2 - i][0] = cube[1][2 - i][0];
+				cube[1][2 - i][0] = cube[2][i][2];
+				cube[2][i][2] = temp[i];
+			}
+		}
+	}
+}
+
+int main() {
+	scanf("%d", &T);
+	while (T--) {
+		init();
+
+		scanf("%d", &n);
+		for (int i = 0; i < n; i++) {
+			scanf("%s", command);
+			rotate(command[0], command[1]);
+		}
+
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++)
+				printf("%c", cube[0][i][j]);
+			printf("\n");
+		}
+	}
+}
