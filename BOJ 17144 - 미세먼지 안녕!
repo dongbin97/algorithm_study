@@ -1,0 +1,121 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+
+typedef struct {
+	int row, col;
+}coor;
+
+int R, C, T, A[2][50][50];
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+queue<coor> q;
+coor air[2];
+
+void init(int t) {
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+			if (A[(t - 1) % 2][i][j] > 0)
+				q.push({ i,j });
+			A[t % 2][i][j] = 0;
+		}
+	}
+
+	A[t % 2][air[0].row][air[0].col] = -1;
+	A[t % 2][air[1].row][air[1].col] = -1;
+}
+
+int main() {
+	int c = 0;
+	scanf("%d %d %d", &R, &C, &T);
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+			scanf("%d", &A[0][i][j]);
+			if (A[0][i][j] == -1)
+				air[c++] = { i,j };
+		}
+	}
+
+	for (int t = 1; t <= T; t++) {
+
+		init(t);
+
+		while (!q.empty()) {
+			coor x = q.front(); q.pop();
+			int cnt = 0;
+			for (int i = 0; i < 4; i++) {
+				int nrow = x.row + dx[i], ncol = x.col + dy[i];
+				if (nrow < 0 || nrow >= R || ncol < 0 || ncol >= C) continue;
+				if (A[t % 2][nrow][ncol] == -1) continue;
+
+				A[t % 2][nrow][ncol] += A[(t - 1) % 2][x.row][x.col] / 5;
+				cnt++;
+			}
+			A[t % 2][x.row][x.col] += (A[(t - 1) % 2][x.row][x.col] - (A[(t - 1) % 2][x.row][x.col] / 5) * cnt);
+		}
+
+		int row = air[0].row, col = air[0].col;
+		while (col > 0) {
+			A[t % 2][row][col] = A[t % 2][row][col - 1];
+			col--;
+		}
+		while (row > 0) {
+			A[t % 2][row][col] = A[t % 2][row - 1][col];
+			row--;
+		}
+		while (col < C - 1) {
+			A[t % 2][row][col] = A[t % 2][row][col + 1];
+			col++;
+		}
+		while (row < air[0].row) {
+			A[t % 2][row][col] = A[t % 2][row + 1][col];
+			row++;
+		}
+		while (col > air[0].col) {
+			A[t % 2][row][col] = A[t % 2][row][col - 1];
+			col--;
+		}
+		if (air[0].col + 1 < C)
+			A[t % 2][air[0].row][air[0].col + 1] = 0;
+		else
+			A[t % 2][air[0].row - 1][air[0].col] = 0;
+
+		row = air[1].row, col = air[1].col;
+		while (col > 0) {
+			A[t % 2][row][col] = A[t % 2][row][col - 1];
+			col--;
+		}
+		while (row < R - 1) {
+			A[t % 2][row][col] = A[t % 2][row + 1][col];
+			row++;
+		}
+		while (col < C - 1) {
+			A[t % 2][row][col] = A[t % 2][row][col + 1];
+			col++;
+		}
+		while (row > air[1].row) {
+			A[t % 2][row][col] = A[t % 2][row - 1][col];
+			row--;
+		}
+		while (col > air[1].col) {
+			A[t % 2][row][col] = A[t % 2][row][col - 1];
+			col--;
+		}
+		if (air[1].col + 1 < C)
+			A[t % 2][air[1].row][air[1].col + 1] = 0;
+		else
+			A[t % 2][air[1].row + 1][air[1].col] = 0;
+
+		A[t % 2][air[0].row][air[0].col] = -1;
+		A[t % 2][air[1].row][air[1].col] = -1;
+	}
+
+	int ans = 0;
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+			if (A[T % 2][i][j] > 0)
+				ans += A[T % 2][i][j];
+		}
+	}
+
+	printf("%d", ans);
+}
