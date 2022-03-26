@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int row, col;
+}coor;
+
+int N, map[20][20], sh_row, sh_col, sh_size = 2, cnt = 0;
+int dx[] = { -1,0,0,1 }, dy[] = { 0,-1,1,0 };
+queue<coor> q;
+int v[20][20];
+vector<coor> candidate;
+
+void init() {
+	candidate.clear();
+	while (!q.empty()) q.pop();
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			v[i][j] = 0;
+}
+
+bool comp(coor a, coor b) {
+	if (a.row == b.row) return a.col < b.col;
+	else return a.row < b.row;
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			scanf("%d", &map[i][j]);
+			if (map[i][j] == 9) {
+				map[i][j] = 0;
+				sh_row = i;
+				sh_col = j;
+			}
+		}
+	}
+		
+	int ans = 0;
+	while (1) {
+		init();
+
+		q.push({ sh_row, sh_col });
+		v[sh_row][sh_col] = 1;
+
+		while (!q.empty()) {
+			if (candidate.size() > 0) break;
+
+			int q_sz = q.size();
+			for (int t = 0; t < q_sz; t++) {
+				coor x = q.front(); q.pop();
+				
+				for (int i = 0; i < 4; i++) {
+					int nrow = x.row + dx[i], ncol = x.col + dy[i];
+					if (nrow < 0 || nrow >= N || ncol < 0 || ncol >= N) continue;
+					if (v[nrow][ncol]>0) continue;
+					if (map[nrow][ncol] > sh_size) continue;
+
+					if (0 < map[nrow][ncol] && map[nrow][ncol] < sh_size && v[nrow][ncol]==0) 
+						candidate.push_back({ nrow,ncol });
+					
+					v[nrow][ncol] = v[x.row][x.col] + 1;
+					q.push({ nrow, ncol });
+				}
+			}
+		}
+
+		if (candidate.size() > 0) {
+			sort(candidate.begin(), candidate.end(), comp);
+
+			ans = ans + (v[candidate[0].row][candidate[0].col] - 1);
+			cnt++;
+			if (sh_size == cnt) {
+				sh_size++; 
+				cnt = 0;
+			}
+			sh_row = candidate[0].row;
+			sh_col = candidate[0].col;
+			map[sh_row][sh_col] = 0;
+		}
+		else 
+			break;
+		
+	}
+
+	printf("%d", ans);
+}
