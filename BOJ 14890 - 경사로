@@ -1,0 +1,90 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int N, L, map[100][100];
+bool used[100][100];
+
+int main() {
+	scanf("%d %d", &N, &L);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			scanf("%d", &map[i][j]);
+
+	int ans = 0;
+	for (int i = 0; i < N; i++) {
+		bool flag = true;
+		int j = 1;
+		while (j < N) {
+			if (map[i][j - 1] == map[i][j]) j++;
+			else if (abs(map[i][j - 1] - map[i][j]) > 1) {
+				flag = false;
+				break;
+			}
+			else if (map[i][j - 1] < map[i][j]) {
+				for (int len = 0; len < L; len++) {
+					if (j - 1 - len < 0 || map[i][j - 1 - len] != map[i][j] - 1 || used[i][j - 1 - len]) {
+						flag = false;
+						break;
+					}
+					used[i][j - 1 - len] = true;
+				}
+				if (!flag) break;
+				else j++;
+			}
+			else if (map[i][j - 1] > map[i][j]) {
+				for (int len = 0; len < L; len++) {
+					if (j + len >= N || map[i][j + len] != map[i][j - 1] - 1 || used[i][j + len]) {
+						flag = false;
+						break;
+					}
+					used[i][j + len] = true;
+				}
+				if (!flag) break;
+				else j = j + L;
+			}
+		}
+		if (flag) ans++;
+	}
+
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			used[i][j] = false;
+
+	for (int j = 0; j < N; j++) {
+		bool flag = true;
+		int i = 1;
+		while (i < N) {
+			if (map[i - 1][j] == map[i][j]) i++;
+			else if (abs(map[i - 1][j] - map[i][j]) > 1) {
+				flag = false;
+				break;
+			}
+			else if (map[i - 1][j] < map[i][j]) {
+				for (int len = 0; len < L; len++) {
+					if (i - 1 - len < 0 || map[i - 1 - len][j] != map[i][j] - 1 || used[i - 1 - len][j]) {
+						flag = false;
+						break;
+					}
+					used[i - 1 - len][j] = true;
+				}
+				if (!flag) break;
+				else i++;
+			}
+			else if (map[i - 1][j] > map[i][j]) {
+				for (int len = 0; len < L; len++) {
+					if (i + len >= N || map[i + len][j] != map[i - 1][j] - 1 || used[i + len][j]) {
+						flag = false;
+						break;
+					}
+					used[i + len][j] = true;
+				}
+				if (!flag) break;
+				else i = i + L;
+			}
+		}
+		if (flag) ans++;
+	}
+
+	printf("%d", ans);
+}
