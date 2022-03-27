@@ -1,0 +1,56 @@
+#include <stdio.h>
+
+typedef struct {
+	int hor, ver;
+}st;
+
+int  N, M, H, c_sz, ans = 4;
+bool ladder[31][11];
+
+bool check() {
+	for (int num = 1; num <= N; num++) {
+		int res = num;
+		for (int i = 1; i <= H; i++) {
+			if (ladder[i][res - 1]) res--;
+			else if (ladder[i][res]) res++;
+		}
+		if (num != res) return false;
+	}
+	
+	return true;
+}
+
+void recur(int n, int h, int v) {
+	if (ans <= n) return;
+
+	if (check()) {
+		ans = n;
+		return;
+	}
+
+	if (n == 3) return;
+
+	for (int hor = h; hor <= H; hor++) {
+		for (int ver = v; ver < N; ver++) {
+			if (ladder[hor][ver - 1] || ladder[hor][ver] || ladder[hor][ver + 1]) continue;
+			ladder[hor][ver] = true;
+			recur(n + 1, hor, ver + 1);
+			ladder[hor][ver] = false;
+		}
+		v = 1;
+	}
+}
+
+int main() {
+	int hor, ver;
+	scanf("%d %d %d", &N, &M, &H);
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d", &hor, &ver);
+		ladder[hor][ver] = true;
+	}
+
+	recur(0, 1, 1);
+
+	if (ans > 3) ans = -1;
+	printf("%d", ans);
+}
