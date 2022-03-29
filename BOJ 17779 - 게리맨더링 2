@@ -1,0 +1,70 @@
+#include <stdio.h>
+
+int N, A[20][20];
+
+int main() {
+	scanf("%d", &N);
+
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			scanf("%d", &A[i][j]);
+	
+	int ans = 40000;
+	for (int x = 0; x < N - 2; x++) {
+		for (int y = 1; y < N - 1; y++) {
+			for (int d1 = 1; y - d1 >= 0; d1++) {
+				for (int d2 = 1; y + d2 < N && x + d1 + d2 < N; d2++) {
+					int map[20][20] = { 0, };
+					int cnt[6] = { 0, };
+
+					for (int i = 0; i <= d1; i++) {
+						map[x + i][y - i] = 5;
+						map[x + d2 + i][y + d2 - i] = 5;
+					}
+					for (int i = 0; i <= d2; i++) {
+						map[x + i][y + i] = 5;
+						map[x + d1 + i][y - d1 + i] = 5;
+					}
+
+					for (int i = 0; i < x + d1; i++) {
+						for (int j = 0; map[i][j] != 5 && j <= y; j++)
+							map[i][j] = 1;
+					}
+
+					for (int i = 0; i <= x + d2; i++) {
+						for (int j = N - 1; map[i][j] != 5 && j > y; j--)
+							map[i][j] = 2;
+					}
+
+					for (int i = x+d1; i < N; i++) {
+						for (int j = 0; map[i][j] != 5 && j < y-d1+d2; j++)
+							map[i][j] = 3;
+					}
+
+					for (int i = x+d2+1; i < N; i++) {
+						for (int j = N - 1; map[i][j] != 5 && j >= y-d1+d2; j--)
+							map[i][j] = 4;
+					}
+
+					for (int i = 0; i < N; i++) {
+						for (int j = 0; j < N; j++) {
+							if (map[i][j] == 5 || map[i][j] == 0) cnt[5] += A[i][j];
+							else cnt[map[i][j]] += A[i][j];
+						}
+					}
+						
+					int min = 40000, max = 0;
+					for (int i = 1; i <= 5; i++) {
+						if (min > cnt[i]) min = cnt[i];
+						if (max < cnt[i]) max = cnt[i];
+					}
+
+					if (ans > max - min)
+						ans = max - min;
+				}
+			}
+		}
+	}
+
+	printf("%d", ans);
+}
