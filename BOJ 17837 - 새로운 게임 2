@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <stack>
+#include <deque>
+using namespace std;
+
+typedef struct {
+	int row, col, dir;
+}st;
+
+int N, K, map[13][13];
+int dx[] = { 0,0,0,-1,1 }, dy[] = { 0,1,-1,0,0 };
+stack<int> board[13][13];
+st horse[10];
+deque<int> dq;
+
+int main() {
+	scanf("%d %d", &N, &K);
+	for (int i = 1; i <= N; i++)
+		for (int j = 1; j <= N; j++)
+			scanf("%d", &map[i][j]);
+
+	int x, y, d;
+	for (int i = 0; i < K; i++) {
+		scanf("%d %d %d", &x, &y, &d);
+		horse[i] = { x,y,d };
+		board[x][y].push(i);
+	}
+
+	int turn = 1, temp;
+	bool found = false;
+	while (turn <= 1000) {
+		for (int h = 0; h < K; h++) {
+			int row = horse[h].row, col = horse[h].col;
+			int nrow = row + dx[horse[h].dir], ncol = col + dy[horse[h].dir];
+			if (nrow<1 || nrow>N || ncol<1 || ncol>N || map[nrow][ncol] == 2) {
+				int ndir = horse[h].dir % 2 == 1 ? horse[h].dir + 1 : horse[h].dir - 1;
+
+				horse[h].dir = ndir;
+				nrow = row + dx[ndir], ncol = col + dy[ndir];
+
+				if (nrow<1 || nrow>N || ncol<1 || ncol>N || map[nrow][ncol] == 2)
+					nrow = row, ncol = col;
+				else {
+					do {
+						dq.push_back(board[row][col].top());
+						board[row][col].pop();
+					} while (dq.back() != h);
+
+					if (map[nrow][ncol] == 0) {
+						while (!dq.empty()) {
+							temp = dq.back();
+							board[nrow][ncol].push(temp);
+							horse[temp].row = nrow;
+							horse[temp].col = ncol;
+
+							dq.pop_back();
+						}
+					}
+					else if (map[nrow][ncol] == 1) {
+						while (!dq.empty()) {
+							temp = dq.front();
+							board[nrow][ncol].push(temp);
+							horse[temp].row = nrow;
+							horse[temp].col = ncol;
+
+							dq.pop_front();
+						}
+					}
+				}
+			}
+			else {
+				do {
+					dq.push_back(board[row][col].top());
+					board[row][col].pop();
+				} while (dq.back() != h);
+
+				if (map[nrow][ncol] == 0) {
+					while (!dq.empty()) {
+						temp = dq.back();
+						board[nrow][ncol].push(temp);
+						horse[temp].row = nrow;
+						horse[temp].col = ncol;
+
+						dq.pop_back();
+					}
+				}
+				else if (map[nrow][ncol] == 1) {
+					while (!dq.empty()) {
+						temp = dq.front();
+						board[nrow][ncol].push(temp);
+						horse[temp].row = nrow;
+						horse[temp].col = ncol;
+
+						dq.pop_front();
+					}
+				}
+			}
+			if (board[nrow][ncol].size() >= 4) {
+				found = true;
+				break;
+			}
+		}
+
+		if (found) break;
+
+		turn++;
+	}
+
+	if (turn > 1000) turn = -1;
+	printf("%d", turn);
+}
