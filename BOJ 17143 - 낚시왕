@@ -1,0 +1,69 @@
+#include <stdio.h>
+
+typedef struct {
+	bool caught;
+	int r, c, s, d, z;
+}st;
+
+int R, C, M, map[2][101][101];
+int dx[] = { 0,-1,1,0,0 }, dy[] = { 0,0,0,1,-1 };
+st shark[10001];
+
+int main() {
+	scanf("%d %d %d", &R, &C, &M);
+
+	int r, c, s, d, z;
+	for (int i = 1; i <= M; i++) {
+		scanf("%d %d %d %d %d", &r, &c, &s, &d, &z);
+		map[0][r][c] = i;
+		if (d <= 2) shark[i] = { false,r,c,s % (2 * R - 2),d,z };
+		else shark[i] = { false,r,c,s % (2 * C - 2),d,z };
+	}
+
+	int row, col, ans = 0;
+	for (col = 1; col <= C; col++) {
+
+		for (int i = 1; i <= R; i++)
+			for (int j = 1; j <= C; j++)
+				map[col % 2][i][j] = 0;
+
+		row = 1;
+		while (row <= R && map[(col - 1) % 2][row][col] == 0) row++;
+
+		if (row <= R) {
+			shark[map[(col - 1) % 2][row][col]].caught = true;
+			ans += shark[map[(col - 1) % 2][row][col]].z;
+		}
+
+		for (int i = 1; i <= M; i++) {
+			if (shark[i].caught) continue;
+			
+			int crow = shark[i].r, ccol = shark[i].c;
+			for (int j = 0; j < shark[i].s; j++) {
+				int nrow = crow + dx[shark[i].d], ncol = ccol + dy[shark[i].d];
+				if (nrow <= 0 || nrow > R || ncol <= 0 || ncol > C) {
+					shark[i].d = shark[i].d % 2 == 1 ? shark[i].d + 1 : shark[i].d - 1;
+					nrow = crow + dx[shark[i].d], ncol = ccol + dy[shark[i].d];
+				}
+
+				crow = nrow, ccol = ncol;
+			}
+
+			if (map[col % 2][crow][ccol] > 0) {
+				if (shark[map[col % 2][crow][ccol]].z < shark[i].z) {
+					shark[map[col % 2][crow][ccol]].caught = true;
+					map[col % 2][crow][ccol] = i;
+					shark[i].r = crow, shark[i].c = ccol;
+				}
+				else
+					shark[i].caught = true;
+			}
+			else {
+				map[col % 2][crow][ccol] = i;
+				shark[i].r = crow, shark[i].c = ccol;
+			}
+		}
+	}
+
+	printf("%d", ans);
+}
