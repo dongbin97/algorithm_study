@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+
+typedef struct {
+	int r, c;
+}coor;
+
+int N, M, K, map[20][20], dp[20][20], dice[6];
+int dx[] = { 0,1,0,-1 }, dy[] = { 1,0,-1,0 };
+bool v[20][20];
+queue<coor> q;
+
+void move(int d) {
+	int temp = dice[0];
+	if (d == 0) {
+		dice[0] = dice[3];
+		dice[3] = dice[5];
+		dice[5] = dice[2];
+		dice[2] = temp;
+	}
+	else if (d == 1) {
+		dice[0] = dice[1];
+		dice[1] = dice[5];
+		dice[5] = dice[4];
+		dice[4] = temp;
+	}
+	else if (d == 2) {
+		dice[0] = dice[2];
+		dice[2] = dice[5];
+		dice[5] = dice[3];
+		dice[3] = temp;
+	}
+	else {
+		dice[0] = dice[4];
+		dice[4] = dice[5];
+		dice[5] = dice[1];
+		dice[1] = temp;
+	}
+}
+
+void dfs(int r, int c) {
+	v[r][c] = true;
+
+	q.push({ r,c });
+
+	for (int i = 0; i < 4; i++) {
+		int nr = r + dx[i], nc = c + dy[i];
+		if (nr < 0 || nr >= N || nc < 0 || nc >= M) continue;
+		if (v[nr][nc] || map[r][c] != map[nr][nc]) continue;
+
+		dfs(nr, nc);
+	}
+}
+
+int main() {
+	scanf("%d %d %d", &N, &M, &K);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < M; j++)
+			scanf("%d", &map[i][j]);
+
+	dice[0] = 1, dice[1] = 2, dice[2] = 3, dice[3] = 4, dice[4] = 5, dice[5] = 6;
+
+	int row = 0, col = 0, dir = 0, ans = 0;
+	while (K--) {
+		int nrow = row + dx[dir], ncol = col + dy[dir];
+		if (nrow < 0 || nrow >= N || ncol < 0 || ncol >= M) {
+			dir = (dir + 2) % 4;
+			nrow = row + dx[dir], ncol = col + dy[dir];
+		}
+
+		move(dir);
+
+		if (!v[nrow][ncol]) {
+			dfs(nrow, ncol);
+			int sz = q.size();
+			while (!q.empty()) {
+				dp[q.front().r][q.front().c] = sz;
+				q.pop();
+			}
+		}
+
+		ans += map[nrow][ncol] * dp[nrow][ncol];
+
+		if (dice[5] > map[nrow][ncol]) dir = (dir + 1) % 4;
+		else if (dice[5] < map[nrow][ncol]) dir = (dir + 3) % 4;
+		row = nrow, col = ncol;
+	}
+
+	printf("%d", ans);
+}
