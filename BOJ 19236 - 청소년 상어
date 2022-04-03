@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+typedef struct {
+	bool caught;
+	int r, c, d;
+}st;
+
+int ans = 0, dx[] = { -1,-1,0,1,1,1,0,-1 }, dy[] = { 0,-1,-1,-1,0,1,1,1 };
+
+void dfs(int sr, int sc, int eat, vector<vector<int>> map, vector<st> fish) {
+	fish[map[sr][sc]].caught = true;
+	int sd = fish[map[sr][sc]].d;
+	map[sr][sc] = 0;
+
+	for (int i = 1; i <= 16; i++) {
+		if (fish[i].caught) continue;
+		for (int j = 0; j < 8; j++) {
+			int dir = (fish[i].d + j) % 8;
+			int nr = fish[i].r + dx[dir], nc = fish[i].c + dy[dir];
+			if (nr < 0 || nr >= 4 || nc < 0 || nc >= 4) continue;
+			if (nr == sr && nc == sc) continue;
+
+			fish[i].d = dir;
+
+			if (map[nr][nc] == 0) {
+				map[fish[i].r][fish[i].c] = 0;
+				map[nr][nc] = i;
+				fish[i].r = nr, fish[i].c = nc;
+			}
+			else {
+				int t = map[nr][nc];
+				map[nr][nc] = map[fish[i].r][fish[i].c];
+				map[fish[i].r][fish[i].c] = t;
+
+				fish[t].r = fish[i].r, fish[t].c = fish[i].c;
+				fish[i].r = nr, fish[i].c = nc;
+			}
+			break;
+		}
+
+	}
+
+	int cnt = 0;
+	for (int dist = 1; dist < 4; dist++) {
+		int nr = sr + dx[sd] * dist, nc = sc + dy[sd] * dist;
+		if (nr < 0 || nr >= 4 || nc < 0 || nc >= 4) break;
+		if (map[nr][nc] == 0) continue;
+
+		cnt++;
+		dfs(nr, nc, eat + map[nr][nc], map, fish);
+	}
+
+	if (cnt == 0) {
+		if (ans < eat) 
+			ans = eat;
+	}
+}
+
+int main() {
+	int a, b;
+	vector<vector<int>> map(4);
+	vector<st> fish(17);
+	fish[0] = { false,0,0,0 };
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			scanf("%d %d", &a, &b);
+			map[i].push_back(a);
+			fish[a] = { false,i,j,b - 1 };
+		}
+	}
+
+	dfs(0, 0, map[0][0], map, fish);
+
+	printf("%d", ans);
+}
