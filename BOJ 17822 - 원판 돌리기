@@ -1,0 +1,109 @@
+#include <stdio.h>
+
+int N, M, T, x, d, k, plate[51][50], sum = 0, count;
+bool v[51][50];
+
+void spin(int num, int d, int k) {
+	int temp[50];
+	for (int i = 0; i < M; i++)
+		temp[i] = plate[num][i];
+
+	int offset = d == 0 ? M - k : k;
+
+	for (int i = 0; i < M; i++)
+		plate[num][i] = temp[(i + offset) % M];
+	
+}
+
+bool dfs(int i, int j, int cnt) {
+	v[i][j] = true;
+
+	bool found = false;
+
+	if (plate[i][j] == plate[i][(j + 1) % M] && !v[i][(j + 1) % M]) {
+		dfs(i, (j + 1) % M, cnt + 1);
+		found = true;
+	}
+
+	if (plate[i][j] == plate[i][(j + M - 1) % M] && !v[i][(j + M - 1) % M]) {
+		dfs(i, (j + M - 1) % M, cnt + 1);
+		found = true;
+	}
+
+	if (i - 1 >= 1 && plate[i][j] == plate[i - 1][j] && !v[i - 1][j]) {
+		dfs(i - 1, j, cnt + 1);
+		found = true;
+	}
+
+	if (i + 1 <= N && plate[i][j] == plate[i + 1][j] && !v[i + 1][j]) {
+		dfs(i + 1, j, cnt + 1);
+		found = true;
+	}
+
+	if (cnt > 1 || found) {
+		sum -= plate[i][j];
+		count--;
+		plate[i][j] = 0;
+
+		return true;
+	}
+	else return false;
+}
+
+void check() {
+	for (int i = 1; i <= N; i++)
+		for (int j = 0; j < M; j++)
+			v[i][j] = false;
+
+	bool found = false;
+	for (int i = 1; i <= N; i++)
+		for (int j = 0; j < M; j++)
+			if (plate[i][j] > 0 && !v[i][j])
+				found = found | dfs(i, j, 1);
+
+	if (!found) {
+		int temp = sum;
+		for (int i = 1; i <= N; i++) {
+			for (int j = 0; j < M; j++) {
+				if (plate[i][j] > 0) {
+					if (plate[i][j] * count > temp) {
+						plate[i][j]--;
+						sum--;
+					}
+					else if (plate[i][j] * count < temp) {
+						plate[i][j]++;
+						sum++;
+					}
+				}
+			}
+		}
+	}
+}
+
+int main() {
+	scanf("%d %d %d", &N, &M, &T);
+	for (int i = 1; i <= N; i++) {
+		for (int j = 0; j < M; j++) {
+			scanf("%d", &plate[i][j]);
+			sum += plate[i][j];
+		}
+	}
+		
+	count = N * M;
+
+	while (T-- && count > 0) {
+		scanf("%d %d %d", &x, &d, &k);
+
+		for (int i = x; i <= N; i += x)
+			spin(i, d, k);
+
+		check();
+	}
+
+	int ans = 0;
+	for (int i = 1; i <= N; i++)
+		for (int j = 0; j < M; j++)
+			ans += plate[i][j];
+
+	printf("%d", ans);
+}
