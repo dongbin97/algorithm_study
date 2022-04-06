@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int N, M, dp[40];
+vector<int> v;
+
+int fibo(int n) {
+	if (dp[n] > 0) return dp[n];
+	if (n <= 1) return (dp[n] = 1);
+
+	return fibo(n - 2) + fibo(n - 1);
+}
+
+int main() {
+	scanf("%d", &N);
+	scanf("%d", &M);
+
+	int vip;
+	for (int i = 0; i < M; i++) {
+		scanf("%d", &vip);
+		v.push_back(vip);
+	}
+
+	sort(v.begin(), v.end());
+
+	int s = 0, ans = 1;
+	for (int i = 0; i < M; i++) {
+		ans *= fibo(v[i] - s - 1);
+		s = v[i];
+	}
+	ans *= fibo(N - s);
+
+	printf("%d", ans);
+}
