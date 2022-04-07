@@ -1,0 +1,139 @@
+#include <stdio.h>
+
+int N, t, x, y, score = 0;
+bool blue[4][6], green[6][4];
+
+bool check_to_move(int t, int row, int col, int color) {
+	if (color == 0) { //blue
+		if (t < 3) return col + 1 < 6 && !blue[row][col + 1];
+		else return col + 1 < 6 && !blue[row][col + 1] && !blue[row + 1][col + 1];
+	}
+	else { //green
+		if (t == 2) return row + 1 < 6 && !green[row + 1][col] && !green[row + 1][col + 1];
+		else return row + 1 < 6 && !green[row + 1][col];
+	}
+}
+
+void move_blue(int t, int x, int y) {
+	int row = x, col = 1;
+	while (check_to_move(t, row, col, 0)) col++;
+
+	if (t == 1) blue[row][col] = true;
+	else if (t == 2) {
+		blue[row][col - 1] = true;
+		blue[row][col] = true;
+	}
+	else {
+		blue[row][col] = true;
+		blue[row + 1][col] = true;
+	}
+
+	int j = 5;
+	while (j >= 0) {
+		int cnt = 0;
+		for (int i = 0; i < 4; i++)
+			if (blue[i][j]) cnt++;
+
+		if (cnt == 4) {
+			score++;
+			col++;
+			for (int x = j; x >= 1; x--)
+				for (int i = 0; i < 4; i++)
+					blue[i][x] = blue[i][x - 1];
+
+			for (int i = 0; i < 4; i++) blue[i][0] = false;
+		}
+		else j--;
+	}
+
+	int jump = 0;
+	for (int j = 1; j >= 0; j--) {
+		for (int i = 0; i < 4; i++) {
+			if (blue[i][j]) {
+				jump++;
+				break;
+			}
+		}
+	}
+
+	if (jump > 0) {
+		for (int j = 5; j >= 0; j--) {
+			for (int i = 0; i < 4; i++) {
+				if (j < 2) blue[i][j] = false;
+				else blue[i][j] = blue[i][j - jump];
+			}
+		}
+	}
+}
+
+void move_green(int t, int x, int y) {
+	int row = 1, col = y;
+	while (check_to_move(t, row, col, 1)) row++;
+
+	if (t == 1) green[row][col] = true;
+	else if (t == 2) {
+		green[row][col] = true;
+		green[row][col + 1] = true;
+	}
+	else {
+		green[row - 1][col] = true;
+		green[row][col] = true;
+	}
+
+	int i = 5;
+	while (i >= 0) {
+		int cnt = 0;
+		for (int j = 0; j < 4; j++)
+			if (green[i][j]) cnt++;
+
+		if (cnt == 4) {
+			score++;
+			row++;
+			for (int x = i; x >= 1; x--)
+				for (int j = 0; j < 4; j++)
+					green[x][j] = green[x - 1][j];
+
+			for (int j = 0; j < 4; j++) green[0][j] = false;
+		}
+		else i--;
+	}
+
+	int jump = 0;
+	for (int i = 1; i >= 0; i--) {
+		for (int j = 0; j < 4; j++) {
+			if (green[i][j]) {
+				jump++;
+				break;
+			}
+		}
+	}
+
+	if (jump > 0) {
+		for (int i = 5; i >= 0; i--) {
+			for (int j = 0; j < 4; j++) {
+				if (i < 2) green[i][j] = false;
+				else green[i][j] = green[i - jump][j];
+			}
+		}
+	}
+}
+
+int main() {
+	scanf("%d", &N);
+	while (N--) {
+		scanf("%d %d %d", &t, &x, &y);
+
+		move_blue(t, x, y);
+		move_green(t, x, y);
+	}
+
+	int cnt = 0;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 2; j < 6; j++) {
+			if (blue[i][j]) cnt++;
+			if (green[j][i]) cnt++;
+		}
+	}
+
+	printf("%d\n%d", score, cnt);
+}
