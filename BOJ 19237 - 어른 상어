@@ -1,0 +1,96 @@
+#include <stdio.h>
+
+typedef struct {
+	int shark, scent;
+}st;
+
+typedef struct{
+	int row,col;
+}coor;
+
+st map[2][20][20];
+coor sh[401];
+int N,M,k,dir[401],prior[1001][5][4], loc[20][20];
+int dx[] = { 0,-1,1,0,0 }, dy[] = { 0,0,0,-1,1 };
+
+int main() {
+	scanf("%d %d %d", &N, &M, &k);
+
+	int shark;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			scanf("%d", &shark);
+			if (shark == 0) map[0][i][j] = { 0,0 };
+			else {
+				sh[shark] = { i,j };
+				loc[i][j] = shark;
+				map[0][i][j] = { shark,k };
+			}
+		}
+	}
+
+	for (int i = 1; i <= M; i++)
+		scanf("%d", &dir[i]);
+
+	for (int i = 1; i <= M; i++) 
+		for (int j = 1; j <= 4; j++) 
+			for (int e = 0; e < 4; e++)
+				scanf("%d", &prior[i][j][e]);
+		
+	int turn = 0, cnt = M;
+	while (turn <= 1000 ) {
+		turn++;
+
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < N; j++)
+				map[turn % 2][i][j] = map[(turn - 1) % 2][i][j];
+
+		for (int i = 1; i <= M; i++) {
+			if (dir[i] < 0) continue;
+			int next_row, next_col, next_dir;
+			bool found = false;
+			for (int e = 0; e < 4; e++) {
+				int nr = sh[i].row + dx[prior[i][dir[i]][e]], nc = sh[i].col + dy[prior[i][dir[i]][e]];
+				if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+				
+				if (map[(turn-1)%2][nr][nc].scent == 0) {
+					next_row = nr, next_col = nc, next_dir = prior[i][dir[i]][e];
+					break;
+				}
+				else if (map[(turn - 1) % 2][nr][nc].shark == i && !found) {
+					found = true;
+					next_row = nr, next_col = nc, next_dir = prior[i][dir[i]][e];
+				}
+			}
+
+			if (loc[next_row][next_col] == 0 || loc[next_row][next_col] > i) {
+				if (loc[next_row][next_col] > 0) {
+					cnt--;
+					dir[loc[next_row][next_col]] = -1;
+				}
+				loc[sh[i].row][sh[i].col] = 0;
+				loc[next_row][next_col] = i;
+				map[turn%2][next_row][next_col] = { i,k };
+				sh[i] = { next_row,next_col };
+				dir[i] = next_dir;
+			}
+			else {
+				cnt--;
+				loc[sh[i].row][sh[i].col] = 0;
+				dir[i] = -1;
+			}
+		}
+		
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (loc[i][j] > 0 || map[turn%2][i][j].scent == 0) continue;
+				else map[turn%2][i][j].scent--;
+			}
+		}
+
+		if (cnt == 1) break;
+	}
+
+	if (turn > 1000) turn = -1;
+	printf("%d", turn);
+}
