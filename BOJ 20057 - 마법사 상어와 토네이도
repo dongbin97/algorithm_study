@@ -1,0 +1,56 @@
+#include <stdio.h>
+
+int N, A[499][499], dir[499][499];
+int dx[] = { 0,-1,0,1 }, dy[] = { -1,0,1,0 };
+int sx[] = { 0,-1,1,-2,-1,1,2,-1,1 }, sy[] = { -2,-1,-1,0,0,0,0,1,1 }, p[] = { 5,10,10,2,7,7,2,1,1 };
+int matrix[4][2][2] = { {{1,0},{0,1}}, {{0,1},{ -1,0}}, {{1,0},{0,-1}}, {{0,-1},{1,0}} };
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			scanf("%d", &A[i][j]);
+			dir[i][j] = -1;
+		}
+	}
+		
+	int cnt = 0, d = 0, row = 0, col = 0;
+	while (cnt < N * N) {
+		dir[row][col] = d;
+
+		int nrow = row + dx[(d + 2) % 4], ncol = col + dy[(d + 2) % 4];
+		if (nrow < 0 || nrow >= N || ncol < 0 || ncol >= N || dir[nrow][ncol] >= 0) {
+			d = (d + 1) % 4;
+			nrow = row + dx[(d + 2) % 4], ncol = col + dy[(d + 2) % 4];
+		}
+
+		row = nrow, col = ncol;
+		cnt++;
+	}
+
+	int ans = 0;
+	row = N / 2, col = N / 2;
+	while (!(row == 0 && col == 0)) {
+		int d = dir[row][col];
+		int trow = row + dx[d], tcol = col + dy[d], nrow, ncol;
+		int sand = A[trow][tcol];
+		for (int i = 0; i < 9; i++) {
+			int allocated = sand * p[i] / 100;
+			nrow = trow + matrix[d][0][0] * sx[i] + matrix[d][0][1] * sy[i];
+			ncol = tcol + matrix[d][1][0] * sx[i] + matrix[d][1][1] * sy[i];
+			if (nrow < 0 || nrow >= N || ncol < 0 || ncol >= N) ans += allocated;
+			else A[nrow][ncol] += allocated;
+			A[trow][tcol] -= allocated;
+		}
+
+		nrow = trow - matrix[d][0][1];
+		ncol = tcol - matrix[d][1][1];
+		if (nrow < 0 || nrow >= N || ncol < 0 || ncol >= N) ans += A[trow][tcol];
+		else A[nrow][ncol] += A[trow][tcol];
+		A[trow][tcol] = 0;
+
+		row = trow, col = tcol;
+	}
+
+	printf("%d", ans);
+}
