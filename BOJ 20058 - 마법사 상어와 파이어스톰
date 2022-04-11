@@ -1,0 +1,87 @@
+#include <stdio.h>
+
+int N, Q, A[2][64][64], temp[65][65], L, ans = 0, element;
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+bool visited[64][64];
+
+void spin(int t, int row, int col, int size) {
+	int r = row, c;
+	for (int i = 0; i < size + 1; i++) {
+		c = col;
+		if (i == size / 2) continue;
+		for (int j = 0; j < size + 1; j++) {
+			if (j == size / 2) continue;
+			temp[i][j] = A[t][r][c];
+			c++;
+		}
+		r++;
+	}
+
+	for (int i = 0; i < size; i++) {
+		r = (i < size / 2 ? i : i + 1) - size / 2;;
+		for (int j = 0; j < size; j++) {
+			c = (j < size / 2 ? j : j + 1) - size / 2;
+			int from_r = -1 * c + size / 2, from_c = r + size / 2;
+			A[t][row + i][col + j] = temp[from_r][from_c];
+		}
+	}
+}
+
+void dfs(int r, int c, int size) {
+	visited[r][c] = true;
+	ans += A[Q % 2][r][c];
+	element++;
+
+	for (int i = 0; i < 4; i++) {
+		int nr = r + dx[i], nc = c + dy[i];
+		if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
+		if (A[Q % 2][nr][nc] == 0 || visited[nr][nc]) continue;
+
+		dfs(nr, nc, size);
+	}
+}
+
+int main() {
+	scanf("%d %d", &N, &Q);
+	int A_sz = 1 << N;
+	for (int i = 0; i < A_sz; i++)
+		for (int j = 0; j < A_sz; j++)
+			scanf("%d", &A[0][i][j]);
+
+	for (int turn = 1; turn <= Q; turn++) {
+		scanf("%d", &L);
+
+		if (L > 0) {
+			int sz = 1 << L;
+			for (int i = 0; i < A_sz; i = i + sz)
+				for (int j = 0; j < A_sz; j = j + sz)
+					spin((turn - 1) % 2, i, j, sz);
+		}
+
+		for (int r = 0; r < A_sz; r++) {
+			for (int c = 0; c < A_sz; c++) {
+				int cnt = 0;
+				for (int i = 0; i < 4; i++) {
+					int nr = r + dx[i], nc = c + dy[i];
+					if (nr < 0 || nr >= A_sz || nc < 0 || nc >= A_sz) continue;
+					if (A[(turn - 1) % 2][nr][nc] == 0) continue;
+					cnt++;
+				}
+				if (cnt < 3 && A[(turn - 1) % 2][r][c]>0) A[turn % 2][r][c] = A[(turn - 1) % 2][r][c] - 1;
+				else A[turn % 2][r][c] = A[(turn - 1) % 2][r][c];
+			}
+		}
+	}
+
+	int max_size = 0;
+	for (int i = 0; i < A_sz; i++) {
+		for (int j = 0; j < A_sz; j++) {
+			if (A[Q % 2][i][j] == 0 || visited[i][j]) continue;
+			element = 0;
+			dfs(i, j, A_sz);
+			if (max_size < element) max_size = element;
+		}
+	}
+
+	printf("%d\n%d", ans, max_size);
+}
