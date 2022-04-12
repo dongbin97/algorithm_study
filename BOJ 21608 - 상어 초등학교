@@ -1,0 +1,85 @@
+#include <stdio.h>
+
+typedef struct {
+	int row, col, fr, empty;
+}st;
+
+int N, map[20][20], friends[401][4];
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+
+st comp(st a, st b) {
+	if (a.fr > b.fr) return a;
+	else if(a.fr<b.fr) return b;
+	
+	if (a.empty > b.empty) return a;
+	else if (a.empty < b.empty) return b;
+
+	if (a.row < b.row) return a;
+	else if (a.row > b.row) return b;
+
+	if (a.col < b.col) return a;
+	else return b;
+}
+
+int main() {
+	scanf("%d", &N);
+
+	int M = N * N, num;
+	while (M--) {
+		scanf("%d", &num);
+		for (int i = 0; i < 4; i++)
+			scanf("%d", &friends[num][i]);
+
+		st x = { N,N,-1,-1 };
+		for (int r = 0; r < N; r++) {
+			for (int c = 0; c < N; c++) {
+				if (map[r][c] > 0) continue;
+				int fr = 0, empty = 0;
+				for (int i = 0; i < 4; i++) {
+					int nr = r + dx[i], nc = c + dy[i];
+					if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+					if (map[nr][nc] == 0) empty++;
+					else {
+						bool found = false;
+						for (int j = 0; j < 4; j++) {
+							if (map[nr][nc] == friends[num][j]) {
+								found = true;
+								break;
+							}
+						}
+
+						if (found) fr++;
+					}
+				}
+
+				x = comp(x, { r,c,fr,empty });
+			}
+		}
+
+		map[x.row][x.col] = num;
+	}
+
+	int ans = 0;
+	for (int r = 0; r < N; r++) {
+		for (int c = 0; c < N; c++) {
+			int cnt = 0;
+			for (int i = 0; i < 4; i++) {
+				int nr = r + dx[i], nc = c + dy[i];
+				if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+				for (int j = 0; j < 4; j++) {
+					if (map[nr][nc] == friends[map[r][c]][j]) {
+						cnt++;
+						break;
+					}
+				}
+			}
+
+			if (cnt == 1) ans += 1;
+			else if (cnt == 2) ans += 10;
+			else if (cnt == 3) ans += 100;
+			else if (cnt == 4) ans += 1000;
+		}
+	}
+
+	printf("%d", ans);
+}
