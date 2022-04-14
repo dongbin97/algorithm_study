@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+typedef struct {
+	int row, col;
+}coor;
+
+int N, M, A[51][51], d, s;
+int dx[] = { 0,0,-1,-1,-1,0,1,1,1 }, dy[] = { 0,-1,-1,0,1,1,1,0,-1 };
+bool cloud[51][51];
+vector<coor> cloud_coor;
+
+void move(int dir, int len) {
+	int c_sz = cloud_coor.size();
+	for (int i = 0; i < c_sz; i++) {
+		cloud_coor[i] = { (cloud_coor[i].row + N + dx[dir] * (s % N)) % N, (cloud_coor[i].col + N + dy[dir] * (s % N)) % N };
+		cloud[cloud_coor[i].row][cloud_coor[i].col] = true;
+	}
+}
+
+int main() {
+	scanf("%d %d", &N, &M);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			scanf("%d", &A[i][j]);
+
+	cloud_coor.push_back({ N - 2,0 });
+	cloud_coor.push_back({ N - 2,1 });
+	cloud_coor.push_back({ N - 1,0 });
+	cloud_coor.push_back({ N - 1,1 });
+
+	int ncr, ncc;
+	for (int turn = 1; turn <= M; turn++) {
+
+
+		scanf("%d %d", &d, &s);
+
+		move(d, s);
+
+		for (coor x : cloud_coor)
+			A[x.row][x.col]++;
+
+		for (coor x : cloud_coor) {
+			for (int i = 2; i <= 8; i = i + 2) {
+				int nrow = x.row + dx[i], ncol = x.col + dy[i];
+				if (nrow < 0 || nrow >= N || ncol < 0 || ncol >= N) continue;
+				if (A[nrow][ncol] > 0) A[x.row][x.col]++;
+			}
+		}
+
+		cloud_coor.clear();
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (A[i][j] >= 2 && !cloud[i][j]) {
+					A[i][j] -= 2;
+					cloud_coor.push_back({ i,j });
+				}
+				cloud[i][j] = false;
+			}
+		}
+	}
+
+	int ans = 0;
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			ans += A[i][j];
+
+	printf("%d", ans);
+}
