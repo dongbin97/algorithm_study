@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+
+typedef struct{
+	int row, col, dir;
+}st;
+
+int M, S, fx, fy, d, sx, sy, scent[5][5];
+int dx[] = { 0,-1,-1,-1,0,1,1,1 }, dy[] = { -1,-1,0,1,1,1,0,-1 };
+queue<int> map[2][5][5];
+
+int fish_cnt, arr[3], temp[3];
+int dt[] = { 2,0,6,4 };
+
+void recur(int row, int col, int cnt, int turn) {
+	if (cnt == 3) {
+		int res = 0;
+		bool v[5][5] = { false, };
+		int r = sx, c = sy;
+		for (int i = 0; i < 3; i++) {
+			r = r + dx[dt[temp[i]]], c = c + dy[dt[temp[i]]];
+
+			if (!v[r][c]) {
+				v[r][c] = true;
+				res += map[turn][r][c].size();
+			}
+		}
+
+		if (fish_cnt < res) {
+			for (int i = 0; i < 3; i++)
+				arr[i] = temp[i];
+			fish_cnt = res;
+		}
+
+		return;
+	}
+
+	for (int i = 0; i < 4; i++) {
+		int nrow = row + dx[dt[i]], ncol = col + dy[dt[i]];
+		if (nrow < 1 || nrow>4 || ncol < 1 || ncol>4) continue;
+		temp[cnt] = i;
+		recur(nrow, ncol, cnt + 1, turn);
+	}
+}
+
+int main() {
+	scanf("%d %d", &M, &S);
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d %d", &fx, &fy, &d);
+		map[0][fx][fy].push(d - 1);
+	}
+	scanf("%d %d", &sx, &sy);
+
+	for (int turn = 1; turn <= S; turn++) {
+		for (int r = 1; r <= 4; r++) {
+			for (int c = 1; c <= 4; c++) {
+				int q_sz = map[(turn - 1) % 2][r][c].size();
+				for (int i = 0; i < q_sz; i++) {
+					int dir = map[(turn - 1) % 2][r][c].front();  map[(turn - 1) % 2][r][c].pop();
+
+					int j, nr = r, nc = c;
+					for (j = 0; j < 8; j++) {
+						nr = r + dx[(dir + 8 - j) % 8], nc = c + dy[(dir + 8 - j) % 8];
+						if (nr < 1 || nr > 4 || nc < 1 || nc > 4) continue;
+						if (scent[nr][nc] > 0 || (nr == sx && nc == sy)) continue;
+
+						break;
+					}
+
+					if (j == 8) map[turn % 2][r][c].push(dir);
+					else map[turn % 2][nr][nc].push((dir + 8 - j) % 8);
+					map[(turn - 1) % 2][r][c].push(dir);
+				}
+			}
+		}
+		
+		fish_cnt = -1; arr[0] = -1;
+		recur(sx, sy, 0, turn % 2);
+
+
+		if (arr[0] != -1) {
+			for (int i = 0; i < 3; i++) {
+				sx = sx + dx[dt[arr[i]]], sy = sy + dy[dt[arr[i]]];
+				while (!map[turn % 2][sx][sy].empty()) {
+					map[turn % 2][sx][sy].pop();
+					scent[sx][sy] = turn;
+				}
+			}
+		}
+
+		for (int r = 1; r <= 4; r++) {
+			for (int c = 1; c <= 4; c++) {
+				if (turn >= 3 && scent[r][c] == turn - 2)
+					scent[r][c] = 0;
+
+				
+			}
+		}
+
+		for (int r = 1; r <= 4; r++) {
+			for (int c = 1; c <= 4; c++) {
+				while (!map[(turn - 1) % 2][r][c].empty()) {
+					map[turn % 2][r][c].push(map[(turn - 1) % 2][r][c].front());
+					map[(turn - 1) % 2][r][c].pop();
+				}
+			}
+		}
+	}
+
+	int ans = 0;
+	for (int i = 1; i <= 4; i++)
+		for (int j = 1; j <= 4; j++)
+			ans += map[S % 2][i][j].size();
+
+	printf("%d", ans);
+}
