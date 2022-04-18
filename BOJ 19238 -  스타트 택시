@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+
+typedef struct {
+	int row, col;
+}coor;
+
+typedef struct {
+	coor coordinate;
+	int cost;
+}st;
+
+int N, M, fuel, tr, tc, map[20][20], passenger[20][20];
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+coor target[401];
+
+coor comp(coor a, coor b) {
+	if (a.row == b.row) {
+		if (a.col < b.col) return a;
+		else return b;
+	}
+	else if (a.row < b.row) return a;
+	else return b;
+}
+
+st find_passenger() {
+
+	int v[20][20] = { 0, };
+	queue<coor> q;
+
+	coor p = { N,N };
+	q.push({ tr,tc });
+	v[tr][tc] = 1;
+
+	if (passenger[tr][tc] > 0)
+		return { {tr,tc}, 0 };
+
+	while (!q.empty()) {
+		int q_sz = q.size();
+		while(q_sz--) {
+			coor x = q.front(); q.pop();
+
+			for (int i = 0; i < 4; i++) {
+				int nr = x.row + dx[i], nc = x.col + dy[i];
+				if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+				if (map[nr][nc] == 1 || v[nr][nc] > 0) continue;
+
+				v[nr][nc] = v[x.row][x.col] + 1;
+				q.push({nr,nc});
+
+				if (passenger[nr][nc] > 0)
+					p = comp(p, { nr,nc });
+			}
+		}
+
+		if (p.row < N) break;
+
+	}
+
+	if (p.row >= N) return { p,-1 };
+	else return { p,v[p.row][p.col] - 1 };
+}
+
+int go_target(int tar_row, int tar_col) {
+	int v[20][20] = { 0, };
+	queue<coor> q;
+	bool found = false;
+
+	q.push({ tr,tc });
+	v[tr][tc] = 1;
+
+	while (!q.empty()) {
+		coor x = q.front(); q.pop();
+
+		for (int i = 0; i < 4; i++) {
+			int nr = x.row + dx[i], nc = x.col + dy[i];
+			if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+			if (map[nr][nc] == 1 || v[nr][nc] > 0) continue;
+
+			v[nr][nc] = v[x.row][x.col] + 1;
+			q.push({ nr,nc });
+
+			if (nr == tar_row && nc == tar_col) {
+				found = true;
+				break;
+			}
+		}
+
+		if (found) break;
+	}
+
+	return v[tar_row][tar_col] - 1;
+}
+
+int main() {
+	scanf("%d %d %d", &N, &M, &fuel);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			scanf("%d", &map[i][j]);
+
+	scanf("%d %d", &tr, &tc);
+	tr = tr - 1, tc = tc - 1;
+
+	int from_r, from_c, to_r, to_c;
+	for (int i = 1; i <= M; i++) {
+		scanf("%d %d %d %d", &from_r, &from_c, &to_r, &to_c);
+		passenger[from_r - 1][from_c - 1] = i;
+		target[i] = { to_r - 1, to_c - 1 };
+	}
+
+	int temp;
+	while (fuel > 0 && M > 0) {
+
+		st x = find_passenger();
+		if (x.cost < 0 || x.cost > fuel) break;
+
+		fuel -= x.cost;
+		temp = passenger[x.coordinate.row][x.coordinate.col];
+		passenger[x.coordinate.row][x.coordinate.col] = 0;
+		tr = x.coordinate.row, tc = x.coordinate.col;
+
+		int c = go_target(target[temp].row, target[temp].col);
+
+		if (c < 0 || c > fuel) break;
+
+		fuel -= c;
+		tr = target[temp].row, tc = target[temp].col;
+
+		M--;
+		fuel += 2 * c;
+	}
+
+	if (M > 0) fuel = -1;
+	printf("%d", fuel);
+}
