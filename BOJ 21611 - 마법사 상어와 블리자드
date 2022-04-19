@@ -1,0 +1,113 @@
+#include <stdio.h>
+
+typedef struct {
+	int row, col;
+}coor;
+
+int N, map[2][49][49], M, d, s;
+int dx[] = { 0,-1,1,0,0 }, dy[] = { 0,0,0,-1,1 }, dt[] = { 4,2,3,1 };
+bool v[49][49];
+coor point[2500];
+
+void move(int t) {
+	int zero = 1;
+	while (map[t][point[zero].row][point[zero].col] > 0) zero++;
+
+	for (int i = zero + 1; i < N * N; i++) {
+		if (map[t][point[i].row][point[i].col] == 0) continue;
+
+		int temp = map[t][point[i].row][point[i].col];
+		map[t][point[i].row][point[i].col] = 0;
+		map[t][point[zero].row][point[zero].col] = temp;
+		zero++;
+	}
+}
+
+int check(int t) {
+	int cnt[4] = { 0, };
+
+	int start = 1, end;
+	while (start < N * N) {
+		if (map[t][point[start].row][point[start].col] == 0) break;
+		end = start;
+
+		while (end < N * N && map[t][point[end].row][point[end].col] == map[t][point[end + 1].row][point[end + 1].col]) end++;
+
+		if (end - start + 1 >= 4) {
+			cnt[map[t][point[start].row][point[start].col]] += (end - start + 1);
+			for (int i = start; i <= end; i++)
+				map[t][point[i].row][point[i].col] = 0;
+		}
+
+		start = end + 1;
+	}
+
+	return cnt[1] + 2 * cnt[2] + 3 * cnt[3];
+}
+
+void restruct(int t) {
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			map[t][i][j] = 0;
+
+	map[t][N / 2][N / 2] = 4;
+
+	int start = 1, end, idx = 1;
+	while (idx < N * N && start < N * N) {
+		if (map[1 - t][point[start].row][point[start].col] == 0) break;
+		end = start;
+
+		while (end < N * N && map[1 - t][point[end].row][point[end].col] == map[1 - t][point[end + 1].row][point[end + 1].col]) end++;
+
+		map[t][point[idx].row][point[idx].col] = end - start + 1;
+		map[t][point[idx + 1].row][point[idx + 1].col] = map[1 - t][point[start].row][point[start].col];
+
+		start = end + 1;
+		idx += 2;
+	}
+}
+
+int main() {
+	scanf("%d %d", &N, &M);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			scanf("%d", &map[0][i][j]);
+	map[0][N / 2][N / 2] = 4;
+
+	int r = 0, c = 0, x = 0, nr, nc;
+	for (int i = N * N - 1; i >= 1; i--) {
+		point[i] = { r,c };
+		v[r][c] = true;
+
+		nr = r + dx[dt[x]], nc = c + dy[dt[x]];
+		if (nr < 0 || nr >= N || nc < 0 || nc >= N || v[nr][nc]) {
+			x = (x + 1) % 4;
+			nr = r + dx[dt[x]], nc = c + dy[dt[x]];
+		}
+		r = nr, c = nc;
+	}
+
+	int ans = 0, res;
+	for (int turn = 1; turn <= M; turn++) {
+		scanf("%d %d", &d, &s);
+		for (int i = 1; i <= s; i++) {
+			int nr = N / 2 + dx[d] * i, nc = N / 2 + dy[d] * i;
+			if (nr < 0 || nr >= N || nc < 0 || nc >= N) break;
+
+			map[(turn - 1) % 2][nr][nc] = 0;
+		}
+
+		move((turn - 1) % 2);
+
+		res = check((turn - 1) % 2);
+		while (res > 0) {
+			ans += res;
+			move((turn - 1) % 2);
+			res = check((turn - 1) % 2);
+		}
+
+		restruct(turn % 2);
+	}
+
+	printf("%d", ans);
+}
