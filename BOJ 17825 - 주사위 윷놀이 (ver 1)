@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+typedef struct {
+	int route, offset;
+}st;
+
+int route[4][21] = { {0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40},
+					{10,13,16,19,},{30,28,27,26,},{20,22,24,25,30,35, } };
+int turn[10], ans = 0, arr[10];
+bool visit[4][21];
+
+void recur(int t, int score, vector<st> horse) {
+	if (t == 10) {
+		if (ans < score)
+			ans = score;
+		return;
+	}
+
+	int cnt = 0;
+	for (int i = 0; i < 4; i++) {
+		if (horse[i].route < 0) continue;
+
+		cnt++;
+		st temp = horse[i];
+
+		if (horse[i].route == 0) {
+			if (horse[i].offset + turn[t] == 5) horse[i] = { 1,0 };
+			else if (horse[i].offset + turn[t] == 10) horse[i] = { 3,0 };
+			else if (horse[i].offset + turn[t] == 15) horse[i] = { 2,0 };
+			else if (horse[i].offset + turn[t] > 20) horse[i] = { -1,-1 };
+			else horse[i].offset += turn[t];
+		}
+		else if (horse[i].route == 1 || horse[i].route == 2) {
+			if (horse[i].offset + turn[t] > 7) horse[i] = { -1,-1 };
+			else if (horse[i].offset + turn[t] == 7) horse[i] = { 0,20 };
+			else if (horse[i].offset + turn[t] >= 4)
+				horse[i] = { 3, horse[i].offset + turn[t] + 3 - 4 };
+			else horse[i].offset += turn[t];
+		}
+		else if (horse[i].route == 3) {
+			if (horse[i].offset + turn[t] > 6) horse[i] = { -1,-1 };
+			else if (horse[i].offset + turn[t] == 6) horse[i] = { 0,20 };
+			else horse[i].offset += turn[t];
+		}
+
+		visit[temp.route][temp.offset] = false;
+		if (horse[i].route < 0) 
+			recur(t + 1, score, horse);
+		else {
+			if (!visit[horse[i].route][horse[i].offset]) {
+				visit[horse[i].route][horse[i].offset] = true;
+				recur(t + 1, score + route[horse[i].route][horse[i].offset], horse);
+				visit[horse[i].route][horse[i].offset] = false;
+			}
+		}
+	    visit[temp.route][temp.offset] = true;
+		horse[i] = temp;
+	}
+
+	if (cnt == 0) {
+		if (ans < score)
+			ans = score;
+	}
+}
+
+int main() {
+	for (int i = 0; i < 10; i++)
+		scanf("%d", &turn[i]);
+
+	vector<st> v;
+	for (int i = 0; i < 4; i++) v.push_back({ 0,0 });
+
+	recur(0,0, v);
+
+	printf("%d", ans);
+}
