@@ -1,0 +1,75 @@
+#include <stdio.h>
+
+typedef struct {
+	int route, offset;
+}st;
+
+int route[4][21] = { {0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40},
+					{10,13,16,19,},{30,28,27,26,},{20,22,24,25,30,35, } };
+int turn[10], ans = 0, arr[10];
+bool visit[4][21];
+
+int check() {
+	st horse[4] = { {0,0},{0,0},{0,0},{0,0} };
+	bool v[4][21] = { false , };
+
+	int score = 0;
+
+	for (int t = 0; t < 10; t++) {
+		int i = arr[t];
+		if (horse[i].route < 0) return 0;
+		st temp = horse[i];
+
+		if (horse[i].route == 0) {
+			if (horse[i].offset + turn[t] == 5) horse[i] = { 1,0 };
+			else if (horse[i].offset + turn[t] == 10) horse[i] = { 3,0 };
+			else if (horse[i].offset + turn[t] == 15) horse[i] = { 2,0 };
+			else if (horse[i].offset + turn[t] > 20) horse[i] = { -1,-1 };
+			else horse[i].offset += turn[t];
+		}
+		else if (horse[i].route == 1 || horse[i].route == 2) {
+			if (horse[i].offset + turn[t] > 7) horse[i] = { -1,-1 };
+			else if (horse[i].offset + turn[t] == 7) horse[i] = { 0,20 };
+			else if (horse[i].offset + turn[t] >= 4)
+				horse[i] = { 3, horse[i].offset + turn[t] + 3 - 4 };
+			else horse[i].offset += turn[t];
+		}
+		else if (horse[i].route == 3) {
+			if (horse[i].offset + turn[t] > 6) horse[i] = { -1,-1 };
+			else if (horse[i].offset + turn[t] == 6) horse[i] = { 0,20 };
+			else horse[i].offset += turn[t];
+		}
+
+		if (v[horse[i].route][horse[i].offset]) return 0;
+
+		v[temp.route][temp.offset] = false;
+		if (horse[i].route >= 0) {
+			v[horse[i].route][horse[i].offset] = true;
+			score += route[horse[i].route][horse[i].offset];
+		}
+	}
+
+	return score;
+}
+
+void recur(int t) {
+	if (t == 10) {
+		int res = check();
+		if (ans < res) ans = res;
+		return;
+	}
+
+	for (int i = 0; i < 4; i++) {
+		arr[t] = i;
+		recur(t + 1);
+	}
+}
+
+int main() {
+	for (int i = 0; i < 10; i++)
+		scanf("%d", &turn[i]);
+    
+	recur(0);
+
+	printf("%d", ans);
+}
