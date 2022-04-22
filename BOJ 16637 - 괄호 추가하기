@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int N, dp[10][2];
+char str[20];
+
+int operation(int num1, int num2, char op) {
+	if (op == '+') return num1 + num2;
+	else if (op == '-') return num1 - num2;
+	else if (op == '*') return num1 * num2;
+}
+
+int main() {
+	scanf("%d", &N);
+	scanf("%s", str);
+
+	int x = N / 2;
+	dp[0][0] = dp[0][1] = str[0] - '0';
+	if (x > 0) dp[1][0] = dp[1][1] = operation(str[0] - '0', str[2] - '0', str[1]);
+	
+	int maximum, minimum, res;
+	for (int i = 2; i <= x; i++) {
+		maximum = minimum = operation(dp[i - 1][0], str[2 * i] - '0', str[2 * i - 1]);
+
+		res = operation(dp[i - 1][1], str[2 * i] - '0', str[2 * i - 1]);
+		maximum = max(maximum, res); minimum = min(minimum, res);
+
+		res = operation(dp[i - 2][0], operation(str[2 * i - 2] - '0', str[2 * i] - '0', str[2 * i - 1]), str[2 * i - 3]);
+		maximum = max(maximum, res); minimum = min(minimum, res);
+
+		res = operation(dp[i - 2][1], operation(str[2 * i - 2] - '0', str[2 * i] - '0', str[2 * i - 1]), str[2 * i - 3]);
+		maximum = max(maximum, res); minimum = min(minimum, res);
+
+		dp[i][0] = maximum;
+		dp[i][1] = minimum;
+	}
+		
+	printf("%d", dp[x][0]);
+}
