@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+
+typedef struct {
+	int row, col;
+}coor;
+
+int N, M, D, map[15][15], temp[16][15];
+int arr[3], ans = 0;
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+
+void init() {
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < M; j++)
+			temp[i][j] = map[i][j];
+
+	for (int j = 0; j < M; j++)
+		temp[N][j] = 0;
+}
+
+coor comp(coor a, coor b) {
+	if (a.col < b.col) return a;
+	else return b;
+}
+
+coor bfs(int start) {
+	int v[16][15] = { 0, };
+	queue<coor> q;
+
+	v[N][start] = 1;
+	q.push({ N, start });
+
+	coor target = { -1,M };
+	while (!q.empty()) {
+		int q_sz = q.size();
+		for (int i = 0; i < q_sz; i++) {
+			coor x = q.front(); q.pop();
+			if (v[x.row][x.col] >= D+ 1) continue;
+
+			for (int j = 0; j < 4; j++) {
+				int nr = x.row + dx[j], nc = x.col + dy[j];
+				if (nr < 0 || nr >= N || nc < 0 || nc >= M) continue;
+				if (v[nr][nc] > 0) continue;
+
+				v[nr][nc] = v[x.row][x.col] + 1;
+				if (temp[nr][nc] == 1) 
+					target = comp(target, { nr,nc });
+				q.push({ nr,nc });
+			}
+		}
+		if (target.row >= 0) break;
+
+	}
+	
+	return target;
+}
+
+void check() {
+	init();
+
+	int res = 0;
+	for (int t = 0; t < N; t++) {
+		coor x[3];
+		for (int i = 0; i < 3; i++) 
+			x[i] = bfs(arr[i]);
+			
+		for (int i = 0; i < 3; i++) {
+			if (x[i].row >= 0 && temp[x[i].row][x[i].col] == 1) {
+				res++;
+				temp[x[i].row][x[i].col] = 0;
+			}
+		}
+
+		for (int i = N - 1; i > 0; i--)
+			for (int j = 0; j < M; j++)
+				temp[i][j] = temp[i - 1][j];
+
+		for (int j = 0; j < M; j++)
+			temp[0][j] = 0;
+	}
+
+	if (ans < res) 
+		ans = res;
+}
+
+void recur(int cnt, int idx) {
+	if (cnt == 3) {
+		check();
+		return;
+	}
+
+	for (int i = idx; i < M; i++) {
+		arr[cnt] = i;
+		recur(cnt + 1, i + 1);
+	}
+}
+
+int main() {
+	scanf("%d %d %d", &N, &M, &D);
+	for (int i = 0; i < N; i++) 
+		for (int j = 0; j < M; j++) 
+			scanf("%d", &map[i][j]);
+		
+	recur(0, 0);
+
+	printf("%d", ans);
+}
