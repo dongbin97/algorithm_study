@@ -1,0 +1,80 @@
+#include <stdio.h>
+
+int N, map[50][9], arr[9], ans = 0;
+bool used[9];
+
+void check() {
+	int turn = 0, player = 0;
+	int res = 0, out_cnt;
+
+	while (turn < N) {
+		out_cnt = 0;
+		bool base[3] = { false, };
+
+		while (out_cnt < 3) {
+			if (map[turn][arr[player]] == 0) out_cnt++;
+			else if (map[turn][arr[player]] == 4) {
+				for (int i = 2; i >= 0; i--) {
+					if (base[i]) {
+						res++;
+						base[i] = false;
+					}
+				}
+				res++;
+			}
+			else {
+				for (int i = 2; i >= 0; i--) {
+					if (i >= 3 - map[turn][arr[player]]) {
+						if (base[i]) {
+							res++;
+							base[i] = false;
+						}
+					}
+					else {
+						base[i + map[turn][arr[player]]] = base[i];
+						base[i] = false;
+					}
+				}
+				base[map[turn][arr[player]] - 1] = true;
+			}
+
+			player = (player + 1) % 9;
+		}
+		turn++;
+	}
+
+	if (ans < res) 
+		ans = res;
+}
+
+void recur(int cnt) {
+	if (cnt == 9) {
+		check();
+		return;
+	}
+
+	for (int i = 1; i < 9; i++) {
+		if (used[i]) continue;
+
+		used[i] = true;
+		arr[cnt] = i;
+		if (cnt == 2) recur(cnt + 2);
+		else recur(cnt + 1);
+
+		used[i] = false;
+	}
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < 9; j++)
+			scanf("%d", &map[i][j]);
+
+	arr[3] = 0;
+	used[0] = true;
+
+	recur(0);
+
+	printf("%d", ans);
+}
