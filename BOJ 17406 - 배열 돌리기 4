@@ -1,0 +1,86 @@
+#include <stdio.h>
+
+typedef struct {
+	int r, c, s;
+}st;
+
+int N, M, K, A[50][50], temp[50][50], r, c, s, arr[6], ans = 10000;
+st op[6];
+bool v[6];
+
+void init() {
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < M; j++)
+			temp[i][j] = A[i][j];
+}
+
+void spin(int srow, int scol, int size) {
+	int t = temp[srow][scol];
+
+	for (int i = 0; i < size - 1; i++) 
+		temp[srow + i][scol] = temp[srow + i + 1][scol];
+
+	for (int i = 0; i < size - 1; i++)
+		temp[srow + size - 1][scol + i] = temp[srow + size - 1][scol + i + 1];
+
+	for (int i = 0; i < size - 1; i++) 
+		temp[srow + size - 1 - i][scol + size - 1] = temp[srow + size - 1 - i - 1][scol + size - 1];
+	
+	for (int i = 0; i < size - 1; i++)
+		temp[srow][scol + size - 1 - i] = temp[srow][scol + size - 1 - i - 1];
+
+	temp[srow][scol + 1] = t;
+
+}
+
+void change() {
+	for (int i = 0; i < K; i++) {
+		int x = arr[i];
+		for (int j = op[x].s; j >= 1; j--) 
+			spin(op[x].r - j, op[x].c - j, 2 * j + 1);
+	}
+}
+
+void check() {
+	int sum;
+	for (int i = 0; i < N; i++) {
+		sum = 0;
+		for (int j = 0; j < M; j++)
+			sum += temp[i][j];
+		if (ans > sum) ans = sum;
+	}
+}
+
+void recur(int cnt) {
+	if (cnt == K) {
+		init();
+		change();
+		check();
+		return;
+	}
+
+	for (int i = 0; i < K; i++) {
+		if (v[i]) continue;
+		v[i] = true;
+		arr[cnt] = i;
+		recur(cnt + 1);
+		v[i] = false;
+	}
+
+}
+
+int main() {
+	scanf("%d %d %d", &N, &M, &K);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < M; j++)
+			scanf("%d", &A[i][j]);
+
+	for (int i = 0; i < K; i++) {
+		scanf("%d %d %d", &r, &c, &s);
+		op[i] = { r-1,c-1,s };
+	}
+
+	recur(0);
+
+	printf("%d", ans);
+}
