@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+#define INF 1000000001
+
+typedef struct {
+	int to, cost;
+}st;
+
+int N, Q, p, q, r, k, v, cost[5001][5001];
+vector<st> graph[5001];
+bool visit[50001], done[5001];
+
+void dfs(int v, int start, int min_usado) {
+	visit[v] = true;
+	cost[start][v] = min_usado;
+
+	for (st x : graph[v]) {
+		if (visit[x.to]) continue;
+		dfs(x.to, start, min(min_usado, x.cost));
+	}
+}
+
+int main() {
+	scanf("%d %d", &N, &Q);
+
+	for (int i = 0; i < N - 1; i++) {
+		scanf("%d %d %d", &p, &q, &r);
+		graph[p].push_back( {q,r });
+		graph[q].push_back({ p,r });
+	}
+
+	int ans;
+	for (int i = 0; i < Q; i++) {
+		scanf("%d %d", &k, &v);
+
+		if (!done[v]) {
+			for (int j = 1; j <= N; j++) visit[j] = false;
+			dfs(v, v, INF);
+			done[v] = true;
+		}
+		ans = 0;
+		for (int j = 1; j <= N; j++) 
+			if (j != v && cost[v][j] >= k) ans++;
+
+		printf("%d\n", ans);
+	}
+}
+
