@@ -1,0 +1,54 @@
+#include <stdio.h>
+
+typedef struct {
+	int row, col;
+}coor;
+
+int N, K, R, r1,c1,r2,c2;
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+bool pos[100][100][100][100], v[100][100];
+coor cow[100];
+
+void dfs(int r, int c) {
+	v[r][c] = true;
+
+	for (int i = 0; i < 4; i++) {
+		int nr = r + dx[i], nc = c + dy[i];
+		if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+		if (pos[r][c][nr][nc] || v[nr][nc]) continue;
+
+		dfs(nr, nc);
+	}
+}
+
+int main() {
+	scanf("%d %d %d", &N, &K, &R);
+
+	for (int i = 0; i < R; i++) {
+		scanf("%d %d %d %d", &r1, &c1, &r2, &c2);
+
+		pos[r1 - 1][c1 - 1][r2 - 1][c2 - 1] = true;
+		pos[r2 - 1][c2 - 1][r1 - 1][c1 - 1] = true;
+	}
+
+	for (int i = 0; i < K; i++) {
+		scanf("%d %d", &r1, &c1);
+		cow[i] = { r1 - 1,c1 - 1 };
+	}
+
+	int ans = 0;
+	for (int i = 0; i < K; i++) {
+
+		for (int r = 0; r < N; r++)
+			for (int c = 0; c < N; c++)
+				v[r][c] = false;
+
+		dfs(cow[i].row, cow[i].col);
+
+		for (int j = 0; j < K; j++)
+			if (!v[cow[j].row][cow[j].col])
+				ans++;
+	}
+		
+	printf("%d", ans/2);
+}
