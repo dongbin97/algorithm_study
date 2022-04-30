@@ -1,0 +1,66 @@
+#include <stdio.h>
+
+int N, M, map[2][100][100];
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+bool outside[100][100];
+
+void dfs(int row, int col, int t) {
+	outside[row][col] = true;
+
+	for (int i = 0; i < 4; i++) {
+		int nr = row + dx[i], nc = col + dy[i];
+
+		if (nr < 0 || nr >= N || nc < 0 || nc >= M) continue;
+		if (map[t][nr][nc] == 1 || outside[nr][nc]) continue;
+
+		dfs(nr, nc, t);
+	}
+}
+
+int main() {
+	int cnt = 0;
+
+	scanf("%d %d", &N, &M);
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			scanf("%d", &map[0][i][j]);
+			if (map[0][i][j] == 1) cnt++;
+		}
+	}
+
+	int turn = 1;
+	int cheeze = 0;
+	while (1) {
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				outside[i][j] = false;
+				map[turn % 2][i][j] = map[(turn - 1) % 2][i][j];
+			}
+		}
+
+		dfs(0, 0, (turn - 1) % 2);
+
+		for (int r = 0; r < N; r++) {
+			for (int c = 0; c < M; c++) {
+				if (map[(turn - 1) % 2][r][c] == 1) {
+					int count = 0;
+					for (int i = 0; i < 4; i++) {
+						int nr = r + dx[i], nc = c + dy[i];
+						if (nr < 0 || nr >= N || nc < 0 || nc >= M) continue;
+
+						if (outside[nr][nc]) count++;
+					}
+					if (count >= 2) {
+						map[turn % 2][r][c] = 0;
+						cheeze++;
+					}
+				}
+			}
+		}
+
+		if (cheeze == cnt) break;
+		turn++;
+	}
+
+	printf("%d", turn);
+}
