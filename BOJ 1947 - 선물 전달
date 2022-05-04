@@ -1,0 +1,17 @@
+#include <stdio.h>
+#define MOD 1000000000
+
+int N;
+long long dp[10000001];
+
+int main() {
+	scanf("%d", &N);
+	
+	dp[0] = 1;
+	dp[1] = 0;
+
+	for (int i = 2; i <= N; i++)
+		dp[i] = ((i - 1) * (dp[i - 1] + dp[i - 2])) % MOD;
+
+	printf("%lld", dp[N]);
+}
