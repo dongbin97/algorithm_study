@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+#define INF 1000000000
+
+int N, K, arr[21], dp[21][21][21];
+
+int main() {
+
+	scanf("%d", &N);
+
+	int x, y;
+	scanf("%d %d", &x, &y);
+	
+
+	scanf("%d", &K);
+	for (int i = 1; i <= K; i++)
+		scanf("%d", &arr[i]);
+
+	for (int i = 0; i <= K; i++)
+		for (int j = 0; j <= N; j++)
+			for (int k = 0; k <= N; k++)
+				dp[i][j][k] = INF;
+
+	if (x < y) dp[0][x][y] = 0;
+	else dp[0][y][x] = 0;
+
+	for (int i = 1; i <= K; i++) {
+		for (int j = 1; j <= N; j++) {
+			if (j < arr[i]) {
+				for (int k = 1; k < N; k++) 
+					for (int l = k + 1; l <= N; l++) 
+						dp[i][j][arr[i]] = min(dp[i][j][arr[i]], dp[i - 1][k][l] + abs(j - k) + abs(arr[i] - l));	
+			}
+			else if (j > arr[i]) {
+				for (int k = 1; k < N; k++)
+					for (int l = k + 1; l <= N; l++)
+						dp[i][arr[i]][j] = min(dp[i][arr[i]][j], dp[i - 1][k][l] + abs(arr[i] - k) + abs(j - l));
+			}
+		}
+	}
+
+	int ans = INF;
+	for (int i = 1; i <= N; i++) {
+		if (i < arr[K]) ans = min(ans, dp[K][i][arr[K]]);
+		else if (i > arr[K]) ans = min(ans, dp[K][arr[K]][i]);
+	}
+
+	printf("%d", ans);
+}
