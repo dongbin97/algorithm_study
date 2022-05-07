@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+int N, M, map[50][50];
+int dx[] = { 0,-1,0,1 }, dy[] = { -1,0,1,0 };
+int v[50][50];
+vector<int> color_size;
+
+int dfs(int r, int c, int color) {
+	int res = 1;
+	v[r][c] = color;
+
+	for (int i = 0; i < 4; i++) {
+		if ((map[r][c] & (1 << i)) == 0) {
+			int nr = r + dx[i], nc = c + dy[i];
+			if (v[nr][nc] == 0) res += dfs(nr, nc, color);
+		}
+	}
+
+	return res;
+}
+
+int main() {
+	scanf("%d %d", &N, &M);
+	
+	for (int i = 0; i < M; i++)
+		for (int j = 0; j < N; j++)
+			scanf("%d", &map[i][j]);
+
+	int color = 0; color_size.push_back(0);
+	for (int i = 0; i < M; i++) {
+		for (int j = 0; j < N; j++) {
+			if (v[i][j] == 0) {
+				color_size.push_back(dfs(i, j, ++color));
+			}
+		}
+	}
+
+	int max = 0;
+	for (int i = 1; i <= color; i++)
+		if (max < color_size[i])
+			max = color_size[i];
+
+	int ans = 0;
+	for (int r = 0; r < M; r++) {
+		for (int c = 0; c < N; c++) {
+			for (int i = 0; i < 4; i++) {
+				int nr = r + dx[i], nc = c + dy[i];
+				if (nr < 0 || nr >= M || nc < 0 || nc >= N) continue;
+				if (v[r][c] != v[nr][nc] && ans < color_size[v[r][c]] + color_size[v[nr][nc]])
+					ans = color_size[v[r][c]] + color_size[v[nr][nc]];
+			}
+		}
+	}
+
+	printf("%d\n", color);
+	printf("%d\n", max); 
+	printf("%d", ans);
+}
