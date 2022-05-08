@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int N, M, loc[50];
+
+int main() {
+	scanf("%d %d", &N, &M);
+	for (int i = 0; i < N; i++)
+		scanf("%d", &loc[i]);
+
+	sort(loc, loc + N);
+
+	int front = 0, rear = N - 1;
+	int ans = 0, cnt;
+	while (loc[front] * loc[rear] < 0) {
+		if (abs(loc[front]) > loc[rear]) {
+			ans += loc[rear] * 2;
+			cnt = 0;
+			while (cnt < M && loc[rear] > 0) {
+				rear--;
+				cnt++;
+			}
+		}
+		else {
+			ans += abs(loc[front]) * 2;
+			cnt = 0;
+			while (cnt < M && loc[front] < 0) {
+				front++;
+				cnt++;
+			}
+		}
+	}
+
+	if (loc[rear] < 0) {
+		ans += abs(loc[front]);
+		cnt = 0;
+		while (cnt < M && front<= rear) {
+			front++;
+			cnt++;
+		}
+
+		while (front <= rear) {
+			ans += abs(loc[front]) * 2;
+			cnt = 0;
+			while (cnt < M && front <= rear) {
+				front++;
+				cnt++;
+			}
+		}
+	}
+	else if (loc[front] > 0) {
+		ans += loc[rear];
+		cnt = 0;
+		while (cnt < M && front <= rear) {
+			rear--;
+			cnt++;
+		}
+
+		while (front <= rear) {
+			ans += loc[rear] * 2;
+			cnt = 0;
+			while (cnt < M && front <= rear) {
+				rear--;
+				cnt++;
+			}
+		}
+	}
+
+	printf("%d", ans);
+}
