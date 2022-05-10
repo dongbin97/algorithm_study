@@ -1,0 +1,66 @@
+#include <stdio.h>
+
+int N, M, map[2][100][100];
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+bool v[100][100];
+
+void dfs(int r, int c, int turn) {
+	v[r][c] = true;
+
+	for (int i = 0; i < 4; i++) {
+		int nr = r + dx[i], nc = c + dy[i];
+		if (nr < 0 || nr >= N || nc < 0 || nc >= M) continue;
+		if (v[nr][nc] || map[turn][nr][nc] == 1) continue;
+
+		dfs(nr, nc, turn);
+	}
+}
+
+void setting(int turn) {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			v[i][j] = false;
+			map[1 - turn][i][j] = map[turn][i][j];
+		}
+	}
+
+	dfs(0, 0, turn);
+}
+
+int main() {
+	scanf("%d %d", &N, &M);
+
+	int cnt = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			scanf("%d", &map[0][i][j]);
+			if (map[0][i][j] == 1) cnt++;
+		}
+	}
+
+	int ans = cnt, turn = 1;
+	while (1) {
+		setting((turn - 1) % 2);
+
+		for (int r = 1; r < N - 1; r++) {
+			for (int c = 1; c < M - 1; c++) {
+				if (map[(turn - 1) % 2][r][c] == 0) continue;
+				for (int i = 0; i < 4; i++) {
+					int nr = r + dx[i], nc = c + dy[i];
+					if (v[nr][nc]) {
+						map[turn % 2][r][c] = 0;
+						cnt--;
+						break;
+					}
+				}
+			}
+		}
+
+		if (cnt == 0) break;
+		ans = cnt;
+		turn++;
+	}
+
+
+	printf("%d\n%d", turn, ans);
+}
