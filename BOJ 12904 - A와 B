@@ -1,0 +1,26 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+string S, T;
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	cin >> S;
+	cin >> T;
+
+	char ch;
+	string temp;
+	while (T.size() > S.size()) {
+		ch = T.at(T.size() - 1);
+		temp = T.substr(0, T.size() - 1);
+		if (ch == 'B') reverse(temp.begin(), temp.end());
+		T = temp;
+	}
+
+	if (S.compare(T) != 0) printf("0");
+	else printf("1");
+}
