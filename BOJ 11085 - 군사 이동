@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+using namespace std;
+
+typedef struct {
+	int to, cost;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		return a.cost < b.cost;
+	}
+};
+
+int p, w, c, v;
+vector<st> graph[1000];
+priority_queue<st, vector<st>, comp> pq;
+bool used[1000];
+
+int main() {
+	scanf("%d %d", &p, &w);
+	scanf("%d %d", &c, &v);
+
+	int from, to, cost;
+	for (int i = 0; i < w; i++) {
+		scanf("%d %d %d", &from, &to, &cost);
+		graph[from].push_back({ to, cost });
+		graph[to].push_back({ from, cost });
+	}
+
+	for (st x : graph[c]) 
+		pq.push(x);
+	used[c] = true;
+
+	int ans = 1000;
+	while (1) {
+		st x = pq.top(); pq.pop();
+		if (used[x.to]) continue;
+		used[x.to] = true;
+
+		if (ans > x.cost) ans = x.cost;
+
+		if (x.to == v) break;
+
+		for (st t : graph[x.to]) {
+			if (used[t.to]) continue;
+			pq.push(t);
+		}
+	}
+	
+	printf("%d", ans);
+}
