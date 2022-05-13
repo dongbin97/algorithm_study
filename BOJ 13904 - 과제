@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+
+typedef struct {
+	int days, score;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		if (a.score == b.score) return a.days < b.days;
+		else return a.score < b.score;
+	}
+};
+
+int N, d, w, cnt[1001];
+priority_queue<st, vector<st>, comp> pq;
+
+int main() {
+	int max = 0;
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%d %d", &d, &w);
+		pq.push({ d,w });
+		if (max < d) max = d;
+	}
+
+	int ans = 0, temp = 0;
+	while (!pq.empty()) {
+		st x = pq.top(); pq.pop();
+		if (x.days < temp) continue;
+
+		if (cnt[x.days] < x.days) {
+			ans += x.score;
+			for (int i = x.days; i <= max; i++) {
+				cnt[i]++;
+				if (cnt[i] == i && temp < i) temp = i;
+			}
+		}
+	}
+
+	printf("%d", ans);
+}
