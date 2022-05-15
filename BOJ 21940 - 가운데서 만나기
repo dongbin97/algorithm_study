@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+#define INF 1000000000
+
+int N, K, M, dp[201][201], f[200];
+
+int main() {
+	scanf("%d %d", &N, &M);
+
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			if (i == j) dp[i][j] = 0;
+			else dp[i][j] = INF;
+		}
+	}
+		
+
+	int a, b, c;
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d %d", &a, &b, &c);
+		dp[a][b] = c;
+	}
+
+	scanf("%d", &K);
+	for (int i = 0; i < K; i++) {
+		scanf("%d", &f[i]);
+	}
+
+	for (int k = 1; k <= N; k++)
+		for (int i = 1; i <= N; i++)
+			for (int j = 1; j <= N; j++)
+				dp[i][j] = min(dp[i][j], dp[i][k] + dp[k][j]);
+
+	int ans = INF;
+	vector<int> v;
+
+	for (int i = 1; i <= N; i++) {
+		int temp = 0;
+		bool pos = true;
+		for (int j = 0; j < K; j++) {
+			if (dp[f[j]][i] == INF || dp[i][f[j]] == INF) {
+				pos = false;
+				break;
+			}
+			if (temp < (dp[f[j]][i] + dp[i][f[j]]))
+				temp = (dp[f[j]][i] + dp[i][f[j]]);
+		}
+		if (!pos) continue;
+
+		if (ans > temp) {
+			ans = temp;
+			v.clear();
+			v.push_back(i);
+		}
+		else if (ans == temp) v.push_back(i);
+	}
+
+	for (int x : v) printf("%d ", x);
+}
