@@ -1,0 +1,52 @@
+#include <stdio.h>
+
+int N, dx[] = { 1,0 }, dy[] = { 0,1 }, min  = 4000, max = -4000;
+char map[5][5];
+
+void dfs(int r, int c, int turn, int cal, char op) {
+	if (turn == 0) {
+		int res = cal;
+		if (op == '+') res += (map[r][c] - '0');
+		else if(op=='-') res -= (map[r][c] - '0');
+		else if (op == '*') res *= (map[r][c] - '0');
+
+		if (r == N - 1 && c == N - 1) {
+			if (max < res) max = res;
+			if (min > res) min = res;
+			return;
+		}
+
+		for (int i = 0; i < 2; i++) {
+			int nr = r + dx[i], nc = c + dy[i];
+			if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+
+			dfs(nr, nc, 1 - turn, res, op);
+		}
+	}
+	else {
+		for (int i = 0; i < 2; i++) {
+			int nr = r + dx[i], nc = c + dy[i];
+			if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+
+			dfs(nr, nc, 1 - turn, cal, map[r][c]);
+		}
+	}
+}
+
+int main() {
+	scanf("%d", &N);
+
+	int cnt = 0;
+	char ch;
+	while (cnt < N * N) {
+		scanf("%c", &ch);
+		if (ch == ' ' || ch == '\n') continue;
+
+		map[cnt / N][cnt % N] = ch;
+		cnt++;
+	}
+
+	dfs(0, 0, 0, map[0][0] - '0',' ');
+
+	printf("%d %d", max, min);
+}
