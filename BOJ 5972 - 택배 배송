@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int to, cost;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		return a.cost > b.cost;
+	}
+};
+
+int N, M, dist[50001];
+bool v[50001];
+priority_queue<st, vector<st>, comp> graph[50001], pq;
+
+int main() {
+	scanf("%d %d", &N, &M);
+
+	for (int i = 1; i <= N; i++) dist[i] = 500000000;
+
+	int a, b, c;
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d %d", &a, &b, &c);
+		graph[a].push({ b,c });
+		graph[b].push({ a,c });
+	}
+
+	dist[1] = 0;
+	v[1] = true;
+	while (!graph[1].empty()) {
+		st x = graph[1].top(); graph[1].pop();
+		dist[x.to] = x.cost;
+		pq.push(x);
+	}
+
+	while (!pq.empty()) {
+		st x = pq.top(); pq.pop();
+		if (v[x.to]) continue;
+		v[x.to] = true;
+
+		while (!graph[x.to].empty()) {
+			st t = graph[x.to].top(); graph[x.to].pop();
+			if (dist[t.to] > dist[x.to] + t.cost) {
+				dist[t.to] = dist[x.to] + t.cost;
+				pq.push({ t.to, dist[t.to] });
+			}
+		}
+	}
+
+	printf("%d", dist[N]);
+}
