@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+typedef struct {
+	int to, cost;
+}st;
+
+int N, M, ans;
+vector<st> graph[1001];
+bool v[1001];
+
+bool dfs(int u, int cost, int target) {
+	v[u] = true;
+	if (u == target) {
+		ans = cost;
+		return true;
+	}
+
+	for (st x : graph[u]) {
+		if (v[x.to]) continue;
+
+		if (dfs(x.to, cost + x.cost, target)) return true;
+	}
+	return false;
+}
+
+int main() {
+	scanf("%d %d", &N, &M);
+
+	int a, b, c;
+	for (int i = 0; i < N-1; i++) {
+		scanf("%d %d %d", &a, &b, &c);
+		graph[a].push_back({ b,c });
+		graph[b].push_back({ a,c });
+	}
+
+	for (int i = 0; i < M; i++) {
+		for (int j = 1; j <= N; j++) v[j] = false;
+
+		scanf("%d %d", &a, &b);
+		dfs(a, 0, b);
+		printf("%d\n", ans);
+	}
+}
