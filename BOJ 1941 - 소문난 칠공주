@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+
+int ans = 0, dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+char map[5][6];
+bool selected[25];
+
+bool check_num() {
+	int res = 0;
+	for (int i = 0; i < 25; i++) {
+		if (selected[i] && map[i / 5][i % 5] == 'S')
+			res++;
+	}
+
+	return (res >= 4);
+}
+
+bool check_adj() {
+	bool v[25] = { false, };
+	queue<int> q;
+
+	for (int i = 0; i < 25; i++) {
+		if (selected[i]) {
+			v[i] = true;
+			q.push(i);
+			break;
+		}
+	}
+
+	int cnt = 1;
+	while (!q.empty()) {
+		int x = q.front(); q.pop();
+		int r = x / 5, c = x % 5;
+
+		for (int i = 0; i < 4; i++) {
+			int nr = r + dx[i], nc = c + dy[i];
+			if (nr < 0 || nr >= 5 || nc < 0 || nc >= 5) continue;
+			if (!selected[nr * 5 + nc] || v[nr * 5 + nc]) continue;
+
+			v[nr * 5 + nc] = true;
+			q.push(nr * 5 + nc);
+			cnt++;
+		}
+	}
+
+	return (cnt == 7);
+}
+
+void recur(int idx, int cnt) {
+	if (cnt == 7) {
+		if (check_num() && check_adj()) ans++;
+		return;
+	}
+
+	for (int i = idx; i < 25; i++) {
+		selected[i] = true;
+		recur(i + 1, cnt + 1);
+		selected[i] = false;
+	}
+}
+
+int main() {
+	for (int i = 0; i < 5; i++)
+		scanf("%s", &map[i]);
+
+	recur(0, 0);
+
+	printf("%d", ans);
+}
