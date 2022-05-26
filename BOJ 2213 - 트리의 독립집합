@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int N, w[10001], dp[2][10001], ans = 0;
+vector<int> graph[10001], answer[2][10001];
+bool v[10001];
+
+int recur(int num, int take) {
+	if (dp[take][num] >= 0) return dp[take][num];
+
+	v[num] = true;
+
+	int res = 0;
+	if (take == 1) {
+		answer[take][num].push_back(num);
+		for (int x : graph[num]) {
+			if (v[x]) continue;
+			res += recur(x, 0);
+
+			for (int t : answer[0][x])
+				answer[take][num].push_back(t);
+		}
+			
+		dp[take][num] = w[num] + res;
+	}
+	else {
+		for (int x : graph[num]) {
+			if (v[x]) continue;
+
+			int res0 = recur(x, 0), res1 = recur(x, 1);
+			if (res0 > res1)  {
+				res += res0;
+				for (int t : answer[0][x])
+					answer[take][num].push_back(t);
+			}
+			else {
+				res += res1;
+				for (int t : answer[1][x])
+					answer[take][num].push_back(t);
+			}
+		}
+
+		dp[take][num] = res;
+	}
+
+	v[num] = false;
+	return dp[take][num];
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 1; i <= N; i++)
+		scanf("%d", &w[i]);
+
+	int a, b;
+	for (int i = 0; i < N - 1; i++) {
+		scanf("%d %d", &a, &b);
+		graph[a].push_back(b);
+		graph[b].push_back(a);
+	}
+
+	for (int i = 1; i <= N; i++)
+		dp[0][i] = dp[1][i] = -1;
+
+	int res0 = recur(1, 0), res1 = recur(1, 1);
+	if (res0 > res1) {
+		printf("%d\n", res0);
+		
+		sort(answer[0][1].begin(), answer[0][1].end());
+		for (int t : answer[0][1])
+			printf("%d ", t);
+	}
+	else {
+		printf("%d\n", res1);
+
+		sort(answer[1][1].begin(), answer[1][1].end());
+		for (int t : answer[1][1])
+			printf("%d ", t);
+	}
+}
