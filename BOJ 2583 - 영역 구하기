@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int M, N, K;
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+bool v[100][100];
+vector<int> sz;
+
+int dfs(int i, int j) {
+	v[i][j] = true;
+	int res = 1;
+
+	for (int d = 0; d < 4; d++) {
+		int nr = i + dx[d], nc = j + dy[d];
+		if (nr < 0 || nr >= M || nc < 0 || nc >= N) continue;
+		if (v[nr][nc]) continue;
+
+		res += dfs(nr, nc);
+	}
+
+	return res;
+}
+
+int main() {
+	scanf("%d %d %d", &M, &N, &K);
+	
+	int x1, y1, x2, y2;
+	for (int i = 0; i < K; i++) {
+		scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
+		for (int r = y1; r < y2; r++)
+			for (int c = x1; c < x2; c++)
+				v[r][c] = true;
+	}
+
+	for (int i = 0; i < M; i++) {
+		for (int j = 0; j < N; j++) {
+			if (v[i][j]) continue;
+			sz.push_back(dfs(i, j));
+		}
+	}
+
+	sort(sz.begin(), sz.end());
+	printf("%d\n", sz.size());
+	for (int x : sz) printf("%d ", x);
+}
