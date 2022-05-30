@@ -1,0 +1,41 @@
+#include <stdio.h>
+
+int N, dice[10000][6], op[6] = { 5,3,4,1,2,0 };
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < 6; j++)
+			scanf("%d", &dice[i][j]);
+
+	int floor, top, ans = 0, temp;
+
+	for (int i = 0; i < 6; i++) {
+		temp = 0;
+
+		floor = dice[0][i];
+		top = dice[0][op[i]];
+
+		if (floor < 6 && top < 6) temp += 6;
+		else if (floor < 5 || top < 5) temp += 5;
+		else temp += 4;
+
+		for (int j = 1; j < N; j++) {
+			floor = top;
+			for (int k = 0; k < 6; k++) {
+				if (dice[j][k] == floor) {
+					top = dice[j][op[k]];
+					break;
+				}
+			}
+
+			if (floor < 6 && top < 6) temp += 6;
+			else if (floor < 5 || top < 5) temp += 5;
+			else temp += 4;
+		}
+
+		if (ans < temp) ans = temp;
+	}
+
+	printf("%d", ans);
+}
