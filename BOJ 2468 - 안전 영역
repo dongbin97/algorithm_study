@@ -1,0 +1,54 @@
+#include <stdio.h>
+
+int N, map[100][100];
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+bool v[100][100];
+
+void dfs(int r, int c, int rain) {
+	v[r][c] = true;
+
+	for (int i = 0; i < 4; i++) {
+		int nr = r + dx[i], nc = c + dy[i];
+		if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+		if (v[nr][nc]) continue;
+
+		dfs(nr, nc, rain);
+	}
+}
+
+int main() {
+	scanf("%d", &N);
+
+	int max = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			scanf("%d", &map[i][j]);
+			if (max < map[i][j]) max = map[i][j];
+		}
+	}
+		
+	int ans = 0, cnt;
+	for (int rain = 0; rain <= max; rain++) {
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (map[i][j] > rain) v[i][j] = false;
+				else v[i][j] = true;
+
+			}
+		}
+			
+		cnt = 0;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (v[i][j]) continue;
+
+				dfs(i, j, rain);
+				cnt++;
+			}
+		}
+
+		if (ans < cnt) ans = cnt;
+	}
+
+	printf("%d", ans);
+}
