@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int N, arr[2000], dp[2000][2000];
+
+int recur(int start, int end, int turn) {
+	if (start > end) return 0;
+	else if (dp[start][end] > 0) return dp[start][end];
+	else if (start == end) {
+		dp[start][end] = arr[start] * turn;
+		return dp[start][end];
+	}
+
+	dp[start][end] = max(arr[start] * turn + recur(start + 1, end, turn + 1), recur(start, end - 1, turn + 1) + arr[end] * turn);
+	return dp[start][end];
+}
+
+int main() {
+	scanf("%d", &N);
+
+	for (int i = 0; i < N; i++) 
+		scanf("%d", &arr[i]);
+
+	printf("%d", recur(0, N - 1, 1));
+}
