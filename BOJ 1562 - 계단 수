@@ -1,0 +1,28 @@
+#include <stdio.h>
+#define MOD 1000000000
+
+int N;
+long long dp[101][10][1024];
+
+int main() {
+	scanf("%d", &N);
+
+	for (int i = 0; i < 10; i++)
+		dp[1][i][1 << i] = 1;
+
+	for (int n = 2; n <= N; n++) {
+		for (int bit = 0; bit < 1024; bit++) {
+			dp[n][0][(bit | (1 << 0))] = (dp[n][0][(bit | (1 << 0))] + dp[n - 1][1][bit]) % MOD;
+			for (int x = 1; x < 9; x++)
+				dp[n][x][(bit | (1 << x))] = (dp[n][x][(bit | (1 << x))] + dp[n - 1][x - 1][bit] + dp[n - 1][x + 1][bit]) % MOD;
+			dp[n][9][(bit | (1 << 9))] = (dp[n][9][(bit | (1 << 9))] + dp[n - 1][8][bit]) % MOD;
+		}
+	}
+
+	int ans = 0;
+	for (int i = 1; i < 10; i++) {
+		ans = (ans + dp[N][i][1023]) % MOD;
+	}
+
+	printf("%d", ans);
+}
