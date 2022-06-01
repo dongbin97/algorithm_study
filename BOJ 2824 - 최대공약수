@@ -3,12 +3,12 @@
 #include <map>
 #include <algorithm>
 using namespace std;
-#define MAX 1000000000
+#define INF 1000000000
 
-int N, M, sz;
+int N, M, num;
+map<int, int> A_map, B_map;
 vector<int> prime;
 bool composite[32000];
-map<int, int> A_map, B_map;
 
 void get_prime() {
 	for (int i = 2; i < 32000; i++) {
@@ -22,13 +22,12 @@ void get_prime() {
 int main() {
 
 	get_prime();
-	sz = prime.size();
+	int sz = prime.size();
 
-	int num;
 	scanf("%d", &N);
 	for (int i = 0; i < N; i++) {
 		scanf("%d", &num);
-		for (int j = 0; j < sz && prime[j] <= num; j++) {
+		for (int j = 0; j < sz; j++) {
 			while (num % prime[j] == 0) {
 				A_map[prime[j]]++;
 				num /= prime[j];
@@ -40,7 +39,7 @@ int main() {
 	scanf("%d", &M);
 	for (int i = 0; i < M; i++) {
 		scanf("%d", &num);
-		for (int j = 0; j < sz && prime[j] <= num; j++) {
+		for (int j = 0; j < sz; j++) {
 			while (num % prime[j] == 0) {
 				B_map[prime[j]]++;
 				num /= prime[j];
@@ -49,24 +48,23 @@ int main() {
 		if (num > 1) B_map[num]++;
 	}
 
-	bool flag = false;
-	long long ans = 1;
 	map<int, int> ::iterator A_it = A_map.begin(), B_it = B_map.begin();
+	long long ans = 1; 
+	bool flag = false;
 	while (A_it != A_map.end() && B_it != B_map.end()) {
-		int A_prime = A_it->first;
-		int B_prime = B_it->first;
+		int A_prime = A_it->first, B_prime = B_it->first;
 		if (A_prime < B_prime) A_it++;
 		else if (A_prime > B_prime) B_it++;
 		else {
-			int n = min(A_it->second, B_it->second);
-			while (n--) {
-				ans = ans * A_it->first;
-				if (ans > MAX) {
+			int x = min(A_it->second, B_it->second);
+			while (x--) {
+				ans = ans * A_prime;
+				if (ans >= INF) {
 					flag = true;
-					ans %= MAX;
+					ans %= INF;
 				}
 			}
-			A_it++; B_it++;
+			A_it++, B_it++;
 		}
 	}
 
@@ -80,5 +78,4 @@ int main() {
 		printf("%s", buf);
 	}
 	else printf("%lld", ans);
-	return 0;
 }
