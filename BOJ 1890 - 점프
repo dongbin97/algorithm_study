@@ -1,0 +1,35 @@
+#include <stdio.h>
+
+int N, map[100][100];
+long long dp[100][100];
+
+long long  dfs(int r, int c) {
+	if (dp[r][c] >= 0) return dp[r][c];
+
+	if (r == N - 1 && c == N - 1) {
+		dp[r][c] = 1;
+		return dp[r][c];
+	}
+
+	long long res = 0;
+	
+	if (map[r][c] > 0) {
+		if (r + map[r][c] < N) res += dfs(r + map[r][c], c);
+		if (c + map[r][c] < N) res += dfs(r, c + map[r][c]);
+	}
+
+	dp[r][c] = res;
+	return dp[r][c];
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			scanf("%d", &map[i][j]);
+			dp[i][j] = -1;
+		}
+	}
+		
+	printf("%lld", dfs(0, 0));
+}
