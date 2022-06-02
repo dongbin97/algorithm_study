@@ -1,36 +1,77 @@
 #include <stdio.h>
 #include <map>
+#include <vector>
 using namespace std;
 
-int main() {
-	int test = 1, u, v;
-	bool finished = false,isTree;
-	while (!finished) {
-		map<int, int> m;
-		int cnt = 0;
-		isTree = true;
-		while (1) {
-			scanf("%d %d", &u, &v);
-			if (u == -1 && v == -1) {
-				finished = true;
-				break;
-			}
-			else if (u == 0 && v == 0) break;
-			else {
-				if (m.find(u) == m.end()) m.insert({ u,1 });
-				if (m.find(v) == m.end()) m.insert({ v,1 });
-				cnt++;
-			}
-		}
-		if (finished) break;
+map<int, int> m;
+vector<int> graph[14];
+int visit[14];
 
-		if (m.size() - 1 != cnt) isTree = false;
-		if (cnt == 0) isTree = true;
+bool dfs(int u) {
+	visit[u] = 1;
 
-		if (isTree) printf("Case %d is a tree.\n", test);
-		else printf("Case %d is not a tree.\n", test);
-		test++;
+	for (int x : graph[u]) {
+		if (visit[x] == 1) return false;
+
+		if (!dfs(x)) return false;
 	}
+		
+	return true;
+}
 
-	return 0;
+int main() {
+	int u, v, turn = 1;
+	bool node = false;
+	for (int i = 0; i < 14; i++) visit[i] = -1;
+
+	while (1) {
+		scanf("%d %d", &u, &v);
+
+		if (u == -1 && v == -1) break;
+		else if (u == 0 && v == 0) {
+			bool isTree = true;
+			int zero = 0, root;
+			for (auto x : m) {
+				if (x.second == 0) {
+					zero++;
+					root = x.first;
+				}
+				else if (x.second > 1) {
+					isTree = false;
+					break;
+				}
+			}
+			if (zero != 1) isTree = false;
+
+			if (isTree) {
+				if (!dfs(root)) isTree = false;
+				else {
+					for (int i = 0; i < 14; i++) {
+						if (visit[i] == 0) {
+							isTree = false;
+							break;
+						}
+					}
+				}
+			}
+
+			if (!node || isTree) printf("Case %d is a tree.\n", turn);
+			else printf("Case %d is not a tree.\n", turn);
+
+			turn++;
+			m.clear();
+			for (int i = 0; i < 14; i++) {
+				graph[i].clear();
+				visit[i] = -1;
+			}
+			node = false;
+		}
+		else {
+			node = true;
+			if (m.find(u) == m.end()) m[u] = 0;
+			m[v]++;
+			visit[u] = 0; visit[v] = 0;
+			graph[u].push_back(v);
+		}
+	}
 }
