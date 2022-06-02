@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <queue>
+using namespace std;
+
+typedef struct {
+	int r, c;
+}coor;
+
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+char map[12][7];
+bool v[12][6];
+queue<coor> q;
+
+void dfs(int r, int c) {
+	v[r][c] = true;
+	q.push({ r,c });
+
+	for (int i = 0; i < 4; i++) {
+		int nr = r + dx[i], nc = c + dy[i];
+		if (nr < 0 || nr >= 12 || nc < 0 || nc >= 6) continue;
+		if (v[nr][nc] || map[r][c] != map[nr][nc]) continue;
+
+		dfs(nr, nc);
+	}
+}
+
+void move() {
+	for (int j = 0; j < 6; j++) {
+		for (int i = 11; i >= 0; i--) {
+			if (map[i][j] == '.') continue;
+
+			int idx = i;
+			while (idx + 1 < 12 && map[idx + 1][j] == '.') idx++;
+
+			char temp = map[i][j];
+			map[i][j] = '.';
+			map[idx][j] = temp;
+		}
+	}
+}
+
+int main() {
+	for (int i = 0; i < 12; i++)
+		scanf("%s", map[i]);
+
+	int ans = 0;
+	while (1) {
+		bool change = false;
+		for (int i = 0; i < 12; i++)
+			for (int j = 0; j < 6; j++)
+				v[i][j] = false;
+
+		for (int i = 0; i < 12; i++) {
+			for (int j = 0; j < 6; j++) {
+				if (map[i][j] == '.') continue;
+
+				dfs(i, j);
+				if (q.size() >= 4) {
+					change = true;
+					while (!q.empty()) {
+						coor x = q.front(); q.pop();
+						map[x.r][x.c] = '.';
+					}
+				}
+				else {
+					while (!q.empty()) q.pop();
+				}
+			}
+		}
+
+		move();
+
+		if (change) ans++;
+		else break;
+	}
+	
+	printf("%d", ans);
+}
