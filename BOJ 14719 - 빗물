@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int H, W, arr[500], max_left[500], max_right[500];
+
+int main() {
+	scanf("%d %d", &H, &W);
+
+	scanf("%d", &arr[0]);
+	max_left[0] = arr[0];
+	for (int i = 1; i < W; i++) {
+		scanf("%d", &arr[i]);
+		max_left[i] = max(max_left[i - 1], arr[i]);
+	}
+
+	max_right[W - 1] = arr[W - 1];
+	for (int i = W - 2; i >= 0; i--) 
+		max_right[i] = max(max_right[i + 1], arr[i]);
+	
+	int ans = 0;
+	for (int i = 1; i < W - 1; i++) {
+		int x = min(max_left[i - 1], max_right[i + 1]);
+		ans += (x > arr[i] ? x - arr[i] : 0);
+	}
+
+	printf("%d", ans);
+}
