@@ -1,0 +1,36 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+string S, T;
+
+bool check(string s, string t) {
+	if (s.size() == t.size()) 
+		return s.compare(t) == 0;
+	
+	if (t.at(0) == 'B') {
+		string temp = t.substr(1, t.size() - 1);
+		reverse(temp.begin(), temp.end());
+
+		if (check(s, temp)) return true;
+	}
+
+	if (t.at(t.size() - 1) == 'A') {
+		if (check(s, t.substr(0, t.size() - 1))) return true;
+	}
+
+	return false;
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	cin >> S;
+	cin >> T;
+
+	int res = check(S, T);
+
+	cout << res;
+}
