@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+int N;
+long long subtree[300001], ans = 0;
+vector<int> graph[300001];
+
+long long res(long long num) {
+	return num * (num - 1) / 2;
+}
+
+long long dfs(int u) {
+	subtree[u] = 1;
+
+	for (int x : graph[u]) {
+		if (subtree[x] > 0) continue;
+
+		subtree[u] += dfs(x);
+	}
+
+	ans += (res(N) - res(N - subtree[u]));
+	return subtree[u];
+}
+
+int main() {
+	scanf("%d", &N);
+
+	int a, b;
+	for (int i = 0; i < N - 1; i++) {
+		scanf("%d %d", &a, &b);
+		graph[a].push_back(b);
+		graph[b].push_back(a);
+	}
+
+	dfs(1);
+	printf("%lld", ans - res(N));
+}
