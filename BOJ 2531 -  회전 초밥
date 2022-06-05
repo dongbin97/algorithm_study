@@ -1,0 +1,33 @@
+#include <stdio.h>
+
+int N, d, k, c, arr[30000];
+bool eat[3001];
+
+int main() {
+	scanf("%d %d %d %d", &N, &d, &k, &c);
+
+	for (int i = 0; i < N; i++)
+		scanf("%d", &arr[i]);
+
+	int ans = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 1; j <= d; j++)
+			eat[j] = false;
+
+		int cnt = 0;
+		bool coupon = true;
+		for (int j = 0; j < k; j++) {
+			if (!eat[arr[(i + j) % N]]) {
+				eat[arr[(i + j) % N]] = true;
+				cnt++;
+			}
+
+			if (arr[(i + j) % N] == c) coupon = false;
+		}
+
+		if (ans < cnt + coupon) 
+			ans = cnt + coupon;
+	}
+
+	printf("%d", ans);
+}
