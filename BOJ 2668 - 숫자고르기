@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int turn, num;
+}st;
+
+int N, arr[101], ans = 0;
+st v[101];
+vector<int> temp, a;
+
+void dfs(int u, int idx, int t) {
+	v[u].turn = t;
+	v[u].num = idx;
+
+	if (v[arr[u]].turn == 0) dfs(arr[u], idx + 1, t);
+	else if (0 < v[arr[u]].turn && v[arr[u]].turn < t) return;
+	else if (v[arr[u]].turn == t) {
+		temp.push_back(arr[u]);
+		return;
+	}
+
+}
+
+void get_answer(int u, int start) {
+	a.push_back(u);
+	if (u == start) return;
+
+	get_answer(arr[u], start);
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 1; i <= N; i++) {
+		scanf("%d", &arr[i]);
+		v[i] = { 0,0 };
+	}
+
+	int turn = 1;
+	for (int i = 1; i <= N; i++) {
+		if (v[i].turn == 0) {
+			dfs(i, 1, turn++);
+		}
+	}
+
+	for (int x : temp) 
+		get_answer(arr[x], x);
+
+	sort(a.begin(), a.end());
+
+	printf("%d\n", a.size());
+	for (int x : a) printf("%d\n", x);
+}
