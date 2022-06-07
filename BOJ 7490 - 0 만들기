@@ -1,0 +1,91 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <deque>
+#include <algorithm>
+using namespace std;
+
+int T, N;
+char num[9], op[8];
+vector<string> ans;
+
+bool check(int cnt) {
+	deque<string> dq;
+	int i = 0;
+
+	string str = "";
+	dq.push_back(str+ num[0]);
+	while (i < N-1) {
+		if (op[i] != ' ') {
+			dq.push_back(str + op[i]);
+			dq.push_back(str + num[i+1]);
+		}
+		else {
+			string temp = dq.back(); dq.pop_back();
+			dq.push_back(temp + num[i+1]);
+		}
+		i++;
+	}
+
+	int res = stoi(dq.front()); dq.pop_front();
+	while (!dq.empty()) {
+		if (!dq.front().compare("+")) {
+			dq.pop_front();
+			res = res + stoi(dq.front());
+			dq.pop_front();
+		}
+		else {
+			dq.pop_front();
+			res = res - stoi(dq.front());
+			dq.pop_front();
+		}
+	}
+
+	return (res == 0);
+}
+
+void recur(int idx) {
+	if (idx == N - 1) {
+		if (check(idx)) {
+			string temp = "";
+			temp += num[0];
+			for (int i = 0; i < idx; i++) 
+				temp = temp + op[i] + num[i + 1];
+			ans.push_back(temp);
+		}
+		return;
+	}
+
+	op[idx] = '+';
+	recur(idx + 1);
+
+	op[idx] = '-';
+	recur(idx + 1);
+
+	op[idx] = ' ';
+	recur(idx + 1);
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	cin >> T;
+
+	for (int i = 0; i < 9; i++)
+		num[i] = (i + 1 + '0');
+
+	while (T--) {
+		cin >> N;
+
+		recur(0);
+
+		sort(ans.begin(), ans.end());
+
+		for (string str : ans)
+			cout << str << "\n";
+
+		ans.clear();
+		cout << "\n";
+	}
+}
