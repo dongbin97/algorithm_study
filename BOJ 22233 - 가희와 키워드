@@ -1,0 +1,44 @@
+#include <iostream>
+#include <string>
+#include <unordered_set>
+using namespace std;
+
+int N, M;
+unordered_set<string> s;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	cin >> N >> M;
+
+	string str, temp;
+
+	for (int i = 1; i <= N; i++) {
+		cin >> str;
+		s.insert(str);
+	}
+
+	int ans = N, x;
+	for (int i = 0; i < M; i++) {
+		cin >> str;
+
+		int idx = str.find(",");
+		while (idx != -1) {
+			temp = str.substr(0, idx);
+			if (s.find(temp) != s.end()) {
+				s.erase(temp);
+				ans--;
+			}
+
+			str = str.substr(idx + 1);
+			idx = str.find(",");
+		}
+		if (s.find(str) != s.end()) {
+			s.erase(str);
+			ans--;
+		}
+
+		cout << ans << "\n";
+	}
+}
