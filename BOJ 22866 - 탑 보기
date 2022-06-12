@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+int N, arr[100001], left[100001], right[100001], lcnt[100001], rcnt[100001];
+
+int res(int l, int r, int i) {
+	if (l == 0) return r;
+	else if (r == N + 1) return l;
+
+	if (i - l > r - i) return r;
+	else return l;
+}
+
+int main() {
+	scanf("%d", &N);
+
+	scanf("%d", &arr[1]);
+	left[1] = 0;
+
+	int idx;
+	for (int i = 2; i <= N; i++) {
+		scanf("%d", &arr[i]);
+
+		idx = i - 1;
+		while (idx > 0 && arr[idx] <= arr[i]) idx = left[idx];
+
+		left[i] = idx;
+
+		if (idx > 0) lcnt[i] = lcnt[idx] + 1;
+	}
+
+	right[N] = N + 1;
+	for (int i = N - 1; i >= 1; i--) {
+		idx = i + 1;
+		while (idx <= N && arr[idx] <= arr[i]) idx = right[idx];
+
+		right[i] = idx;
+
+		if (idx <= N) rcnt[i] = rcnt[idx] + 1;
+	}
+
+	int ans;
+	for (int i = 1; i <= N; i++) {
+		if (lcnt[i] + rcnt[i] == 0) {
+			printf("0\n");
+			continue;
+		}
+
+		ans = res(left[i], right[i], i);
+
+		printf("%d %d\n", lcnt[i] + rcnt[i], ans);
+	}
+
+}
