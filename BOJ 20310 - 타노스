@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <string.h>
+#include <vector>
+using namespace std;
+
+char str[501];
+vector<int> z, o;
+
+int main() {
+	
+	scanf("%s", str);
+	int sz = strlen(str);
+
+	for (int i = 0; i < sz; i++) {
+		if (str[i] == '0') z.push_back(i);
+		else o.push_back(i);
+	}
+
+	int zero = z.size(), one = o.size();
+
+	int i = 0, j = one / 2;
+	while (i < zero / 2 && j < one) {
+		if (z[i] < o[j]) {
+			printf("0");
+			i++;
+		}
+		else {
+			printf("1");
+			j++;
+		}
+	}
+
+	for (; i < zero / 2; i++) printf("0");
+	for (; j < one; j++) printf("1");
+}
