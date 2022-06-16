@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int idx, height;
+}st;
+
+int N, L, H;
+int left[1001], right[1001];
+vector<st> v;
+
+bool comp(st a, st b) {
+	return a.idx < b.idx;
+}
+
+int main() {
+	scanf("%d", &N);
+
+	int max_height = 0, max_idx;
+	for (int i = 0; i < N; i++) {
+		scanf("%d %d", &L, &H);
+		v.push_back({ L,H });
+
+		if (max_height < H) {
+			max_height = H;
+			max_idx = L;
+		}
+	}
+
+	sort(v.begin(), v.end(), comp);
+
+	int left_max = v[0].height;
+	for (int i = 1; i < N; i++) {
+		for (int j = v[i - 1].idx; j < v[i].idx; j++)
+			left[j] = left_max;
+
+		if (left_max < v[i].height) left_max = v[i].height;
+	}
+	left[v[N - 1].idx] = left_max;
+
+	int right_max = v[N - 1].height;
+	for (int i = N - 2; i >= 0; i--) {
+		for (int j = v[i + 1].idx; j > v[i].idx; j--)
+			right[j] = right_max;
+
+		if (right_max < v[i].height) right_max = v[i].height;
+	}
+	right[v[0].idx] = right_max;
+
+	int ans = 0;
+	for (int i = v[0].idx; i < max_idx; i++) ans += left[i];
+	for (int i = max_idx; i <= v[N - 1].idx; i++) ans += right[i];
+
+	printf("%d", ans);
+}
