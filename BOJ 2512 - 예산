@@ -1,0 +1,43 @@
+#include <stdio.h>
+
+int N, arr[10000], M;
+
+int check(int x) {
+	int res = 0;
+	for (int i = 0; i < N; i++) {
+		if (arr[i] <= x) res += arr[i];
+		else res += x;
+	}
+
+	return res;
+}
+
+int main() {
+	scanf("%d", &N);
+
+	int sum = 0, max = 0;
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &arr[i]);
+		sum += arr[i];
+		if (max < arr[i]) max = arr[i];
+	}
+
+	scanf("%d", &M);
+
+	if (sum <= M) printf("%d", max);
+	else {
+		int ans = -1, start = 0, end = max, mid, res;
+		while (start <= end) {
+			mid = (start + end) / 2;
+
+			res = check(mid);
+			if (res <= M) {
+				if (ans < mid) ans = mid;
+				start = mid + 1;
+			}
+			else end = mid - 1;
+		}
+
+		printf("%d", ans);
+	}
+}
