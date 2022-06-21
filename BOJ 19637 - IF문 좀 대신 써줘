@@ -1,0 +1,44 @@
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+int N, M;
+vector<int> score;
+vector<string> str;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	cin >> N >> M;
+	
+	int x, prev = -1, cnt = 0;
+	string temp;
+	score.push_back(0);
+	for (int i = 0; i < N; i++) {
+		cin >> temp >> x;
+		if (prev < x) {
+			str.push_back(temp);
+			score.push_back(x);
+			prev = x;
+			cnt++;
+		}
+	}
+
+	for (int i = 0; i < M; i++) {
+		cin >> x;
+		int start = 0, end = cnt, mid, max = 0;
+		while (start <= end) {
+			mid = (start + end) / 2;
+
+			if (x > score[mid]) {
+				if (max < mid) max = mid;
+				start = mid + 1;
+			}
+			else end = mid - 1;
+		}
+
+		cout << str[max] << "\n";
+	}
+}
