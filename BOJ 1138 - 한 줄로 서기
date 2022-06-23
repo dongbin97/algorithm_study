@@ -1,0 +1,44 @@
+#include <stdio.h>
+
+int N, arr[11], ans[11];
+bool used[11], found;
+
+bool check() {
+	int cnt;
+	for (int i = 1; i <= N; i++) {
+		cnt = 0;
+		for (int j = 1; j < i; j++) {
+			if (ans[j] > ans[i]) cnt++;
+		}
+
+		if (arr[ans[i]] != cnt) return false;
+	}
+	return true;
+}
+
+void recur(int x) {
+	if (x > N) {
+		if (check()) {
+			found = true;
+			for (int i = 1; i <= N; i++) 
+				printf("%d ", ans[i]);
+		}
+		return;
+	}
+
+	for (int i = 1; i <= N; i++) {
+		if (used[i]) continue;
+		ans[x] = i;
+		used[i] = true;
+		recur(x + 1);
+		used[i] = false;
+	}
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 1; i <= N; i++) 
+		scanf("%d", &arr[i]);
+
+	recur(1);
+}
