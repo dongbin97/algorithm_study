@@ -1,0 +1,35 @@
+#include <stdio.h>
+
+typedef struct {
+	int gold, silver, bronze;
+}st;
+
+int N, K, x;
+st arr[1001];
+
+bool check(int n) {
+	if (arr[n].gold > arr[K].gold) return true;
+	else if (arr[n].gold < arr[K].gold) return false;
+	else {
+		if (arr[n].silver > arr[K].silver) return true;
+		else if (arr[n].silver < arr[K].silver) return false;
+		else {
+			if (arr[n].bronze > arr[K].bronze) return true;
+			else return false;
+		}
+	}
+}
+
+int main() {
+	scanf("%d %d", &N, &K);
+	for (int i = 1; i <= N; i++) {
+		scanf("%d", &x);
+		scanf("%d %d %d", &arr[x].gold, &arr[x].silver, &arr[x].bronze);
+	}
+		
+	int ans = 0;
+	for (int i = 1; i <= N; i++) 
+		if (check(i)) ans++;
+
+	printf("%d", ans + 1);
+}
