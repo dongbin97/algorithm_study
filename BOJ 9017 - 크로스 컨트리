@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+int T, N, x, arr[1000], cnt[201];
+vector<int> v[201];
+
+int main() {
+	scanf("%d", &T);
+	while (T--) {
+		scanf("%d", &N);
+
+		int min = 201, max = 0;
+		for (int i = 0; i < N; i++) {
+			scanf("%d", &arr[i]);
+			cnt[arr[i]]++;
+
+			if (min > arr[i]) min = arr[i];
+			if (max < arr[i]) max = arr[i];
+		}
+
+		int rank = 1;
+		for (int i = 0; i < N; i++) {
+			if (cnt[arr[i]] < 6) continue;
+			v[arr[i]].push_back(rank++);
+		}
+
+		int ans = 0, temp = 6000;
+		for (int i = min; i <= max; i++) {
+			if (cnt[i] < 6) continue;
+			
+			int res = v[i][0] + v[i][1] + v[i][2] + v[i][3]; 
+			if (temp > res) {
+				temp = res;
+				ans = i;
+			}
+			else if (temp == res) {
+				if (v[ans][4] > v[i][4]) 
+					ans = i;
+			}
+		}
+
+		printf("%d\n", ans);
+
+		for (int i = min; i <= max; i++) {
+			v[i].clear();
+			cnt[i] = 0;
+		}
+	}
+}
