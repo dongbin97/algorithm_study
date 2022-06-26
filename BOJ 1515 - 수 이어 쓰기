@@ -1,0 +1,31 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+string str;
+
+int main() {
+	cin >> str;
+	int sz = str.size();
+
+	int idx = 0, t_sz, ans;
+	bool found = false;
+	for (int i = 1; i <= 30000; i++) {
+		string temp = to_string(i);
+		t_sz = temp.size();
+
+		for (int j = 0; j < t_sz; j++) {
+			if (temp.at(j) == str.at(idx)) idx++;
+
+			if (idx == sz) {
+				ans = i;
+				found = true;
+				break;
+			}
+		}
+
+		if (found) break;
+	}
+
+	printf("%d", ans);
+}
