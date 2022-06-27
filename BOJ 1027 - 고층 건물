@@ -1,0 +1,48 @@
+#include <stdio.h>
+
+int N, arr[50];
+
+bool check_left(int s, int e) {
+	long long x1 = s, x2 = e, y1 = arr[s], y2 = arr[e];
+
+	for (int i = e + 1; i < s; i++) {
+		long long x3 = i, y3 = arr[i];
+
+		if (((x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)) <= 0) return false;
+	}
+		
+	return true;
+}
+
+bool check_right(int s, int e) {
+	long long x1 = s, x2 = e, y1 = arr[s], y2 = arr[e];
+
+	for (int i = s + 1; i < e; i++) {
+		long long x3 = i, y3 = arr[i];
+
+		if (((x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)) >= 0) return false;
+	}
+
+	return true;
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) 
+		scanf("%d", &arr[i]);
+
+	int ans = 0, cnt;
+	for (int i = 0; i < N ; i++) {
+		cnt = 0;
+		
+		for (int j = 0; j < i; j++) 
+			if (check_left(i, j)) cnt++;
+
+		for (int j = i + 1; j < N; j++)
+			if (check_right(i, j)) cnt++;
+
+		if (ans < cnt) ans = cnt;
+	}
+
+	printf("%d", ans);
+}
