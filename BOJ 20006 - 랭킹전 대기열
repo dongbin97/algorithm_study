@@ -1,0 +1,52 @@
+#include <iostream>
+#include <string>
+#include <queue>
+using namespace std;
+
+typedef struct {
+	int level;
+	string name;
+}st;
+
+struct comp {
+	bool operator()(st a, st b) {
+		return a.name.compare(b.name) > 0;
+	}
+};
+
+int main() {
+	int p, m, l, lev[300], idx = -1;
+	string n;
+	priority_queue<st, vector<st>, comp> room[300];
+
+	cin >> p >> m;
+
+	for (int i = 0; i < p; i++) {
+		cin >> l >> n;
+		
+		bool in = false;
+		for (int j = 0; j <= idx; j++) {
+			if (room[j].size() >= m) continue;
+			if (lev[j] - 10 <= l && l <= lev[j] + 10) {
+				room[j].push({ l,n });
+				in = true;
+				break;
+			}
+		}
+
+		if (!in) {
+			room[++idx].push({ l,n });
+			lev[idx] = l;
+		}
+	}
+
+	for (int i = 0; i <= idx; i++) {
+		if (room[i].size() == m) cout << "Started!\n";
+		else cout << "Waiting!\n";
+
+		while (!room[i].empty()) {
+			cout << room[i].top().level << " " << room[i].top().name << "\n";
+			room[i].pop();
+		}
+	}
+}
