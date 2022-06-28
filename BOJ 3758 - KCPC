@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+typedef struct {
+	int id, score, cnt, time;
+}st;
+
+int T, n, k, t, m, x, y, s;
+int score[101][101], cnt[101], time[101];
+
+bool comp(st a, st b) {
+	if (a.score == b.score) {
+		if (a.cnt == b.cnt)
+			return a.time < b.time;
+		else return a.cnt < b.cnt;
+	}
+	else return a.score > b.score;
+}
+
+int main() {
+	scanf("%d", &T);
+	while (T--) {
+		for (int i = 1; i <= n; i++) {
+			cnt[i] = 0;
+			time[i] = 0;
+			for (int j = 1; j <= k; j++)
+				score[i][j] = 0;
+		}
+
+		scanf("%d %d %d %d", &n, &k, &t, &m);
+		for (int i = 0; i < m; i++) {
+			scanf("%d %d %d", &x, &y, &s);
+			score[x][y] = max(score[x][y], s);
+			cnt[x]++;
+			time[x] = i;
+		}
+
+		vector<st> v;
+		for (int i = 1; i <= n; i++) {
+			int sum = 0;
+			for (int j = 1; j <= k; j++) sum += score[i][j];
+
+			v.push_back({ i,sum,cnt[i],time[i] });
+		}
+
+		sort(v.begin(), v.end(), comp);
+
+		for (int i = 1; i <= n; i++) {
+			if (v[i - 1].id == t) {
+				printf("%d\n", i);
+				break;
+			}
+		}
+	}
+}
